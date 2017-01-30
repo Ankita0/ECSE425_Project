@@ -1,2 +1,5 @@
-# ECSE425
-Add code, comment what you added.. normal git stuff :)
+#ECSE425 Project
+
+The repository is broken down into assignment submissions, namely:
+
+##Assignment 3: Caches
