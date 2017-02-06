@@ -98,6 +98,13 @@ begin
 
 end process;
 
+state_action: process (clock)
+begin
+--TODO
+
+
+end process;
+
 
 
 end arch;
