@@ -44,11 +44,24 @@ constant c_total_blocks: integer:= 32;
 
 type cache_state is (IDLE , C_TAG , C_DIRTY_BIT , R_MAIN_MEM , W_MAIN_MEM , W_CACHE);
 
-type chache_mem is array(31 downto 0) OF STD_LOGIC_VECTOR (127 downto 0);
+-- sets up data in a cheche block as an array of 12x8 bit vectors.
+type data_array is array(11 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
 
+-- sets cache block as a record with 1 dirty bit, 1 valid bit, 20 tag bits, and 12*8 data bits
+type cache_block is record
+	dirtyBit: std_logic;
+	validBit: std_logic;
+	tag: std_logic_vector(19 downto 0);
+	data: data_array;
+end record;
+
+-- sets entire cache as an array of 32 cache blocks
+type chache_mem is array(31 downto 0) of cache_block;
+
+-- declare signals
 signal present_state: cache_state;
 signal next_state: cache_state;
-signal MISS, DIRTY_BIT : STD_LOGIC;
+signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT : STD_LOGIC := '0';
 
 
 begin
@@ -56,6 +69,7 @@ begin
 procedure compare_tags is
 begin
 --TODO
+
 
 end compare_tags;
 
