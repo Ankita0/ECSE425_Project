@@ -42,7 +42,7 @@ constant c_bits_per_block: integer:= 128;
 constant c_total_blocks: integer:= 32;
 
 
-type cache_state is (IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE);
+type cache_state is (INIT, IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
 type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
@@ -103,6 +103,12 @@ begin
 --TODO
 
 end read_from_cache;
+
+procedure load_from_mm_to_cache is 
+begin
+--TODO
+
+end load_from_mm_to_cache;
 
 cache_state_change: process (clock)
 begin
