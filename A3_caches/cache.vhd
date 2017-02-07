@@ -35,23 +35,24 @@ end cache;
 
 architecture arch of cache is
 
--- declare signals here
+-- declare constants here 
 constant c_bits_per_word: integer:= 32;
 constant c_word_per_block: integer:= 4;
 constant c_bits_per_block: integer:= 128;
 constant c_total_blocks: integer:= 32;
 
 
-type cache_state is (IDLE , C_TAG , C_DIRTY_BIT , R_MAIN_MEM , W_MAIN_MEM , W_CACHE);
+type cache_state is (IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE);
 
--- sets up data in a cheche block as an array of 12x8 bit vectors.
-type data_array is array(11 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
+-- sets up data in a cache block as an array of 4*32 bit vectors.
+type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
 
--- sets cache block as a record with 1 dirty bit, 1 valid bit, 20 tag bits, and 12*8 data bits
+type tag_array is array (31 downto 0) of STD_LOGIC_VECTOR (22 downto 0);
+
+-- sets cache block as a record with 1 dirty bit, 1 valid bit, and 4*32 data bits
 type cache_block is record
 	dirtyBit: std_logic;
 	validBit: std_logic;
-	tag: std_logic_vector(19 downto 0);
 	data: data_array;
 end record;
 
@@ -62,7 +63,6 @@ type chache_mem is array(31 downto 0) of cache_block;
 signal present_state: cache_state;
 signal next_state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT : STD_LOGIC := '0';
-
 
 begin
 
@@ -104,11 +104,9 @@ begin
 
 end read_from_cache;
 
-
 cache_state_change: process (clock)
 begin
 --TODO
-
 
 end process;
 
@@ -116,9 +114,6 @@ state_action: process (clock)
 begin
 --TODO
 
-
 end process;
-
-
 
 end arch;
