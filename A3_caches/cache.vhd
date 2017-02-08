@@ -42,7 +42,7 @@ constant c_bits_per_block: integer:= 128;
 constant c_total_blocks: integer:= 32;
 
 
-type cache_state is (INIT, IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE);
+type cache_state is (INIT, IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE, READ_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
 type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
@@ -122,10 +122,44 @@ begin
 
 end load_from_mm_to_cache;
 
-cache_state_change: process (clock)
+cache_state_change: process (clock,s_read,s_write)
 begin
---TODO
-
+	if(rising_edge(clock)) then
+		case state is
+			when INIT=>
+				state<=IDLE;
+			when IDLE=>
+				if((s_read xor s_write)='1') then
+					state<=CHECK_TAG;
+				end if;
+			when CHECK_TAG=>
+				if((READ_HIT and s_read)='1') then
+					state<=READ_CACHE;
+				elsif ((WRITE_HIT and s_write)='1') then
+					state<=WRITE_CACHE;
+				elsif ((READ_MISS or WRITE_MISS)='1') then
+					state<=CHECK_DIRTY_BIT;															
+				end if;
+			when CHECK_DIRTY_BIT=>
+				if(((not DIRTY_BIT) and s_read and s_write)='1') then
+					state<=READ_MAIN_MEM;
+				elsif ((DIRTY_BIT and s_read and s_write)='1') then
+					state<=WRITE_MAIN_MEM;
+				end if;
+			when WRITE_MAIN_MEM=>
+				state<=READ_MAIN_MEM;
+			when READ_MAIN_MEM=>
+				if(((not DIRTY_BIT) and s_read)='1') then
+					state<=IDLE;
+				elsif (((not DIRTY_BIT) and s_write)='1') then
+					state<=WRITE_CACHE;
+				end if;
+			when WRITE_CACHE=>
+				state<=IDLE;
+			when READ_CACHE=>
+				state<=IDLE;
+		end case;
+	end if;
 end process;
 
 state_action: process (clock)
