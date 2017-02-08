@@ -42,7 +42,7 @@ constant c_bits_per_block: integer:= 128;
 constant c_total_blocks: integer:= 32;
 
 
-type cache_state is (INIT, IDLE , CHECK_TAG , CHECK_DIRTY_BIT , READ_MAIN_MEM , WRITE_MAIN_MEM , WRITE_CACHE, READ_CACHE);
+type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, WRITE_MAIN_MEM, WRITE_CACHE, READ_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
 type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
@@ -60,8 +60,7 @@ end record;
 type cache_mem is array(31 downto 0) of cache_block;
 
 -- declare signals
-signal present_state: cache_state;
-signal next_state: cache_state;
+signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT : STD_LOGIC := '0';
 
 begin
@@ -122,7 +121,7 @@ begin
 
 end load_from_mm_to_cache;
 
-cache_state_change: process (clock,s_read,s_write)
+cache_state_change: process (clock,s_read,s_write,READ_HIT,WRITE_HIT,DIRTY_BIT,READ_MISS,WRITE_MISS)
 begin
 	if(rising_edge(clock)) then
 		case state is
@@ -162,10 +161,41 @@ begin
 	end if;
 end process;
 
-state_action: process (clock)
+state_action: process (state)
 begin
---TODO
-
+	case state is
+		when IDLE=>
+		when CHECK_TAG=>
+--			compare_tags();
+			s_waitrequest<='1';
+		when CHECK_DIRTY_BIT=>
+--			check_dirty_bits(s_addr<=s_addr, DIRTY_BIT=>DIRTY_BIT);
+			m_waitrequest<='1';
+			s_waitrequest<='1';
+		when WRITE_MAIN_MEM=>
+--			write_main_mem();
+			m_write<='1';
+--			m_writedata<='1';
+			m_waitrequest<='1';
+			s_waitrequest<='1';
+		when READ_MAIN_MEM=>
+--			read_main_mem();
+			m_read<='1';
+			m_waitrequest<='1';
+			s_waitrequest<='1';
+--			m_readdata<='1';
+			DIRTY_BIT<='0';
+			m_waitrequest<='1';
+		when WRITE_CACHE=>
+--			write_to_cache();
+			DIRTY_BIT<='1';
+			s_waitrequest<='1';
+			m_waitrequest<='0';
+		when READ_CACHE=>
+--			read_from_cache();
+			s_readdata<='1';
+			s_waitrequest<='1';
+	end case;
 end process;
 
 end arch;
