@@ -161,7 +161,7 @@ begin
 	end if;
 end process;
 
-state_action: process (state)
+state_action: process (state,m_readdata,s_writedata)
 begin
 	case state is
 		when IDLE=>
