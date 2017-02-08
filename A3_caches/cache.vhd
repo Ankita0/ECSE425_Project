@@ -73,10 +73,19 @@ begin
 
 end compare_tags;
 
-procedure check_dirty_bits is
-begin
---TODO
+--INPUT TO check_dirty_bits in state_action is:
+-- signal block_dirtybit:=dirtybit <='1'
+-- check_dirty_bits(block_DirtyBit<=cache_block, DIRTY_BIT=>DIRTY_BIT);
 
+procedure check_dirty_bits (Signal block_DirtyBit : in cache_block:=dirtybBit;
+							Signal DIRTY_BIT : out STD_LOGIC) is
+begin
+	if(block_DirtyBit='1')then
+		DIRTY_BIT<='1';
+	elsif(block_DirtyBit='0') then
+		DIRTY_BIT<='0';
+	end if;
+		
 end check_dirty_bits;
 
 procedure read_main_mem is
