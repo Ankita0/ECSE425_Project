@@ -74,13 +74,18 @@ begin
 end compare_tags;
 
 --INPUT TO check_dirty_bits in state_action is:
--- selected_Block : std_logic;
--- selected_Block<= cache_mem(index).dirtyBit;
--- check_dirty_bits(block_DirtyBit<=selected_Block, DIRTY_BIT=>DIRTY_BIT);
+-- check_dirty_bits(addr<=s_addr, DIRTY_BIT=>DIRTY_BIT);
 
-procedure check_dirty_bits (Signal block_DirtyBit : in std_logic;
+procedure check_dirty_bits (Signal addr : in  std_logic_vector (31 downto 0);
 							Signal DIRTY_BIT : out STD_LOGIC) is
+	variable index : std_logic_vector(4 downto 0);
+	variable selected_Block : std_logic;
 begin
+	
+	index <= addr(7 downto 3);
+	
+ 	block_DirtyBit<= cache_mem(index).dirtyBit;
+
 	if(block_DirtyBit='1')then
 		DIRTY_BIT<='1';
 	elsif(block_DirtyBit='0') then
@@ -89,17 +94,22 @@ begin
 		
 end check_dirty_bits;
 
-
+--INPUT to read_main_mem in state_action is:
 
 procedure read_main_mem is
 begin
---TODO
+
+--flush
+--readdata to cache
+
 
 end read_main_mem;
 
 procedure write_main_mem is
 begin
---TODO
+--flush
+--writedata to mm of tag & index to be replaced
+--readdata to cache
 
 end write_main_mem;
 
