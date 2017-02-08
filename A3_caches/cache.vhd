@@ -57,7 +57,7 @@ type cache_block is record
 end record;
 
 -- sets entire cache as an array of 32 cache blocks
-type chache_mem is array(31 downto 0) of cache_block;
+type cache_mem is array(31 downto 0) of cache_block;
 
 -- declare signals
 signal present_state: cache_state;
@@ -74,10 +74,11 @@ begin
 end compare_tags;
 
 --INPUT TO check_dirty_bits in state_action is:
--- signal block_dirtybit:=dirtybit <='1'
--- check_dirty_bits(block_DirtyBit<=cache_block, DIRTY_BIT=>DIRTY_BIT);
+-- selected_Block : std_logic;
+-- selected_Block<= cache_mem(index).dirtyBit;
+-- check_dirty_bits(block_DirtyBit<=selected_Block, DIRTY_BIT=>DIRTY_BIT);
 
-procedure check_dirty_bits (Signal block_DirtyBit : in cache_block:=dirtybBit;
+procedure check_dirty_bits (Signal block_DirtyBit : in std_logic;
 							Signal DIRTY_BIT : out STD_LOGIC) is
 begin
 	if(block_DirtyBit='1')then
@@ -87,6 +88,8 @@ begin
 	end if;
 		
 end check_dirty_bits;
+
+
 
 procedure read_main_mem is
 begin
