@@ -136,6 +136,10 @@ begin
 	if(rising_edge(clock)) then
 		case state is
 			when INIT=>
+				for i in (31 downto 0) loop
+					cache_mem(i).validBit <= '0';
+
+				end loop;
 				state<=IDLE;
 			when IDLE=>
 				if((s_read xor s_write)='1') then
