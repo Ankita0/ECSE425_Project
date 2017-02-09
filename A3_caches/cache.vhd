@@ -82,8 +82,10 @@ procedure check_dirty_bits (Signal addr : in  std_logic_vector (31 downto 0);
 begin
 	
 	index <= addr(7 downto 3);
-	
- 	block_DirtyBit<= cache_mem(index).dirtyBit;
+
+	--I think index needs to be converted to integer
+
+ 	block_DirtyBit<= cache_mem(to_integer(index)).dirtyBit;
 
 	if(block_DirtyBit='1')then
 		DIRTY_BIT<='1';
@@ -94,21 +96,31 @@ begin
 end check_dirty_bits;
 
 --INPUT to read_main_mem in state_action is:
+--readData should go to the m_readdata
 
-procedure read_main_mem is
+procedure read_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
+						 Signal readData : out std_logic_vector (7 downto 0)) is
 begin
 
---flush
---readdata to cache
+	m_read<='1';
+	m_addr <= addr;
 
+	IF(m_waitrequest'event and m_waitrequest='1') then
+		readData<=m_readdata;	
+	end if;
 
 end read_main_mem;
 
-procedure write_main_mem is
+procedure write_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
+						  Signal writeData : out std_logic_vector (7 downto 0)) is
 begin
---flush
---writedata to mm of tag & index to be replaced
---readdata to cache
+
+	m_write<='1';
+	m_addr<=addr;
+
+	IF(m_waitrequest'event and m_waitrequest='1') then
+		writeData<=m_writedata;
+	end if;
 
 end write_main_mem;
 
@@ -116,6 +128,7 @@ end write_main_mem;
 procedure write_to_cache is
 begin
 --TODO
+
 
 end write_to_cache;
 
@@ -125,11 +138,6 @@ begin
 
 end read_from_cache;
 
-procedure load_from_mm_to_cache is 
-begin
---TODO
-
-end load_from_mm_to_cache;
 
 cache_state_change: process (clock,s_read,s_write,READ_HIT,WRITE_HIT,DIRTY_BIT,READ_MISS,WRITE_MISS)
 begin
