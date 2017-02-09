@@ -61,15 +61,24 @@ type cache_mem is array(31 downto 0) of cache_block;
 
 -- declare signals
 signal state: cache_state;
-signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT : STD_LOGIC := '0';
+signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
 
 begin
 
-procedure compare_tags is
+procedure compare_tags (Signal addr : in std_logic_vector(31 downto 0);
+                        Signal HIT_MISS : out STD_LOGIC)) is
+  variable tag : std_logic_vector(22 downto 0);
 begin
---TODO
-
-
+--TODO 
+  tag <= addr(31 downto 9);
+  
+  for i in 0 to 31 loop
+    if (tag= tag_array(i)) then
+      HIT_MISS<='1';
+    else
+     HIT_MISS<='0';
+   end if;
+  end loop;
 end compare_tags;
 
 --INPUT TO check_dirty_bits in state_action is:
@@ -132,9 +141,18 @@ begin
 
 end write_to_cache;
 
-procedure read_from_cache is
+procedure read_from_cache (Signal addr : in std_logic_vector(31 downto 0); 
+                            Signal readData : out std_logic_vector(7 downto 0)) is
+      variable index : std_logic_vector(8 downto 4);
+      variable data : std_logic_vector(7 downto 0);
 begin
---TODO
+
+		IF (clock'event AND clock = '1') THEN
+			IF (s_read = '1') THEN
+				cache_mem(index).data <= s_readdata;
+			END IF;
+		read_address_reg <= address;
+		END IF;
 
 end read_from_cache;
 
