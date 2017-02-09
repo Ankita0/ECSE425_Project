@@ -78,10 +78,10 @@ end compare_tags;
 procedure check_dirty_bits (Signal addr : in  std_logic_vector (31 downto 0);
 							Signal DIRTY_BIT : out STD_LOGIC) is
 	variable index : std_logic_vector(4 downto 0);
-	variable selected_Block : std_logic;
+	variable block_DirtyBit : std_logic;
 begin
 	
-	index <= addr(7 downto 3);
+	index <= addr(8 downto 4);
 
 	--I think index needs to be converted to integer
 
