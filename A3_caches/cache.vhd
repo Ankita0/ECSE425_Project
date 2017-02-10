@@ -148,7 +148,6 @@ Signal inData : in std_logic_vector (31 downto 0);
 Signal outData : out std_logic_vector (7 downto 0)) is
 begin
 	m_addr<=addr;
-
 	IF(m_waitrequest'event and m_waitrequest='1') then
 		outData<=inData;
 	end if;
