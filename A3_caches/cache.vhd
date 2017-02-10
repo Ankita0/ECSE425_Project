@@ -91,10 +91,6 @@ signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	waitrequest:  STD_LOGIC;
 
 
-
-
-
-
 -- HIT_MISS is '1' when HIT, '0' when MISS
 procedure compare_tags 
 (Signal addr : in std_logic_vector(31 downto 0);
@@ -173,23 +169,7 @@ begin
 	s_write <= write_to_cache_32;
 end write_to_cache_cpu;
 
-procedure read_from_cache (Signal addr : in std_logic_vector(31 downto 0); 
-                            Signal readData : out std_logic_vector(7 downto 0)) is
-      variable index : std_logic_vector(8 downto 4);
-      variable data : std_logic_vector(7 downto 0);
 begin
-
-		IF (clock'event AND clock = '1') THEN
-			IF (s_read = '1') THEN
-				cache_memory(index).data <= s_readdata;
-			END IF;
-		read_address_reg <= address;
-		END IF;
-
-end read_from_cache;
-
-begin
-
 
 MainMem: memory 
 Generic map(
@@ -265,30 +245,24 @@ begin
 			s_waitrequest<='1';
 		when CHECK_DIRTY_BIT=>
 			check_dirty_bits(s_addr, DIRTY_BIT);
-			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
 			write_main_mem(s_addr,s_writedata,m_writedata);
 			m_write<='1';
 --			if m_writedata exists
-			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
 			read_from_main_mem(m_addr, m_readdata);
 			m_read<='1';
-			m_waitrequest<='1';
 			s_waitrequest<='1';
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
-			m_waitrequest<='1';
 		when WRITE_CACHE=>
 --			write_to_cache();
 			DIRTY_BIT<='1';
 			s_waitrequest<='1';
-			m_waitrequest<='0';
 		when READ_CACHE=>
-			read_from_cache(s_addr,s_readdata);
-			s_readdata<='1';
+			s_readdata<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).data(to_integer(unsigned(s_addr(3 downto 0))));
 			s_waitrequest<='1';
 	end case;
 end process;
