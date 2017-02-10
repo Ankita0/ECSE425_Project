@@ -91,22 +91,8 @@ signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	waitrequest:  STD_LOGIC;
 
 
-begin
 
-MainMem: memory 
-Generic map(
-		ram_size => 32768,
-		mem_delay => 10 ns,
-		clock_period =>  1 ns
-	)
-Port Map ( 
-	clock => clock,
-	writedata=>writedata,
-	address=>address,
-	memwrite=>memwrite,
-	memread=>memread,
-	readdata=>readdata,
-	waitrequest=>waitrequest); 
+
 
 
 -- HIT_MISS is '1' when HIT, '0' when MISS
@@ -150,7 +136,7 @@ begin
 		readData<=m_readdata;	
 	end if;
 
-end read_main_mem;
+end read_from_main_mem;
 
 procedure write_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
 						  Signal inData : in std_logic_vector (31 downto 0);
@@ -201,6 +187,24 @@ begin
 		END IF;
 
 end read_from_cache;
+
+begin
+
+
+MainMem: memory 
+Generic map(
+		ram_size => 32768,
+		mem_delay => 10 ns,
+		clock_period =>  1 ns
+	)
+Port Map ( 
+	clock => clock,
+	writedata=>writedata,
+	address=>address,
+	memwrite=>memwrite,
+	memread=>memread,
+	readdata=>readdata,
+	waitrequest=>waitrequest); 
 
 
 cache_state_change: process (clock,s_read,s_write)
