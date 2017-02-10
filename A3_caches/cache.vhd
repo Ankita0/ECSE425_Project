@@ -10,7 +10,7 @@ use ieee.numeric_std.all;
 
 entity cache is
 generic(
-	ram_size : INTEGER := 32768;
+	ram_size : INTEGER := 32768
 );
 port(
 	clock : in std_logic;
@@ -79,7 +79,7 @@ type cache_mem is array(31 downto 0) of cache_block;
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
-signal writedata;
+signal writedata: STD_LOGIC;
 signal initialize: std_logic:= '1';
 signal cache : cache_mem;
 
@@ -200,7 +200,7 @@ begin
 	elsif(rising_edge(clock) and initialize ='0') then
 		case state is
 			when INIT=>
-				for i in (31 downto 0) loop
+				for i in 0 to 31 loop
 					cache_mem(i).validBit <= '0';
 				end loop;
 				state<=IDLE;
