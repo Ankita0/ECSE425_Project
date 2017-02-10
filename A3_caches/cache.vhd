@@ -107,19 +107,6 @@ begin
   end loop;
 end compare_tags;
 
---INPUT TO check_dirty_bits in state_action is:
--- check_dirty_bits(addr<=s_addr, DIRTY_BIT=>DIRTY_BIT);
-
-procedure check_dirty_bits 
-(Signal addr : in  std_logic_vector (31 downto 0);
-  Signal DIRTY_BIT : out STD_LOGIC) is
-begin	
-	--convert index to integer
- 	DIRTY_BIT<= cache_memory(to_integer(unsigned(addr(8 downto 4)))).dirtyBit;
-end check_dirty_bits;
-
-
-
 -- funtion takes in s_addr converts to int addr for main mem
 function cache_addr_to_mem_map(addr : std_logic_vector (31 downto 0))
               return integer is
@@ -238,13 +225,14 @@ begin
 				cache_memory(i).validBit <= '0';
 				cache_memory(i).dirtyBit <= '0';
 			end loop;
+
 			initialize<= '0';
 		when IDLE=>
 		when CHECK_TAG=>
 			compare_tags(s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
 		when CHECK_DIRTY_BIT=>
-			check_dirty_bits(s_addr, DIRTY_BIT);
+			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
 			write_to_main_mem(s_addr,s_writedata,m_writedata);
