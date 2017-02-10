@@ -116,19 +116,6 @@ begin
   end if;
 end cache_addr_to_mem_map;
 
---input integer from cache_addr_to_mem_map(s_addr) and attach m_readdata to second element
--- ex: read_from_main_mem(chache_addr_to_mem_map(s_addr), m_readdata);
-procedure read_from_main_mem 
-(Signal addr : in  INTEGER ;
-  Signal readData : out std_logic_vector (7 downto 0)) is
-begin
-	m_addr <= addr;
-	IF(m_waitrequest'event and m_waitrequest='1') then
-		readData<=m_readdata;	
-	end if;
-
-end read_from_main_mem;
-
 procedure write_to_main_mem 
 (Signal addr : in  integer;
 Signal inData : in std_logic_vector (31 downto 0);
@@ -236,7 +223,8 @@ begin
 --			if m_writedata exists
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
-			read_from_main_mem(cache_addr_to_mem_map(s_addr), m_readdata);
+			address<=cache_addr_to_mem_map(s_addr);
+			m_readdata<=readdata;
 			m_read<='1';
 			s_waitrequest<='1';
 --			if m_readdata exists;
