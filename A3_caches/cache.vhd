@@ -145,7 +145,8 @@ end write_to_main_mem;
 procedure write_to_cache_from_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
-			signal mem_read_data_4 :in std_logic_vector(7 downto 0))is
+			signal mem_read_data_4 :in std_logic_vector(7 downto 0);
+signal s_writedata: out std_logic_vector(31 downto 0))is
 begin
 --TODO
 	s_writedata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
