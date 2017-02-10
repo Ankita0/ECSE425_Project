@@ -127,13 +127,7 @@ begin
 	s_writedata <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 	wait for clk_period;
 	ASSERT ((s_waitrequest= '0') and 
-		(s_readdata = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") and 
-		(m_addr = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") and
-		(m_read = '0')and
-		(m_write = '0')and
-		(m_waitrequest = '0') and
-		(m_writedata= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") and
-		(m_readdata = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
+		(s_readdata = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
 	REPORT "INITIALIZATION unsuccessful" 
 	SEVERITY ERROR;
 
@@ -149,11 +143,11 @@ begin
 	REPORT "(IDLE read miss) Busy state waitrequest not working" & std_logic'image(s_waitrequest) 
 	SEVERITY ERROR;
 	wait for clk_period/2;
-	ASSERT (s_waitrequest= '1' and m_addr = "00000000000000000000000000000000" and m_read = '1' and m_write = '0' and m_waitrequest = '1') 
+	ASSERT (s_waitrequest= '1' and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1') 
 	REPORT "(IDLE read miss) main memory fetch request not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
-	ASSERT (s_waitrequest= '1' and m_addr = "00000000000000000000000000000000" and m_read = '1' and m_write = '0' and m_waitrequest = '1')
+	ASSERT (s_waitrequest= '1' and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
 	REPORT "IDLE read miss unsuccessful"
 	SEVERITY ERROR;
 	REPORT "IDLE read miss successful";
