@@ -61,7 +61,7 @@ constant c_total_blocks: integer:= 32;
 constant ram_size_c: INTEGER := 32768;
 
 
-type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, WRITE_MAIN_MEM, WRITE_CACHE, READ_CACHE);
+type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, write_to_main_mem, WRITE_CACHE, READ_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
 type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
@@ -125,8 +125,7 @@ begin
   if (to_integer(unsigned(addr(8 downto 4))) > 0) then
     return to_integer(unsigned(addr(8 downto 4)));
   end if;
-
-end chache_addr_to_mem_map;
+end cache_addr_to_mem_map;
 
 --input integer from cache_addr_to_mem_map(s_addr) and attach m_readdata to second element
 -- ex: read_from_main_mem(chache_addr_to_mem_map(s_addr), m_readdata);
@@ -141,10 +140,10 @@ begin
 
 end read_from_main_mem;
 
-procedure write_main_mem 
+procedure write_to_main_mem 
 (Signal addr : in  integer;
 Signal inData : in std_logic_vector (31 downto 0);
-Signal outData : in std_logic_vector (7 downto 0)) is
+Signal outData : out std_logic_vector (7 downto 0)) is
 begin
 
 	m_write<='1';
@@ -154,10 +153,10 @@ begin
 		outData<=inData;
 	end if;
 
-end write_main_mem;
+end write_to_main_mem;
 
 
-procedure write_to_cache_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
+procedure write_to_cache_from_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_4 :in std_logic_vector(7 downto 0))is
@@ -169,7 +168,7 @@ begin
 	burst_write_to_cache_32 <= (23 downto 16 => '1') & mem_read_data_2;
 	burst_write_to_cache_32 <= (31 downto 24 => '1') & mem_read_data_1;
 	s_write <= burst_write_to_cache_32;
-end write_to_cache_mm;
+end write_to_cache_from_mm;
 
 -- added another procedure for straight up write form cpu
 procedure write_to_cache_cpu (signal write_to_cache_32: std_logic_vector(31 downto 0))is
@@ -220,9 +219,9 @@ begin
 				if(((not DIRTY_BIT) and s_read and s_write)='1') then
 					state<=READ_MAIN_MEM;
 				elsif ((DIRTY_BIT and s_read and s_write)='1') then
-					state<=WRITE_MAIN_MEM;
+					state<=write_to_main_mem;
 				end if;
-			when WRITE_MAIN_MEM=>
+			when write_to_main_mem=>
 				state<=READ_MAIN_MEM;
 			when READ_MAIN_MEM=>
 				if(((not DIRTY_BIT) and s_read)='1') then
@@ -254,8 +253,8 @@ begin
 		when CHECK_DIRTY_BIT=>
 			check_dirty_bits(s_addr, DIRTY_BIT);
 			s_waitrequest<='1';
-		when WRITE_MAIN_MEM=>
-			write_main_mem(s_addr,s_writedata,m_writedata);
+		when write_to_main_mem=>
+			write_to_main_mem(s_addr,s_writedata,m_writedata);
 			m_write<='1';
 --			if m_writedata exists
 			s_waitrequest<='1';
