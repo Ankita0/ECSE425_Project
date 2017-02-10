@@ -61,7 +61,7 @@ constant c_total_blocks: integer:= 32;
 constant ram_size_c: INTEGER := 32768;
 
 
-type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, write_to_main_mem, WRITE_CACHE, READ_CACHE);
+type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, WRITE_MAIN_MEM, WRITE_CACHE, READ_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
 type data_array is array(3 downto 0) of STD_LOGIC_VECTOR (31 downto 0);
@@ -147,8 +147,6 @@ procedure write_to_main_mem
 Signal inData : in std_logic_vector (31 downto 0);
 Signal outData : out std_logic_vector (7 downto 0)) is
 begin
-
-	m_write<='1';
 	m_addr<=addr;
 
 	IF(m_waitrequest'event and m_waitrequest='1') then
@@ -194,7 +192,6 @@ cache_state_change: process (clock,s_read,s_write)
 begin
 	if (initialize = '1') then 
 		state<=INIT;
-		initialize<= '0';
 	elsif(rising_edge(clock) and initialize ='0') then
 		case state is
 			when INIT=>
@@ -215,9 +212,9 @@ begin
 				if(((not DIRTY_BIT) and s_read and s_write)='1') then
 					state<=READ_MAIN_MEM;
 				elsif ((DIRTY_BIT and s_read and s_write)='1') then
-					state<=write_to_main_mem;
+					state<=WRITE_MAIN_MEM;
 				end if;
-			when write_to_main_mem=>
+			when WRITE_MAIN_MEM=>
 				state<=READ_MAIN_MEM;
 			when READ_MAIN_MEM=>
 				if(((not DIRTY_BIT) and s_read)='1') then
@@ -242,14 +239,15 @@ begin
 				cache_memory(i).validBit <= '0';
 				cache_memory(i).dirtyBit <= '0';
 			end loop;
+			initialize<= '0';
 		when IDLE=>
 		when CHECK_TAG=>
-			compare_tags (s_addr,tag_arr,HIT_MISS);
+			compare_tags(s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
 		when CHECK_DIRTY_BIT=>
 			check_dirty_bits(s_addr, DIRTY_BIT);
 			s_waitrequest<='1';
-		when write_to_main_mem=>
+		when WRITE_MAIN_MEM=>
 			write_to_main_mem(s_addr,s_writedata,m_writedata);
 			m_write<='1';
 --			if m_writedata exists
