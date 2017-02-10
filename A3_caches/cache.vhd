@@ -111,13 +111,9 @@ end compare_tags;
 procedure check_dirty_bits 
 (Signal addr : in  std_logic_vector (31 downto 0);
   Signal DIRTY_BIT : out STD_LOGIC) is
-	variable index : std_logic_vector(4 downto 0);
-	variable block_DirtyBit : std_logic;
 begin	
-	index <= addr(8 downto 4);
-	
 	--convert index to integer
- 	DIRTY_BIT<= cache_memory(to_integer(index)).dirtyBit;
+ 	DIRTY_BIT<= cache_memory(to_integer(addr(8 downto 4))).dirtyBit;
 end check_dirty_bits;
 
 --INPUT to read_main_mem in state_action is:
