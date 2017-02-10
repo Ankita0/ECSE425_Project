@@ -113,11 +113,7 @@ procedure check_dirty_bits
   Signal DIRTY_BIT : out STD_LOGIC) is
 begin	
 	--convert index to integer
-<<<<<<< HEAD
- 	DIRTY_BIT<= cache_memory(to_integer(addr(8 downto 4))).dirtyBit;
-=======
- 	DIRTY_BIT<= cache_memory(to_integer(unsigned(index))).dirtyBit;
->>>>>>> ffa3744803d0deea3fb47afe6b3043bfa50eb6b5
+ 	DIRTY_BIT<= cache_memory(to_integer(unsigned(addr(8 downto 4)))).dirtyBit;
 end check_dirty_bits;
 
 
