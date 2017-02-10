@@ -115,8 +115,113 @@ end process;
 test_process : process
 begin
 
--- put your tests here
-	
+--put test here
+-- need to verify 'Z' signals
+-- filling in values for 
+wait for clk_period;
+
+REPORT "start check for initialization of cache";
+s_read <= '0';
+s_write <= '0';
+s_addr <= 'Z';
+s_writedata <= 'Z';
+wait for clk_period;
+ASSERT((s_waitrequest= '0' and s_readdata = 'Z') and (m_addr = 'Z' and m_read = '0' and m_write = '0' and m_waitrequest = '0' and m_writedata= 'Z' and m_readdata = 'Z'))) 
+REPORT "INITIALIZATION unsuccessful"
+SEVERITY ERROR;
+REPORT "cache initialized";
+
+REPORT "start check for read from cache once== IDLE read miss"
+s_read <= '1';
+s_write <= '0';
+s_addr <= '0000000000000000000000000000000';
+s_writedata <= 'Z';
+wait for clk_period/2;
+ASSERT (s_waitrequest= '1') 
+REPORT "(IDLE read miss) Busy state waitrequest not working" & integer'image(s_waitrequest) 
+SEVERITY ERROR;
+wait for clk_period/2;
+ASSERT (s_waitrequest= '1' and m_addr = '0000000000000000000000000000000' and m_read = '1' and m_write = '0' and m_waitrequest = '1') 
+REPORT "(IDLE read miss) main memory fetch request not working"
+SEVERITY ERROR;
+wait for clk_period/2;
+ASSERT (s_waitrequest= '1' and m_addr = '0000000000000000000000000000000' and m_read = '1' and m_write = '0' and m_waitrequest = '1')
+REPORT "IDLE read miss unsuccessful"
+SEVERITY ERROR;
+REPORT "IDLE read miss successful";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
+REPORT "start  == "
+ASSERT () 
+REPORT " " & integer'image(s_op1) 
+SEVERITY ERROR;
+REPORT "";
+
 end process;
 	
 end;
