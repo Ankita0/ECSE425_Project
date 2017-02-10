@@ -202,10 +202,10 @@ begin
 	wait for clk_period/2;
 	-- state read from cache
 	wait for clk_period/2;
-	ASSERT (s_waitrequest= '1' and s_readata = '1') 
+	ASSERT (s_waitrequest= '1') 
 	REPORT "(IDLE read hit) read from cache state not working"
 	SEVERITY ERROR;
-	wait for clk_period/2
+	wait for clk_period/2;
 
 	-- checking read data from cache
 	wait for clk_period/2;
