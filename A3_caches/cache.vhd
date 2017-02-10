@@ -173,12 +173,25 @@ begin
 end write_main_mem;
 
 
-procedure write_to_cache is
+procedure write_to_cache_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_4 :in std_logic_vector(7 downto 0))is
+	variable burst_write_to_cache_32: std_logic_vector(31 downto 0);
 begin
 --TODO
+	burst_write_to_cache_32 <= (7 downto 0 => '1') & mem_read_data_4;
+	burst_write_to_cache_32 <= (15 downto 8 => '1') & mem_read_data_3;
+	burst_write_to_cache_32 <= (23 downto 16 => '1') & mem_read_data_2;
+	burst_write_to_cache_32 <= (31 downto 24 => '1') & mem_read_data_1;
+	s_write <= burst_write_to_cache_32;
+end write_to_cache_mm;
 
-
-end write_to_cache;
+-- added another procedure for straight up write form cpu
+procedure write_to_cache_cpu (signal write_to_cache_32: std_logic_vector(31 downto 0))is
+begin
+	s_write <= write_to_cache_32;
+end write_to_cache_cpu;
 
 procedure read_from_cache (Signal addr : in std_logic_vector(31 downto 0); 
                             Signal readData : out std_logic_vector(7 downto 0)) is
