@@ -64,7 +64,7 @@ constant ram_size_c: INTEGER := 32768;
 type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, write_to_main_mem, WRITE_CACHE, READ_CACHE);
 
 -- sets up data in a cache block as an array of 4*32 bit vectors.
-type data_array is array(15 downto 0) of STD_LOGIC_VECTOR (7 downto 0);
+type data_array is array(3 downto 0) of STD_LOGIC_VECTOR (31 downto 0);
 
 type tag_array is array (31 downto 0) of STD_LOGIC_VECTOR (22 downto 0);
 
