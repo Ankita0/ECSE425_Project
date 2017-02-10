@@ -94,6 +94,7 @@ signal	waitrequest:  STD_LOGIC;
 -- HIT_MISS is '1' when HIT, '0' when MISS
 procedure compare_tags 
 (Signal addr : in std_logic_vector(31 downto 0);
+Signal tag_array: tag_array;
   Signal HIT_MISS : out STD_LOGIC) is
 begin
   for i in 0 to 31 loop
