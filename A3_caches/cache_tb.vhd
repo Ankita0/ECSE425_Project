@@ -138,18 +138,40 @@ begin
 	s_write <= '0';
 	s_addr <= "00000000000000000000000000000000";
 	s_writedata <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	-- transition compare tag state
 	wait for clk_period/2;
 	ASSERT (s_waitrequest= '1') 
 	REPORT "(IDLE read miss) Busy state waitrequest not working" & std_logic'image(s_waitrequest) 
 	SEVERITY ERROR;
 	wait for clk_period/2;
-	ASSERT (s_waitrequest= '1' and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1') 
-	REPORT "(IDLE read miss) main memory fetch request not working"
+	-- state check dirty bits
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '1') 
+	REPORT "(IDLE read miss) check dirty bits state not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
-	ASSERT (s_waitrequest= '1' and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
-	REPORT "IDLE read miss unsuccessful"
+	-- checking dirty bit
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '1')
+	REPORT "(IDLE read miss) dirty bit check state not working"
 	SEVERITY ERROR;
+	wait for clk_period/2;
+	-- checking read main mem
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '1' and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
+	REPORT "(IDLE read miss) read main memory state not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+
+	-- checking write to cache
+	wait for 9*clk_period/2; --4.5 clk
+	ASSERT (s_waitrequest= '1' and s_writedata = "00000000000000010000001000000100" and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
+	REPORT "(IDLE read miss) burst read from main memory (1<2<3<4) state not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+	
+
+
 	REPORT "IDLE read miss successful";
 
 end process;
