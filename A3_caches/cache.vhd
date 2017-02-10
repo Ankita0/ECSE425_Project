@@ -53,7 +53,7 @@ COMPONENT memory IS
             readdata: OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
             waitrequest: OUT STD_LOGIC
         );
-    END COMPONENT;
+END COMPONENT;
 
 
 -- declare constants here 
@@ -92,9 +92,9 @@ begin
 
 MainMem: memory 
 Generic map(
-		ram_size => INTEGER := 32768;
-		mem_delay => time := 10 ns;
-		clock_period => time := 1 ns
+		ram_size => 32768,
+		mem_delay => 10 ns,
+		clock_period =>  1 ns
 	)
 Port Map ( 
 	clock => clock,
