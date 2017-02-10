@@ -128,8 +128,6 @@ function cache_addr_to_mem_map(addr : std_logic_vector (31 downto 0))
 begin
   if (to_integer(unsigned(addr(8 downto 4))) > 0) then
     return to_integer(unsigned(addr(8 downto 4)));
-  else
-    return 'X';
   end if;
 
 end chache_addr_to_mem_map;
@@ -147,9 +145,10 @@ begin
 
 end read_from_main_mem;
 
-procedure write_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
-						  Signal inData : in std_logic_vector (31 downto 0);
-						  Signal outData : in std_logic_vector (7 downto 0)) is
+procedure write_main_mem 
+(Signal addr : in  integer;
+Signal inData : in std_logic_vector (31 downto 0);
+Signal outData : in std_logic_vector (7 downto 0)) is
 begin
 
 	m_write<='1';
