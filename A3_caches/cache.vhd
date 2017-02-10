@@ -33,7 +33,10 @@ port(
 );
 end cache;
 
+
+
 architecture arch of cache is
+
 
 COMPONENT memory IS
         GENERIC(
@@ -51,6 +54,7 @@ COMPONENT memory IS
             waitrequest: OUT STD_LOGIC
         );
     END COMPONENT;
+
 
 -- declare constants here 
 constant c_bits_per_word: integer:= 32;
@@ -79,9 +83,10 @@ type cache_mem is array(31 downto 0) of cache_block;
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
-signal writedata: STD_LOGIC;
+signal writedata: std_logic_vector (7 downto 0);
 signal initialize: std_logic:= '1';
-signal cache : cache_mem;
+signal cache_memory : cache_mem;
+
 
 begin
 
@@ -104,15 +109,14 @@ procedure compare_tags (Signal addr : in std_logic_vector(31 downto 0);
                         Signal HIT_MISS : out STD_LOGIC)) is
   variable tag : std_logic_vector(22 downto 0);
 begin
---TODO 
   tag <= addr(31 downto 9);
   
   for i in 0 to 31 loop
-    if (tag= tag_array(i)) then
-      HIT_MISS<='1';
+    if (tag = tag_array(i)) then
+    	HIT_MISS<='1';
     else
-     HIT_MISS<='0';
-   end if;
+    	HIT_MISS<='0';
+   	end if;
   end loop;
 end compare_tags;
 
@@ -127,9 +131,9 @@ begin
 	
 	index <= addr(8 downto 4);
 
-	--I think index needs to be converted to integer
+	--convert index to integer
 
- 	block_DirtyBit<= cache_mem(to_integer(index)).dirtyBit;
+ 	block_DirtyBit<= cache_memory(to_integer(index)).dirtyBit;
 
 	if(block_DirtyBit='1')then
 		DIRTY_BIT<='1';
@@ -184,7 +188,7 @@ begin
 
 		IF (clock'event AND clock = '1') THEN
 			IF (s_read = '1') THEN
-				cache_mem(index).data <= s_readdata;
+				cache_memory(index).data <= s_readdata;
 			END IF;
 		read_address_reg <= address;
 		END IF;
@@ -192,17 +196,14 @@ begin
 end read_from_cache;
 
 
-cache_state_change: process (clock,s_read,s_write,READ_HIT,WRITE_HIT,DIRTY_BIT,READ_MISS,WRITE_MISS)
+cache_state_change: process (clock,s_read,s_write)
 begin
 	if (initialize = '1') then 
 		state<=INIT;
-		intialize<= '0';
+		initialize<= '0';
 	elsif(rising_edge(clock) and initialize ='0') then
 		case state is
 			when INIT=>
-				for i in 0 to 31 loop
-					cache_mem(i).validBit <= '0';
-				end loop;
 				state<=IDLE;
 			when IDLE=>
 				if((s_read xor s_write)='1') then
@@ -238,29 +239,34 @@ begin
 	end if;
 end process;
 
-state_action: process (state,m_readdata,s_writedata)
+state_action: process (state,s_addr,m_readdata,s_writedata)
 begin
 	case state is
+		when INIT=>
+			-- set all valid bit to 0 in INIT state
+			for i in 0 to 31 loop
+				cache_memory(i).validBit <= '0';
+			end loop;
 		when IDLE=>
 		when CHECK_TAG=>
---			compare_tags();
+			compare_tags (s_addr,HIT_MISS);
 			s_waitrequest<='1';
 		when CHECK_DIRTY_BIT=>
---			check_dirty_bits(s_addr<=s_addr, DIRTY_BIT=>DIRTY_BIT);
+			check_dirty_bits(s_addr, DIRTY_BIT);
 			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
---			write_main_mem();
+			write_main_mem(s_addr,m_writedata);
 			m_write<='1';
---			m_writedata<='1';
+--			if m_writedata exists
 			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
---			read_main_mem();
+			read_main_mem(m_addr,s_readdata);
 			m_read<='1';
 			m_waitrequest<='1';
 			s_waitrequest<='1';
---			m_readdata<='1';
+--			if m_readdata exists;
 			DIRTY_BIT<='0';
 			m_waitrequest<='1';
 		when WRITE_CACHE=>
@@ -269,7 +275,7 @@ begin
 			s_waitrequest<='1';
 			m_waitrequest<='0';
 		when READ_CACHE=>
---			read_from_cache();
+			read_from_cache(s_addr,s_readdata);
 			s_readdata<='1';
 			s_waitrequest<='1';
 	end case;
