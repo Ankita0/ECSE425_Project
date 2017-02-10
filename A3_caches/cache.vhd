@@ -83,6 +83,7 @@ signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
 signal initialize: std_logic:= '1';
 signal cache_memory : cache_mem;
+signal tag_arr: tag_array;
 signal writedata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	address: INTEGER RANGE 0 TO ram_size_c-1;
 signal	memwrite:  STD_LOGIC;
@@ -249,7 +250,7 @@ begin
 			end loop;
 		when IDLE=>
 		when CHECK_TAG=>
-			compare_tags (s_addr,HIT_MISS);
+			compare_tags (s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
 		when CHECK_DIRTY_BIT=>
 			check_dirty_bits(s_addr, DIRTY_BIT);
@@ -260,7 +261,7 @@ begin
 --			if m_writedata exists
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
-			read_from_main_mem(chache_addr_to_mem_map(s_addr), m_readdata);
+			read_from_main_mem(cache_addr_to_mem_map(s_addr), m_readdata);
 			m_read<='1';
 			s_waitrequest<='1';
 --			if m_readdata exists;
