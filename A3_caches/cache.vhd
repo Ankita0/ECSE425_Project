@@ -172,12 +172,6 @@ begin
 	s_write <= burst_write_to_cache_32;
 end write_to_cache_from_mm;
 
--- added another procedure for straight up write form cpu
-procedure write_to_cache_cpu (signal write_to_cache_32: std_logic_vector(31 downto 0))is
-begin
-	s_write <= write_to_cache_32;
-end write_to_cache_cpu;
-
 begin
 
 MainMem: memory 
@@ -267,7 +261,7 @@ begin
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
 		when WRITE_CACHE=>
---			write_to_cache();
+			cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).data(to_integer(unsigned(s_addr(3 downto 0))))<=s_writedata;
 			DIRTY_BIT<='1';
 			s_waitrequest<='1';
 		when READ_CACHE=>
