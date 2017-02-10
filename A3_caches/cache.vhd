@@ -35,6 +35,23 @@ end cache;
 
 architecture arch of cache is
 
+COMPONENT memory IS
+        GENERIC(
+            ram_size : INTEGER := 32768;
+            mem_delay : time := 10 ns;
+            clock_period : time := 1 ns
+        );
+        PORT (
+            clock: IN STD_LOGIC;
+            writedata: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            address: IN INTEGER RANGE 0 TO ram_size-1;
+            memwrite: IN STD_LOGIC := '0';
+            memread: IN STD_LOGIC := '0';
+            readdata: OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+            waitrequest: OUT STD_LOGIC
+        );
+    END COMPONENT;
+
 -- declare constants here 
 constant c_bits_per_word: integer:= 32;
 constant c_word_per_block: integer:= 4;
@@ -62,8 +79,24 @@ type cache_mem is array(31 downto 0) of cache_block;
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
+signal writedata;
 
 begin
+
+MainMem: memory 
+Generic map(
+		ram_size => INTEGER := 32768;
+		mem_delay => time := 10 ns;
+		clock_period => time := 1 ns
+	)
+Port Map ( 
+	clock => clock,
+	writedata=>m_writedata,
+	address=>m_addr,
+	memwrite=>m_write,
+	memread=>m_read,
+	readdata=>m_readdata,
+	waitrequest=>m_waitrequest); 
 
 procedure compare_tags (Signal addr : in std_logic_vector(31 downto 0);
                         Signal HIT_MISS : out STD_LOGIC)) is
