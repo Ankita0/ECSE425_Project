@@ -80,6 +80,8 @@ type cache_mem is array(31 downto 0) of cache_block;
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
 signal writedata;
+signal initialize: std_logic:= '1';
+signal cache : cache_mem;
 
 begin
 
@@ -192,12 +194,14 @@ end read_from_cache;
 
 cache_state_change: process (clock,s_read,s_write,READ_HIT,WRITE_HIT,DIRTY_BIT,READ_MISS,WRITE_MISS)
 begin
-	if(rising_edge(clock)) then
+	if (initialize = '1') then 
+		state<=INIT;
+		intialize<= '0';
+	elsif(rising_edge(clock) and initialize ='0') then
 		case state is
 			when INIT=>
 				for i in (31 downto 0) loop
 					cache_mem(i).validBit <= '0';
-
 				end loop;
 				state<=IDLE;
 			when IDLE=>
