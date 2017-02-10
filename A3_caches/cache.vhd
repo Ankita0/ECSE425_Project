@@ -121,17 +121,30 @@ begin
 	index <= addr(8 downto 4);
 	
 	--convert index to integer
- 	DIRTY_BIT<= cache_memory(to_integer(index)).dirtyBit;
+ 	DIRTY_BIT<= cache_memory(to_integer(unsigned(index))).dirtyBit;
 end check_dirty_bits;
 
---INPUT to read_main_mem in state_action is:
---readData should go to the m_readdata
+
+
+-- funtion takes in s_addr converts to int addr for main mem
+function cache_addr_to_mem_map(addr : std_logic_vector (31 downto 0))
+              return integer is
+begin
+  if (to_integer(unsigned(addr(8 downto 4))) > 0) then
+    return to_integer(unsigned(addr(8 downto 4)));
+  else
+    return 'X';
+  end if;
+
+end chache_addr_to_mem_map;
+
+--input integer from cache_addr_to_mem_map(s_addr) and attach m_readdata to second element
+-- ex: read_from_main_mem(chache_addr_to_mem_map(s_addr), m_readdata);
 procedure read_from_main_mem 
-(Signal addr : in  std_logic_vector (31 downto 0);
+(Signal addr : in  INTEGER ;
   Signal readData : out std_logic_vector (7 downto 0)) is
 begin
 	m_addr <= addr;
-
 	IF(m_waitrequest'event and m_waitrequest='1') then
 		readData<=m_readdata;	
 	end if;
@@ -274,7 +287,7 @@ begin
 			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
-			read_from_main_mem(m_addr, m_readdata);
+			read_from_main_mem(chache_addr_to_mem_map(s_addr), m_readdata);
 			m_read<='1';
 			m_waitrequest<='1';
 			s_waitrequest<='1';
