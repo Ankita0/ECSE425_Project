@@ -111,7 +111,7 @@ end compare_tags;
 function cache_addr_to_mem_map(addr : std_logic_vector (31 downto 0))
               return integer is
 begin
-  if (to_integer(unsigned(addr(8 downto 4))) > 0) then
+  if (to_integer(unsigned(addr(8 downto 4))) >= 0) then
     return to_integer(unsigned(addr(8 downto 4)));
   end if;
 end cache_addr_to_mem_map;
