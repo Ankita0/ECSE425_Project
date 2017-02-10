@@ -159,14 +159,9 @@ procedure write_to_cache_from_mm (signal mem_read_data_1 :in std_logic_vector(7 
 			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_4 :in std_logic_vector(7 downto 0))is
-	variable burst_write_to_cache_32: std_logic_vector(31 downto 0);
 begin
 --TODO
-	burst_write_to_cache_32 <= (7 downto 0 => '1') & mem_read_data_4;
-	burst_write_to_cache_32 <= (15 downto 8 => '1') & mem_read_data_3;
-	burst_write_to_cache_32 <= (23 downto 16 => '1') & mem_read_data_2;
-	burst_write_to_cache_32 <= (31 downto 24 => '1') & mem_read_data_1;
-	s_write <= burst_write_to_cache_32;
+	s_write <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
 end write_to_cache_from_mm;
 
 begin
