@@ -33,10 +33,7 @@ port(
 );
 end cache;
 
-
-
 architecture arch of cache is
-
 
 COMPONENT memory IS
         GENERIC(
@@ -61,6 +58,7 @@ constant c_bits_per_word: integer:= 32;
 constant c_word_per_block: integer:= 4;
 constant c_bits_per_block: integer:= 128;
 constant c_total_blocks: integer:= 32;
+constant ram_size_c: INTEGER := 32768;
 
 
 type cache_state is (INIT, IDLE, CHECK_TAG, CHECK_DIRTY_BIT, READ_MAIN_MEM, WRITE_MAIN_MEM, WRITE_CACHE, READ_CACHE);
@@ -83,9 +81,14 @@ type cache_mem is array(31 downto 0) of cache_block;
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
-signal writedata: std_logic_vector (7 downto 0);
 signal initialize: std_logic:= '1';
 signal cache_memory : cache_mem;
+signal writedata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
+signal	address: INTEGER RANGE 0 TO ram_size_c-1;
+signal	memwrite:  STD_LOGIC;
+signal	memread:  STD_LOGIC;
+signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
+signal	waitrequest:  STD_LOGIC;
 
 
 begin
@@ -98,21 +101,21 @@ Generic map(
 	)
 Port Map ( 
 	clock => clock,
-	writedata=>m_writedata,
-	address=>m_addr,
-	memwrite=>m_write,
-	memread=>m_read,
-	readdata=>m_readdata,
-	waitrequest=>m_waitrequest); 
+	writedata=>writedata,
+	address=>address,
+	memwrite=>memwrite,
+	memread=>memread,
+	readdata=>readdata,
+	waitrequest=>waitrequest); 
 
-procedure compare_tags (Signal addr : in std_logic_vector(31 downto 0);
-                        Signal HIT_MISS : out STD_LOGIC)) is
-  variable tag : std_logic_vector(22 downto 0);
+
+-- HIT_MISS is '1' when HIT, '0' when MISS
+procedure compare_tags 
+(Signal addr : in std_logic_vector(31 downto 0);
+  Signal HIT_MISS : out STD_LOGIC) is
 begin
-  tag <= addr(31 downto 9);
-  
   for i in 0 to 31 loop
-    if (tag = tag_array(i)) then
+    if (addr(31 downto 9) = tag_array(i)(22 downto 0)) then
     	HIT_MISS<='1';
     else
     	HIT_MISS<='0';
@@ -123,34 +126,24 @@ end compare_tags;
 --INPUT TO check_dirty_bits in state_action is:
 -- check_dirty_bits(addr<=s_addr, DIRTY_BIT=>DIRTY_BIT);
 
-procedure check_dirty_bits (Signal addr : in  std_logic_vector (31 downto 0);
-							Signal DIRTY_BIT : out STD_LOGIC) is
+procedure check_dirty_bits 
+(Signal addr : in  std_logic_vector (31 downto 0);
+  Signal DIRTY_BIT : out STD_LOGIC) is
 	variable index : std_logic_vector(4 downto 0);
 	variable block_DirtyBit : std_logic;
-begin
-	
+begin	
 	index <= addr(8 downto 4);
-
+	
 	--convert index to integer
-
- 	block_DirtyBit<= cache_memory(to_integer(index)).dirtyBit;
-
-	if(block_DirtyBit='1')then
-		DIRTY_BIT<='1';
-	elsif(block_DirtyBit='0') then
-		DIRTY_BIT<='0';
-	end if;
-		
+ 	DIRTY_BIT<= cache_memory(to_integer(index)).dirtyBit;
 end check_dirty_bits;
 
 --INPUT to read_main_mem in state_action is:
 --readData should go to the m_readdata
-
-procedure read_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
-						 Signal readData : out std_logic_vector (7 downto 0)) is
+procedure read_from_main_mem 
+(Signal addr : in  std_logic_vector (31 downto 0);
+  Signal readData : out std_logic_vector (7 downto 0)) is
 begin
-
-	m_read<='1';
 	m_addr <= addr;
 
 	IF(m_waitrequest'event and m_waitrequest='1') then
@@ -160,25 +153,39 @@ begin
 end read_main_mem;
 
 procedure write_main_mem (Signal addr : in  std_logic_vector (31 downto 0);
-						  Signal writeData : out std_logic_vector (7 downto 0)) is
+						  Signal inData : in std_logic_vector (31 downto 0);
+						  Signal outData : in std_logic_vector (7 downto 0)) is
 begin
 
 	m_write<='1';
 	m_addr<=addr;
 
 	IF(m_waitrequest'event and m_waitrequest='1') then
-		writeData<=m_writedata;
+		outData<=inData;
 	end if;
 
 end write_main_mem;
 
 
-procedure write_to_cache is
+procedure write_to_cache_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
+			signal mem_read_data_4 :in std_logic_vector(7 downto 0))is
+	variable burst_write_to_cache_32: std_logic_vector(31 downto 0);
 begin
 --TODO
+	burst_write_to_cache_32 <= (7 downto 0 => '1') & mem_read_data_4;
+	burst_write_to_cache_32 <= (15 downto 8 => '1') & mem_read_data_3;
+	burst_write_to_cache_32 <= (23 downto 16 => '1') & mem_read_data_2;
+	burst_write_to_cache_32 <= (31 downto 24 => '1') & mem_read_data_1;
+	s_write <= burst_write_to_cache_32;
+end write_to_cache_mm;
 
-
-end write_to_cache;
+-- added another procedure for straight up write form cpu
+procedure write_to_cache_cpu (signal write_to_cache_32: std_logic_vector(31 downto 0))is
+begin
+	s_write <= write_to_cache_32;
+end write_to_cache_cpu;
 
 procedure read_from_cache (Signal addr : in std_logic_vector(31 downto 0); 
                             Signal readData : out std_logic_vector(7 downto 0)) is
@@ -246,6 +253,7 @@ begin
 			-- set all valid bit to 0 in INIT state
 			for i in 0 to 31 loop
 				cache_memory(i).validBit <= '0';
+				cache_memory(i).dirtyBit <= '0';
 			end loop;
 		when IDLE=>
 		when CHECK_TAG=>
@@ -256,13 +264,13 @@ begin
 			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			write_main_mem(s_addr,m_writedata);
+			write_main_mem(s_addr,s_writedata,m_writedata);
 			m_write<='1';
 --			if m_writedata exists
 			m_waitrequest<='1';
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
-			read_main_mem(m_addr,s_readdata);
+			read_from_main_mem(m_addr, m_readdata);
 			m_read<='1';
 			m_waitrequest<='1';
 			s_waitrequest<='1';
