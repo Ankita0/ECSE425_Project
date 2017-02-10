@@ -216,7 +216,50 @@ begin
 
 	wait for clk_period/2; 
 	ASSERT (s_waitrequest= '0' and s_readdata = "00000000000000010000001000000011")
-	REPORT "(IDLE read hit) did nto read (0<1<2<3) not working"
+	REPORT "(IDLE read hit) did not read (0<1<2<3) not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+	
+	s_read <= '0';
+	s_write <= '0';
+	s_addr <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	s_writedata <= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	wait for clk_period/2; 
+	ASSERT (s_waitrequest= '0')
+	REPORT "(IDLE read hit) reset to idle state not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+
+	-----------------------------------------------------------------------------------------
+--TODO
+	REPORT "start check for read from cache once== IDLE write with DB";
+	s_read <= '0';
+	s_write <= '1';
+	s_addr <= "00000000000000000000000000000000";
+	s_writedata <= "00000001000000100000001100000100";
+	-- transition compare tag state
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '1') 
+	REPORT "(IDLE write with dirty) Busy state waitrequest not working" & std_logic'image(s_waitrequest) 
+	SEVERITY ERROR;
+	wait for clk_period/2;
+	-- state read from cache
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '1') 
+	REPORT "(IDLE write with dirty) read from cache state not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+
+	-- checking read data from cache
+	wait for clk_period/2;
+	ASSERT (s_waitrequest= '0')
+	REPORT "(IDLE write with dirty) read wait req set to zerostate not working"
+	SEVERITY ERROR;
+	wait for clk_period/2;
+
+	wait for clk_period/2; 
+	ASSERT (s_waitrequest= '0' and s_readdata = "00000000000000010000001000000011")
+	REPORT "(IDLE write with dirty) did not read (0<1<2<3) not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
 	
