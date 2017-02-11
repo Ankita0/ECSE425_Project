@@ -149,8 +149,7 @@ procedure write_to_cache_from_mm
 signal mem_read_data_2 :in std_logic_vector(7 downto 0);
 signal mem_read_data_3 :in std_logic_vector(7 downto 0);
 signal mem_read_data_4 :in std_logic_vector(7 downto 0);
-signal s_writedata: out std_logic_vector(31 downto 0);
-signal s_readdata: out std_logic_vector(31 downto 0))is
+signal s_writedata: out std_logic_vector(31 downto 0))is
 begin
 	s_writedata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
 	
@@ -253,7 +252,8 @@ begin
 				mem_burst_data(i)<=m_readdata;
 				address<=cache_addr_to_mem_map(s_addr)+32;
 			end loop;
-			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), c_writedata, c_readdata);
+			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), c_writedata);
+			s_readdata<=c_writedata;
 			s_waitrequest<='1';
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
