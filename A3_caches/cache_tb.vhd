@@ -167,14 +167,14 @@ begin
 
 	-- checking write to cache
 	wait for 9*clk_period/2; --4.5 clk
-	ASSERT (s_waitrequest= '1' and s_writedata = "00000000000000010000001000000011" and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
-	REPORT "(IDLE read miss) burst read from main memory (1<2<3<4) state not working"
+	ASSERT (s_waitrequest= '1' and s_writedata = "00000000001000000100000001100000" and m_addr = 0 and m_read = '1' and m_write = '0' and m_waitrequest = '1')
+	REPORT "(IDLE read miss) burst read from main memory (0<32<64<96) state not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
 
 	wait for clk_period/2; 
-	ASSERT (s_waitrequest= '1' and s_writedata = "00000000000000010000001000000011" and m_addr = 0 and m_read = '0' and m_write = '0' and m_waitrequest = '0')
-	REPORT "(IDLE read miss) burst write to cache (0<1<2<3) state not working"
+	ASSERT (s_waitrequest= '1' and s_writedata = "00000000001000000100000001100000" and m_addr = 0 and m_read = '0' and m_write = '0' and m_waitrequest = '0')
+	REPORT "(IDLE read miss) burst write to cache (0<32<64<96) state not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
 	
@@ -215,8 +215,8 @@ begin
 	wait for clk_period/2;
 
 	wait for clk_period/2; 
-	ASSERT (s_waitrequest= '0' and s_readdata = "00000000000000010000001000000011")
-	REPORT "(IDLE read hit) did not read (0<1<2<3) not working"
+	ASSERT (s_waitrequest= '0' and s_readdata = "00000000001000000100000001100000")
+	REPORT "(IDLE read hit) did not read (0<32<64<96)not working"
 	SEVERITY ERROR;
 	wait for clk_period/2;
 	
