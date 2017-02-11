@@ -79,27 +79,32 @@ end record;
 type cache_mem is array(31 downto 0) of cache_block;
 
 type mem_burst is array (3 downto 0) of STD_LOGIC_VECTOR (7 DOWNTO 0);
+
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
 signal initialize: std_logic:= '1';
 signal cache_memory : cache_mem;
 signal tag_arr: tag_array;
-signal writedata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
+
+-- signals for memory block
+signal  writedata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	address: INTEGER RANGE 0 TO ram_size_c-1;
 signal	memwrite:  STD_LOGIC;
 signal	memread:  STD_LOGIC;
 signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	waitrequest:  STD_LOGIC;
+
+--signals for cache block
 signal	c_addr :  std_logic_vector (31 downto 0);
 signal	c_read :  std_logic;
 signal	c_readdata :  std_logic_vector (31 downto 0);
 signal	c_write :  std_logic;
 signal	c_writedata :  std_logic_vector (31 downto 0);
 signal	c_waitrequest :  std_logic; 
+
+-- data hold for concatenation
 signal	mem_burst_data: mem_burst;
-
-
 
 -- HIT_MISS is '1' when HIT, '0' when MISS
 procedure compare_tags 
@@ -139,16 +144,16 @@ begin
 end write_to_main_mem;
 
 
-procedure write_to_cache_from_mm (signal mem_read_data_1 :in std_logic_vector(7 downto 0);
-			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
-			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
-			signal mem_read_data_4 :in std_logic_vector(7 downto 0);
-			signal s_writedata: out std_logic_vector(31 downto 0);
-			signal s_readdata: out std_logic_vector(31 downto 0))is
+procedure write_to_cache_from_mm 
+(signal mem_read_data_1 :in std_logic_vector(7 downto 0);
+signal mem_read_data_2 :in std_logic_vector(7 downto 0);
+signal mem_read_data_3 :in std_logic_vector(7 downto 0);
+signal mem_read_data_4 :in std_logic_vector(7 downto 0);
+signal s_writedata: out std_logic_vector(31 downto 0);
+signal s_readdata: out std_logic_vector(31 downto 0))is
 begin
---TODO
 	s_writedata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
-	s_readdata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
+	
 end write_to_cache_from_mm;
 
 
@@ -216,14 +221,15 @@ state_action: process (state,s_addr,m_readdata,s_writedata)
 begin
 	case state is
 		when INIT=>
-			-- set all valid bit to 0 in INIT state
+			-- set all valid bits and dirty bits to 0 in INIT state
 			for i in 0 to 31 loop
 				cache_memory(i).validBit <= '0';
 				cache_memory(i).dirtyBit <= '0';
 			end loop;
-
+			--set initalize to zero so that we never enter this state again
 			initialize<= '0';
 		when IDLE=>
+	
 		when CHECK_TAG=>
 			compare_tags(s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
