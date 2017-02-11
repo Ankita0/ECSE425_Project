@@ -225,7 +225,7 @@ begin
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, clock,m_writedata, m_addr);
+			--write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, clock,m_writedata, m_addr);
 			m_write<='1';
 --			if m_writedata exists
 			s_waitrequest<='1';
@@ -235,6 +235,7 @@ begin
 			for i in 0 to 3 loop
 				m_readdata<=readdata;
 				mem_burst_data(i)<=m_readdata;
+				address<=cache_addr_to_mem_map(s_addr)+32;
 			end loop;
 			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), s_writedata, s_readdata);
 			s_waitrequest<='1';
