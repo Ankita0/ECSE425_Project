@@ -240,7 +240,7 @@ begin
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, writedata, address);
+--			write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, writedata, address);
 			m_addr<= address;
 			m_write<='1';
 --			if m_writedata exists
