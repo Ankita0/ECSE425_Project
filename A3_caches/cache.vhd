@@ -229,14 +229,9 @@ begin
 			-- set initalize to zero so that we never enter this state again
 			initialize<= '0';
 		when IDLE=>
-<<<<<<< HEAD
-			s_waitrequest<='0';
-			waitrequest<='0';	
-=======
 			-- set both cache wait request and memory wait request to 0
 			s_waitrequest<='0';
 			waitrequest<='0';
->>>>>>> 6f9b20521ba57220ed4e52bd87164cda2098522a
 		when CHECK_TAG=>
 			compare_tags(s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
