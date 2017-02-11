@@ -196,9 +196,10 @@ begin
 					state<=CHECK_DIRTY_BIT;															
 				end if;
 			when CHECK_DIRTY_BIT=>
-				if(((not DIRTY_BIT) and s_read and s_write)='1') then
+				if(DIRTY_BIT='0') then
 					state<=READ_MAIN_MEM;
-				elsif ((DIRTY_BIT and s_read and s_write)='1') then
+				-- write back
+				elsif (DIRTY_BIT='1') then
 					state<=WRITE_MAIN_MEM;
 				end if;
 			when WRITE_MAIN_MEM=>
