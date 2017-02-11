@@ -226,13 +226,15 @@ begin
 				cache_memory(i).validBit <= '0';
 				cache_memory(i).dirtyBit <= '0';
 			end loop;
-			--set initalize to zero so that we never enter this state again
+			-- set initalize to zero so that we never enter this state again
 			initialize<= '0';
 		when IDLE=>
-	
+			s_waitrequest<='0';
+			waitrequest<='0';	
 		when CHECK_TAG=>
 			compare_tags(s_addr,tag_arr,HIT_MISS);
 			s_waitrequest<='1';
+			
 		when CHECK_DIRTY_BIT=>
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
