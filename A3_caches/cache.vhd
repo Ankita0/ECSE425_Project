@@ -135,11 +135,11 @@ procedure write_to_main_mem
 (Signal addr : in  integer;
 Signal inData : in std_logic_vector (31 downto 0);
 Signal outData : out std_logic_vector (7 downto 0);
-Signal m_addr: out integer) is
+Signal address: out integer) is
 begin
 	for i in 0 to 3 loop
 		outData <= inData(7+7*i downto 0+7*i);
-		m_addr<= addr+i;
+		address<= addr+i;
 	end loop;
 end write_to_main_mem;
 
@@ -204,9 +204,9 @@ begin
 			when WRITE_MAIN_MEM=>
 				state<=READ_MAIN_MEM;
 			when READ_MAIN_MEM=>
-				if(((not DIRTY_BIT) and s_read)='1') then
+				if(((not DIRTY_BIT) and s_read and (not m_waitrequest))='1') then
 					state<=IDLE;
-				elsif (((not DIRTY_BIT) and s_write)='1') then
+				elsif (((not DIRTY_BIT) and s_write and (not m_waitrequest))='1') then
 					state<=WRITE_CACHE;
 				end if;
 			when WRITE_CACHE=>
@@ -240,7 +240,8 @@ begin
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			--write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, writedata, addr);
+			write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, writedata, address);
+			m_addr<= address;
 			m_write<='1';
 --			if m_writedata exists
 			s_waitrequest<='1';
