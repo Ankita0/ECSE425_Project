@@ -91,6 +91,12 @@ signal	memwrite:  STD_LOGIC;
 signal	memread:  STD_LOGIC;
 signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	waitrequest:  STD_LOGIC;
+signal	c_addr :  std_logic_vector (31 downto 0);
+signal	c_read :  std_logic;
+signal	c_readdata :  std_logic_vector (31 downto 0);
+signal	c_write :  std_logic;
+signal	c_writedata :  std_logic_vector (31 downto 0);
+signal	c_waitrequest :  std_logic; 
 signal	mem_burst_data: mem_burst;
 
 
@@ -225,7 +231,7 @@ begin
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			--write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, clock,m_writedata, m_addr);
+			--write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, writedata, addr);
 			m_write<='1';
 --			if m_writedata exists
 			s_waitrequest<='1';
@@ -237,7 +243,7 @@ begin
 				mem_burst_data(i)<=m_readdata;
 				address<=cache_addr_to_mem_map(s_addr)+32;
 			end loop;
-			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), writedata, readdata);
+			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), c_writedata, c_readdata);
 			s_waitrequest<='1';
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
