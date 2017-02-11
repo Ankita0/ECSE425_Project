@@ -82,7 +82,7 @@ type mem_burst is array (3 downto 0) of STD_LOGIC_VECTOR (7 DOWNTO 0);
 
 -- declare signals
 signal state: cache_state;
-signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
+signal DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
 signal initialize: std_logic:= '1';
 signal cache_memory : cache_mem;
 signal tag_arr: tag_array;
@@ -188,11 +188,11 @@ begin
 					state<=CHECK_TAG;
 				end if;
 			when CHECK_TAG=>
-				if((READ_HIT and s_read)='1') then
+				if((HIT_MISS and s_read)='1') then
 					state<=READ_CACHE;
-				elsif ((WRITE_HIT and s_write)='1') then
+				elsif ((HIT_MISS and s_write)='1') then
 					state<=WRITE_CACHE;
-				elsif ((READ_MISS or WRITE_MISS)='1') then
+				elsif (HIT_MISS='0') then
 					state<=CHECK_DIRTY_BIT;															
 				end if;
 			when CHECK_DIRTY_BIT=>
