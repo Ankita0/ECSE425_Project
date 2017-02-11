@@ -233,11 +233,11 @@ begin
 			address<=cache_addr_to_mem_map(s_addr);
 			m_read<='1';
 			for i in 0 to 3 loop
-				m_readdata<=readdata;
+				readdata<=m_readdata;
 				mem_burst_data(i)<=m_readdata;
 				address<=cache_addr_to_mem_map(s_addr)+32;
 			end loop;
-			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), s_writedata, s_readdata);
+			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), writedata, readdata);
 			s_waitrequest<='1';
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
