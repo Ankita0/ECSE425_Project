@@ -78,6 +78,7 @@ end record;
 -- sets entire cache as an array of 32 cache blocks
 type cache_mem is array(31 downto 0) of cache_block;
 
+type mem_burst is array (3 downto 0) of STD_LOGIC_VECTOR (7 DOWNTO 0);
 -- declare signals
 signal state: cache_state;
 signal READ_HIT, READ_MISS, WRITE_HIT, WRITE_MISS, DIRTY_BIT, VALID_BIT, HIT_MISS : STD_LOGIC := '0';
@@ -90,6 +91,8 @@ signal	memwrite:  STD_LOGIC;
 signal	memread:  STD_LOGIC;
 signal	readdata:  STD_LOGIC_VECTOR (7 DOWNTO 0);
 signal	waitrequest:  STD_LOGIC;
+signal	mem_burst_data: mem_burst;
+
 
 
 -- HIT_MISS is '1' when HIT, '0' when MISS
@@ -108,7 +111,8 @@ begin
 end compare_tags;
 
 -- funtion takes in s_addr converts to int addr for main mem
-function cache_addr_to_mem_map(addr : std_logic_vector (31 downto 0))
+function cache_addr_to_mem_map
+(addr : std_logic_vector (31 downto 0))
               return integer is
 begin
   if (to_integer(unsigned(addr(8 downto 4))) >= 0) then
@@ -119,13 +123,13 @@ end cache_addr_to_mem_map;
 procedure write_to_main_mem 
 (Signal addr : in  integer;
 Signal inData : in std_logic_vector (31 downto 0);
-Signal outData : out std_logic_vector (7 downto 0)) is
+Signal outData : out std_logic_vector (7 downto 0);
+Signal m_addr: out integer) is
 begin
-	m_addr<=addr;
-	IF(m_waitrequest'event and m_waitrequest='1') then
-		outData<=inData;
-	end if;
-
+	for i in 0 to 3 loop
+		outData <= inData(7+7*i downto 0+7*i);
+		m_addr<= addr+i;
+	end loop;
 end write_to_main_mem;
 
 
@@ -133,11 +137,14 @@ procedure write_to_cache_from_mm (signal mem_read_data_1 :in std_logic_vector(7 
 			signal mem_read_data_2 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_3 :in std_logic_vector(7 downto 0);
 			signal mem_read_data_4 :in std_logic_vector(7 downto 0);
-signal s_writedata: out std_logic_vector(31 downto 0))is
+			signal s_writedata: out std_logic_vector(31 downto 0);
+			signal s_readdata: out std_logic_vector(31 downto 0))is
 begin
 --TODO
 	s_writedata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
+	s_readdata <= mem_read_data_4 & mem_read_data_3 & mem_read_data_2 & mem_read_data_1;
 end write_to_cache_from_mm;
+
 
 begin
 
@@ -218,14 +225,18 @@ begin
 			DIRTY_BIT<=cache_memory(to_integer(unsigned(s_addr(8 downto 4)))).dirtyBit;
 			s_waitrequest<='1';
 		when WRITE_MAIN_MEM=>
-			write_to_main_mem(s_addr,s_writedata,m_writedata);
+			write_to_main_mem(cache_addr_to_mem_map(s_addr),s_writedata, clock,m_writedata, m_addr);
 			m_write<='1';
 --			if m_writedata exists
 			s_waitrequest<='1';
 		when READ_MAIN_MEM=>
 			address<=cache_addr_to_mem_map(s_addr);
-			m_readdata<=readdata;
 			m_read<='1';
+			for i in 0 to 3 loop
+				m_readdata<=readdata;
+				mem_burst_data(i)<=m_readdata;
+			end loop;
+			write_to_cache_from_mm(mem_burst_data(0),mem_burst_data(1),mem_burst_data(2), mem_burst_data(3), s_writedata, s_readdata);
 			s_waitrequest<='1';
 --			if m_readdata exists;
 			DIRTY_BIT<='0';
