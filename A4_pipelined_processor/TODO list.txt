@@ -1,0 +1,20 @@
+To be implemented:
+1. program counter
+2. AGU(ish) thingi magic
+3. adder
+4. mux
+5. data memory
+6. instruction set memory
+7. zero register
+8. ALU
+9. (TBD)
+
+Called in:
+10.fetch
+11.instruction decoder
+12.EX
+13.mem
+14.write
+
+Put it together in:
+15. MAIN Processor unit
