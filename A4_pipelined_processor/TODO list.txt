@@ -1,6 +1,6 @@
 To be implemented:
 1. program counter
-2. AGU(ish) thingi magic
+2. AGU(address generation unit ish) thingy magic
 3. adder
 4. mux
 5. data memory
