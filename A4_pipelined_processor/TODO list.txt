@@ -17,4 +17,4 @@ Called in:
 14.write
 
 Put it together in:
-15. MAIN Processor unit
+15. MAIN Processor unit (FSM)
