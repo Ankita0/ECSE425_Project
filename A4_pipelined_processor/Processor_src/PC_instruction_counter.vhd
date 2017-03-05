@@ -4,23 +4,25 @@ USE ieee.std_logic_arith.all;
 USE ieee.std_logic_signed.all;
 
 ENTITY PC_instruction_counter IS
-
 PORT(
-PC_IN : IN std_logic_vector(31 downto 0);
-INIT, CLK: IN std_logic;
-PC : OUT std_logic_vector(31 downto 0));
-
+PC_IN : IN STD_LOGIC_VECTOR(31 downto 0);
+INIT, CLK: IN STD_LOGIC;
+PC : OUT STD_LOGIC_VECTOR(31 downto 0)
+);
 END PC_instruction_counter;
 
-ARCHITECTURE PC_instruction_counter_behaviour IS
-SIGNAL ;
+ARCHITECTURE behaviour OF PC_instruction_counter IS
 BEGIN
-sync_PC: PROCESS(CLK, INIT)
+
+--Clock synchronized process for updating program counter component. With reset
+update_PC: PROCESS(CLK, INIT)
 BEGIN
-	IF (rising_edge(INIT) and rising_edge(CLK)) THEN
+	--Reset to initialize PC
+	IF (rising_edge(INIT) AND rising_edge(CLK)) THEN
 		PC<= "00000000000000000000000000000000";
+	--Update PC instruction on clock rising edge
 	ELSIF (rising_edge(CLK)) THEN
 		PC<= PC_IN;
 	END IF;
-END PROCESS sync_PC;
-END PC_instruction_counter_behaviour;
+END PROCESS update_PC;
+END behaviour;
