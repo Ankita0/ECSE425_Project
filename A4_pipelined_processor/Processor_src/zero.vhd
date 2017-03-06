@@ -4,7 +4,8 @@ use ieee.numeric_std.all;
 
 ENTITY Zero is 
 
-PORT();
+PORT(	stall		: in std_logic_vector(31 downto 0)
+		branch_addr	: out std_logic_vector(31 downto 0));
 
 end Zero;
 
