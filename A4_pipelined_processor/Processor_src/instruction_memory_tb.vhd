@@ -49,7 +49,7 @@ clk_process : process
         wait for clk_period/2;
     end process;
 
-    test_process : process
+test_process : process
     BEGIN
 	--initial wait
         wait for 10 ns;

@@ -5,14 +5,15 @@ USE ieee.std_logic_signed.all;
 
 ENTITY IF_mux IS
 PORT(
-PC_instr_from_EX: IN STD_LOGIC_VECTOR(31 downto 0);
-PC_instr_plus4: IN STD_LOGIC_VECTOR(31 downto 0);
-mux_control, CLK: IN STD_LOGIC;
-PC_instr_to_fetch: OUT STD_LOGIC_VECTOR(31 downto 0)
+PC_instr_from_EX: IN INTEGER;
+PC_instr_plus4: IN INTEGER;
+mux_control: IN STD_LOGIC; 
+CLK: IN STD_LOGIC;
+PC_instr_to_fetch: OUT INTEGER
 );
 END IF_mux;
 
-ARCHITECTURE behaviour OF IF_mux IS
+ARCHITECTURE arch OF IF_mux IS
 BEGIN
 
 --Clock synchronized check for mux output as per mux_control input (0/1)
@@ -28,4 +29,4 @@ BEGIN
 	END IF;
 
 END PROCESS next_or_same;
-END behaviour;
+END arch;

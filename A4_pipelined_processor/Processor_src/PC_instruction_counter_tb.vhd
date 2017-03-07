@@ -7,14 +7,15 @@ end PC_instruction_counter_tb;
 ARCHITECTURE foo of pc_instruction_counter_tb is
 COMPONENT PC_instruction_counter IS
 PORT(
-	PC_IN : IN STD_LOGIC_VECTOR(31 downto 0);
+	PC_IN : IN INTEGER;
 	INIT : IN STD_LOGIC;
 	CLK : IN STD_LOGIC;
-	PC : OUT STD_LOGIC_VECTOR(31 downto 0)
+	PC : OUT INTEGER
 );
 END COMPONENT;
 CONSTANT clk_period : time := 1 ns;
-SIGNAL PC_IN, PC_OUT: STD_LOGIC_VECTOR(31 downto 0);
+SIGNAL PC_IN: INTEGER := 0;
+SIGNAL PC_OUT: INTEGER := 0;
 SIGNAL INIT, CLK: STD_LOGIC:= '0';
 
 BEGIN
@@ -39,10 +40,10 @@ BEGIN
 	WAIT FOR 1*clk_period;
 	INIT<='1';
 	WAIT FOR 0.5*clk_period; -- value changes between falloing and rising edge of clock
-	ASSERT PC_OUT = x"00000000" REPORT "init unsuccessful" SEVERITY error;
-	PC_IN<= "00000000000000000000000000000100";
+	ASSERT PC_OUT = 0 REPORT "init unsuccessful" SEVERITY error;
+	PC_IN<= 4;
 	WAIT FOR 1*clk_period;
-	ASSERT PC_OUT = x"00000004" REPORT "update unsuccessful" SEVERITY error;
+	ASSERT PC_OUT = 4 REPORT "update unsuccessful" SEVERITY error;
 	WAIT;
 END process;
 
