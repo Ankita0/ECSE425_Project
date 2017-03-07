@@ -20,22 +20,27 @@ architecture arch of alu is {
 
 	process(Alu_Ctrl)
 
-	Variable Y := std_logic_vector(W downto 0);
+	Variable Y := std_logic_vector(W-1 downto 0);
 	Variable funct := std_logic_vector(5 downto 0);
 
 	begin
 
+		funct:=Alu_Ctrl;
+
 		case funct is
 
-			when "000000"=> Y :=;
-			when "000001"=>Y:=;
-
-
+			when "100000"=> Y := Mux_A+Mux_B; --ADD
+			when "100010"=>Y:= Mux_A-Mux_B; --SUB
+			when "100100"=> Y := Mux_A AND Mux_B; --AND
+			when "100101"=> Y:= Mux_A OR Mux_B;-- OR
+			when "100111"=>Y:= Mux_A OR NOT Mux_B; --NOR
+			when "100110"=> Y := (Mux_A AND (NOT Mux_B)) OR ((NOT Mux_A) AND Mux_B); --XOR
+			when""=>Y:=;
 
 
 
 			when others => NULL;
-			
+
 		end case;
 
 
@@ -56,14 +61,14 @@ architecture arch of alu is {
 			Carryout <='0';
 		end if;
 
-		--Check Overflow
+		--Check Overflow, if it is implmented then we need to change Y to 33 bits
 
 
 
 
 		--Output result
 
-		Alu_Rslt<= Y(31 downto 0);
+		Alu_Rslt<= Y;
 
 	end process;
 
