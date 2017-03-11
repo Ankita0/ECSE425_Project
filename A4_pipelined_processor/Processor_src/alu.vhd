@@ -21,23 +21,36 @@ architecture arch of alu is {
 	process(Alu_Ctrl)
 
 	Variable Y := std_logic_vector(W-1 downto 0);
-	Variable funct := std_logic_vector(5 downto 0);
+	Variable alu_op := std_logic_vector(5 downto 0);
 
 	begin
 
-		funct:=Alu_Ctrl;
+		alu_op:=Alu_Ctrl;
 
-		case funct is
+		case alu_op is
 
-			when "100000"=> Y := Mux_A+Mux_B; --ADD
-			when "100010"=>Y:= Mux_A-Mux_B; --SUB
-			when "100100"=> Y := Mux_A AND Mux_B; --AND
-			when "100101"=> Y:= Mux_A OR Mux_B;-- OR
-			when "100111"=>Y:= Mux_A OR NOT Mux_B; --NOR
-			when "100110"=> Y := (Mux_A AND (NOT Mux_B)) OR ((NOT Mux_A) AND Mux_B); --XOR
-			when""=>Y:=;
-
-
+			when "100000"=> Y 	:= Mux_A+Mux_B; --ADD
+			when "100010"=>	Y	:= Mux_A-Mux_B; --SUB
+			when "100100"=> Y 	:= Mux_A AND Mux_B; --AND
+			when "100101"=> Y	:= Mux_A OR Mux_B;-- OR
+			when "100111"=>	Y	:= Mux_A OR NOT Mux_B; --NOR
+			when "100110"=> Y 	:= (Mux_A AND (NOT Mux_B)) OR ((NOT Mux_A) AND Mux_B); --XOR
+			when "011000"=>	Y	:=;--Mult
+			when "011010"=>	Y	:=;--Div
+			when "101010"=>Y	:=;--slt
+			when "000000"=>Y	:=;--sll
+			when "000010"=>Y	:=;--srl
+			when "000011"=>Y	:=;--sra
+			when "010000"=>Y	:=;--mfhi
+			when "100101"=>Y	:=;--mflo
+			when "001011"=>Y	:=;--slti
+			when "001000"=>Y	:=;--addi
+			when "001100"=>Y	:=;--andi
+			when "001101"=>Y	:=;--ori
+			when "001110"=>Y	:=;--xori
+			when "000100"=>Y	:=;--beq
+			when "000101"=>Y	:=;--bne
+			when "000011"=>Y	:=;--jal
 
 			when others => NULL;
 
