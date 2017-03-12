@@ -4,6 +4,8 @@ use ieee.numeric_std.all;
 use ieee.
 
 
+--MISING: SW,LW,LUI,J,JR address calculations!!!
+
 --ALU for the execute stage
 --MUX_A should be the 1st operand in the instruction
 --MUX_B should be the second operand in the instruction
@@ -15,7 +17,7 @@ entity alu is
 	port( 	Mux_A	: in  std_logic_vector(W-1 downto 0)
 			Mux_B	: in  std_logic_vector(W-1 downto 0)
 			Alu_Ctrl: in  std_logic_vector(F-1 downto 0)
-			Shamt	: in std_logic_vector (F-2 downto 0)
+			Shift	: in std_logic_vector (F-2 downto 0)
 			Alu_Rslt: out std_logic_vector(W-1 downto 0)
 			Zero 	: out std_logic;
 			Overflow: out std_logic;
@@ -35,6 +37,7 @@ architecture arch of alu is
 	Variable sign_A,sign_B := signed(W-1 downto 0);
 	variable MD_rslt := std_logic_vector (63 downto 0);
 	variable shift_zeroes:= (others => '0');
+	variable shamt := to_integer(signed(shamt));
 
 	begin
 
@@ -58,18 +61,23 @@ architecture arch of alu is
 				Hi<= signed(Mux_A)rem signed(Mux_B);
 
 			when "101010"=>
-				IF(Mux_A<Mux_B);--set on less than (slt)
+				IF(Mux_A<Mux_B) then --set on less than (slt)
 					Y:="00000000000000000000000000000001";
 				else
 					Y:="00000000000000000000000000000000";
 				END IF;
 
-			when "000000"=>	Y	:=;--shift left logical (sll)
 
+			-- IF this does not work we need to save the part of the input we cant and & zeroes to it
 
-			when "000010"=>	Y	:=;--shift right logical (srl)
-
-			when "000011"=>	Y	:=;--shift right arithmetic (sra)
+			when "000000"=> Y:= Mux_A shift_left shamt;	--shift left logical (sll), shift zeroes into LSB
+			when "000010"=>	Y:= Mux_A shift_right shamt;--shift right logical (srl), shift zeroes into MSB
+			when "000011"=>	--shift right arithmetic (sra)
+				IF(Mux_A(31)='1')then
+					Y:= Mux_A(shamt downto 0) & others => '1';
+				else
+					Y:= Mux_A(shamt downto 0) & others => '0';
+				END IF;
 
 
 
@@ -97,6 +105,8 @@ architecture arch of alu is
 
 			--J-type
 			when "000011"=>	Y	:=;--jal
+
+
 
 			when others => Y (others => 'X');
 
