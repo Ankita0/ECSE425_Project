@@ -55,8 +55,8 @@ architecture arch of alu is
 				when "100010"=>	Y	:= 	std_logic_vector(signed(Mux_A) - signed(Mux_B)); --SUB
 				when "100100"=> Y 	:= 	Mux_A AND Mux_B; --AND
 				when "100101"=> Y	:= 	Mux_A OR Mux_B;-- OR
-				when "100111"=>	Y	:= 	Mux_A OR NOT Mux_B; --NOR
-				when "100110"=> Y 	:=	(Mux_A AND (NOT Mux_B)) OR ((NOT Mux_A) AND Mux_B); --XOR
+				when "100111"=>	Y	:= 	Mux_A NOR Mux_B; --NOR
+				when "100110"=> Y 	:=	Mux_A XOR Mux_B); --XOR
 
 				when "011000"=>	
 					MD_rslt:= std_logic_vector(signed(Mux_A)*signed(Mux_B));--Mult
