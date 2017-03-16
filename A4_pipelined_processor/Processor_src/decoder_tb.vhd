@@ -21,19 +21,19 @@ architecture arch of decoder_tb is
 	end Component;
 
 	constant clk_period : time := 1 ns;
-	signal instruction : std_logic_vector(31 downto 0) :=(others=>'0');
-	signal alu_op_code : std_logic_vector(5 downto 0):=(others=>'0');
-    signal reg_dst : std_logic := '0';
-    signal reg_write : std_logic := '0';
-    signal alu_src : std_logic := '0';
-    signal mem_write : std_logic := '0';
-    signal mem_read : std_logic := '0';
-    signal jump : std_logic := '0';
-    signal branch : std_logic := '0';    
+	signal instruction : std_logic_vector(31 downto 0);
+	signal alu_op_code : std_logic_vector(5 downto 0);
+    signal reg_dst : std_logic := 'U';
+    signal reg_write : std_logic := 'U';
+    signal alu_src : std_logic := 'U';
+    signal mem_write : std_logic := 'U';
+    signal mem_read : std_logic := 'U';
+    signal jump : std_logic := 'U';
+    signal branch : std_logic := 'U';    
 
 	BEGIN
 
-		dut: alu 
+		dut: decoder 
 			PORT MAP(instruction,
                 alu_op_code,
                 reg_dst,
