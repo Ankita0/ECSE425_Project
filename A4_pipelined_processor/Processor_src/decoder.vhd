@@ -172,7 +172,7 @@ begin
 						alu_src<='X';
 						mem_write<='0';
 						mem_read<='0';
-						jump<='0';
+						jump<='1';
 						branch<='0';			
 					when others =>
 						alu_op_code<="UUUUUU";
