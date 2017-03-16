@@ -13,17 +13,17 @@ architecture arch of alu_testbed is
 	         F : natural :=6;
 	         clock_period : time := 1 ns);
 	
-	port( 		Mux_A	: in  std_logic_vector(W-1 downto 0);
+	port( 	Mux_A	: in  std_logic_vector(W-1 downto 0);
 			   Mux_B	: in  std_logic_vector(W-1 downto 0);
-			   Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
-			   clock 	: in std_logic;
+			   Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
+			   clock : in std_logic;
 			   shamt	: in std_logic_vector (F-2 downto 0);
-			   Hi 		: out std_logic_vector(W-1 downto 0);
-	       	   Lo 		: out std_logic_vector(W-1 downto 0);
-			   Alu_Rslt	: out std_logic_vector(W-1 downto 0);
+			   Hi 	: out std_logic_vector(W-1 downto 0);
+	       Lo 	: out std_logic_vector(W-1 downto 0);
+			   Alu_Rslt: out std_logic_vector(W-1 downto 0);
 			   Zero 	: out std_logic;
-			   Overflow	: out std_logic;
-			   Carryout	: out std_logic);
+			   Overflow: out std_logic;
+			   Carryout: out std_logic);
 	end Component;
 
 	constant clk_period : time := 1 ns;
@@ -116,7 +116,7 @@ architecture arch of alu_testbed is
     			Mux_A <= x"FF00FF24";
     			Mux_B<= x"00028800";
     			wait for clk_period;
-    			ASSERT (Hi = x"FFFFFF7A") REPORT "Hi is incorret should be FFFFFF7A !!" SEVERITY ERROR;
+    			ASSERT (Hi = x"FFFFFD7A") REPORT "Hi is incorret should be FFFFFD7A !!" SEVERITY ERROR;
     			ASSERT (Lo = x"85D32000") REPORT "Lo is incorret should be 85D32000 !!" SEVERITY ERROR;
     			
     			--TEST DIV
@@ -124,24 +124,53 @@ architecture arch of alu_testbed is
     			Mux_A <= x"FF00FF24";
     			Mux_B<= x"00028800";
     			wait for clk_period;
-		   		ASSERT (Hi = x"FFFE1F24") REPORT "Hi is incorret should be FFFE1F24 !!" SEVERITY ERROR;
+		   ASSERT (Hi = x"FFFE1F24") REPORT "Hi is incorret should be FFFE1F24 !!" SEVERITY ERROR;
     			ASSERT (Lo = x"FFFFFF9C") REPORT "Lo is incorret should be FFFFFF9C !!" SEVERITY ERROR;
     			
-    			--TEST SLT
+    			--TEST SLT 1
+    			Alu_Ctrl<="101010";
+    			Mux_A <= x"00000001";
+    			Mux_B<= x"00000F00";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"00000001") REPORT "SLT Should be 1!!" SEVERITY ERROR;
  			
-    			
     			--TEST SLL
+    			Alu_Ctrl<="000000";
+    			Mux_B<= x"00000001";
+    			shamt<="00100";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"00000010") REPORT "SLL Should be 00000010!!" SEVERITY ERROR;
+ 			
+    			--TEST SRL 
+    			Alu_Ctrl<="000010";
+    			Mux_B<= x"00000080";
+    			shamt<="00110";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"00000002") REPORT "SRL Should be 00000002!!" SEVERITY ERROR;
+		   
+    			--TEST SRA sign 0
+    			Alu_Ctrl<="000011";
+    			Mux_B<= x"00000080";
+    			shamt<="00100";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"00000008") REPORT "SRA Should be 00000008!!" SEVERITY ERROR;
+		   
+		   --TEST SLT 0
+		   Alu_Ctrl<="101010";
+    			Mux_A <= x"00000F00";
+    			Mux_B<= x"00000001";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"00000000") REPORT "SLT Should be 0!!" SEVERITY ERROR;
     			
-    			--TEST SRL
-    			
-    			--TEST SRA
-    			
-    			--TEST MFHI
-    			
-    			--TEST MFLO
-    			
-    			--TEST of I Types
+		   --TEST SRA sign 1
+		   Alu_Ctrl<="000011";
+    			Mux_B<= x"80000000";
+    			shamt<="00100";
+    			wait for clk_period;
+		   ASSERT (Alu_Rslt = x"F8000000") REPORT "SRA Should be F8000000!!" SEVERITY ERROR;
+		   
 
+    			--TEST of I Types
     			
 
 

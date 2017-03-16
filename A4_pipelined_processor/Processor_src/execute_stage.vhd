@@ -24,17 +24,17 @@ Component alu is
 	         F : natural :=6;
 	         clock_period : time := 1 ns);
 	
-	port( 		Mux_A	: in  std_logic_vector(W-1 downto 0);
-			   Mux_B	: in  std_logic_vector(W-1 downto 0);
-			   Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
-			   clock 	: in std_logic;
-			   shamt	: in std_logic_vector (F-2 downto 0);
-			   Hi 		: out std_logic_vector(W-1 downto 0);
-	       	   Lo 		: out std_logic_vector(W-1 downto 0);
-			   Alu_Rslt	: out std_logic_vector(W-1 downto 0);
-			   Zero 	: out std_logic;
-			   Overflow	: out std_logic;
-			   Carryout	: out std_logic);
+	port( 		Mux_A		: in  std_logic_vector(W-1 downto 0); --RS
+			   	Mux_B		: in  std_logic_vector(W-1 downto 0); --RT
+			  	Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
+			   	clock 		: in std_logic;
+			   	shamt		: in std_logic_vector (F-2 downto 0);
+			   	Hi 			: out std_logic_vector(W-1 downto 0);
+	       	   	Lo 			: out std_logic_vector(W-1 downto 0);
+			   	Alu_Rslt	: out std_logic_vector(W-1 downto 0);
+			   	Zero 		: out std_logic;
+			   	Overflow	: out std_logic;
+			   	Carryout	: out std_logic);
 	end Component;
 
 	Component Mux_A is
