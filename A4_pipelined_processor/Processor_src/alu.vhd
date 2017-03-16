@@ -1,3 +1,7 @@
+--ALU FOR ECSE 425 PROJECT WINTER 2017
+--GROUP 
+--Author: Alina Mambo
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -6,6 +10,7 @@ use ieee.numeric_std.all;
 
 --MISING: LUI,J,JR address calculations!!!
 --SW AND LW will point to addi NEED an opcode for them
+--MOVE MFLO AND MFHI to the execute stage
 
 --ALU for the execute stage
 --MUX_A should be the 1st operand in the instruction
