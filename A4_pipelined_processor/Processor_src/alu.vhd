@@ -15,24 +15,23 @@ entity alu is
 
 	Generic(W : natural := 32; F : natural :=6;clock_period : time := 1 ns);
 	
-	port(Mux_A	: in  std_logic_vector(W-1 downto 0);
-			Mux_B	: in  std_logic_vector(W-1 downto 0);
-			Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
-			clock : in std_logic;
-			shamt	: in std_logic_vector (F-2 downto 0);
-			Alu_Rslt: out std_logic_vector(W-1 downto 0);
-			Zero 	: out std_logic;
-			Overflow: out std_logic;
-			Carryout: out std_logic);
+	port(  Mux_A	: in  std_logic_vector(W-1 downto 0);
+			   Mux_B	: in  std_logic_vector(W-1 downto 0);
+			   Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
+			   clock : in std_logic;
+			   shamt	: in std_logic_vector (F-2 downto 0);
+			   Hi 	: out std_logic_vector(W-1 downto 0);
+	       		Lo 	: out std_logic_vector(W-1 downto 0);
+			   Alu_Rslt: out std_logic_vector(W-1 downto 0);
+			   Zero 	: out std_logic;
+			   Overflow: out std_logic;
+			   Carryout: out std_logic);
 
 end alu;
 
 
 architecture arch of alu is 
-
-	signal Hi 	: std_logic_vector(W-1 downto 0);
-	signal Lo 	: std_logic_vector(W-1 downto 0);
-
+  
 	begin
 
 		process(Alu_Ctrl)
@@ -56,7 +55,7 @@ architecture arch of alu is
 				when "100100"=> Y 	:= 	Mux_A AND Mux_B; --AND
 				when "100101"=> Y	:= 	Mux_A OR Mux_B;-- OR
 				when "100111"=>	Y	:= 	Mux_A NOR Mux_B; --NOR
-				when "100110"=> Y 	:=	Mux_A XOR Mux_B); --XOR
+				when "100110"=> Y 	:=	Mux_A XOR Mux_B; --XOR
 
 				when "011000"=>	
 					MD_rslt:= std_logic_vector(signed(Mux_A)*signed(Mux_B));--Mult
@@ -86,8 +85,8 @@ architecture arch of alu is
 					--	Y:= Mux_A((to_integer(signed(shamt))) downto 0) & others <= '0';
 					--END IF;
 
-				when "010000"=>	Y	:=Hi;--mfhi
-				--when "100101"=>	Y	:=Lo;--mflo duplicate code of OR
+				--when "010000"=>	Y	:=Hi;--mfhi
+			--	when "010010"=>	Y	:=Lo;--mflo duplicate code of OR
 
 				-- I type 
 				-- Note: andi/addi/ori/xori are the same logic as add/and/or/xor R type
