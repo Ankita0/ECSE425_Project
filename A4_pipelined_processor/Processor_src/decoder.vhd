@@ -188,7 +188,7 @@ begin
 			--I-Type
 			--Arithmetic
 			when "001000" =>		--addi
-				alu_op_code<=op_code;
+				alu_op_code<="100000"; 	--funct of add (r-type)
 				reg_dst<='1';
 				reg_write<='1';
 				alu_src<='1';
@@ -197,7 +197,7 @@ begin
 				jump<='0';
 				branch<='0';				
 			when "001010" =>		--slti
-				alu_op_code<=op_code;
+				alu_op_code<="101010";--funct of slt (r-type)
 				reg_dst<='1';
 				reg_write<='1';
 				alu_src<='1';
@@ -207,7 +207,7 @@ begin
 				branch<='0';	
 			--Logical
 			when "001100" =>		--andi
-				alu_op_code<=op_code;	
+				alu_op_code<="100100";	--funct of and (r-type)
 				reg_dst<='1';
 				reg_write<='1';
 				alu_src<='1';
@@ -216,7 +216,7 @@ begin
 				jump<='0';
 				branch<='0';
 			when "001101" =>		--ori
-				alu_op_code<=op_code;	
+				alu_op_code<="100101"; --funct of or (r-type)
 				reg_dst<='1';
 				reg_write<='1';
 				alu_src<='1';
@@ -225,7 +225,7 @@ begin
 				jump<='0';
 				branch<='0';
 			when "001110" =>		--xori
-				alu_op_code<=op_code;	
+				alu_op_code<="100110"; --funct of xor (r-type)
 				reg_dst<='1';
 				reg_write<='1';
 				alu_src<='1';
