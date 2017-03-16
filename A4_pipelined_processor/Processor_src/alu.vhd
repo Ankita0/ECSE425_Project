@@ -1,16 +1,12 @@
---ALU FOR ECSE 425 PROJECT WINTER 2017
---GROUP 
---Author: Alina Mambo
-
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 
 
+
 --MISING: LUI,J,JR address calculations!!!
 --SW AND LW will point to addi NEED an opcode for them
---MOVE MFLO AND MFHI to the execute stage
 
 --ALU for the execute stage
 --MUX_A should be the 1st operand in the instruction
@@ -26,7 +22,7 @@ entity alu is
 			   clock : in std_logic;
 			   shamt	: in std_logic_vector (F-2 downto 0);
 			   Hi 	: out std_logic_vector(W-1 downto 0);
-	       		Lo 	: out std_logic_vector(W-1 downto 0);
+	       Lo 	: out std_logic_vector(W-1 downto 0);
 			   Alu_Rslt: out std_logic_vector(W-1 downto 0);
 			   Zero 	: out std_logic;
 			   Overflow: out std_logic;
@@ -74,21 +70,21 @@ architecture arch of alu is
 				when "101010"=>
 					IF(signed(Mux_A)<signed(Mux_B)) then --set on less than (slt)
 						Y:="00000000000000000000000000000001";
-					else
+					elsif(signed(Mux_A)>signed(Mux_B)) then
 						Y:="00000000000000000000000000000000";
 					END IF;
 
 
 				-- IF this does not work we need to save the part of the input we cant and & zeroes to it
 
-				when "000000"=> Y:= std_logic_vector(unsigned(Mux_A) sll (to_integer(unsigned(shamt))) );	--shift left logical (sll), shift zeroes into LSB
-				when "000010"=>	Y:= std_logic_vector(unsigned(Mux_A) srl (to_integer(unsigned(shamt))) );--shift right logical (srl), shift zeroes into MSB
-				--when "000011"=>	--shift right arithmetic (sra) NEED TO FIX THE CONCAT
-				--	IF(signed(Mux_A(31))='1')then
-				--   Y:= Mux_A((to_integer(signed(shamt))) downto 0) & others <= '1';
+				when "000000"=> Y:= std_logic_vector(unsigned(Mux_B) sll (to_integer(unsigned(shamt))));	--shift left logical (sll), shift zeroes into LSB
+				when "000010"=>	Y:= std_logic_vector(unsigned(Mux_B) srl (to_integer(unsigned(shamt))));--shift right logical (srl), shift zeroes into MSB
+				when "000011"=>	Y:= to_stdlogicvector(to_bitvector(Mux_B) sra (to_integer(unsigned(shamt))));--shift right arithmetic (sra) NEED TO FIX THE CONCAT
+				  --IF(Mux_B(31)='1')then
+				   -- Y:= Mux_B((to_integer(unsigned(shamt))) downto 0) & (others => '1');
 					--else
-					--	Y:= Mux_A((to_integer(signed(shamt))) downto 0) & others <= '0';
-					--END IF;
+						--Y:= Mux_B((to_integer(unsigned(shamt))) downto 0) & (others => '0');
+				--	END IF;
 
 				--when "010000"=>	Y	:=Hi;--mfhi
 			--	when "010010"=>	Y	:=Lo;--mflo duplicate code of OR
@@ -111,7 +107,7 @@ architecture arch of alu is
 
 				--when "000100"=>	--beq
 				--	IF(Mux_A=Mux_B) then 
-						Zero<= '0';
+					--	Zero<= '0';
 				--	END IF;
 				--when "000101"=>	Y	:=;--bne
 

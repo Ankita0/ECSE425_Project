@@ -9,8 +9,15 @@ use ieee.numeric_std.all;
 
 entity execute_stage is
 
-	Port(	A,B,C,D,E: in std_logic_vector (31 downto 0)
-			W,X,Y.Z: out std_logic_vector(31 downto 0));
+	Port(	Input_A	: in std_logic_vector(31 downto 0);
+			Input_B: in std_logic_vector(31 downto 0);
+			alu_opcode: in std_logic_vector(4 downto 0);
+			Jump: in std_logic;
+			Branch: in std_logic;
+			Alu_Rslt: out std_logic_vector(31 downto 0);
+			branch_taken: out std_logic;
+			rs: out std_logic_vector(31 downto 0);
+			data_to_mem: out std_logic_vector(31 downto 0));
 
 
 end execute_stage;
@@ -24,31 +31,19 @@ Component alu is
 	         F : natural :=6;
 	         clock_period : time := 1 ns);
 	
-	port( 		Mux_A	: in  std_logic_vector(W-1 downto 0);
-			   Mux_B	: in  std_logic_vector(W-1 downto 0);
-			   Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
-			   clock 	: in std_logic;
-			   shamt	: in std_logic_vector (F-2 downto 0);
-			   Hi 		: out std_logic_vector(W-1 downto 0);
-	       	   Lo 		: out std_logic_vector(W-1 downto 0);
-			   Alu_Rslt	: out std_logic_vector(W-1 downto 0);
-			   Zero 	: out std_logic;
-			   Overflow	: out std_logic;
-			   Carryout	: out std_logic);
+	port( 		Mux_A		: in  std_logic_vector(W-1 downto 0); --RS
+			   	Mux_B		: in  std_logic_vector(W-1 downto 0); --RT
+			  	Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
+			   	clock 		: in std_logic;
+			   	shamt		: in std_logic_vector (F-2 downto 0);
+			   	Hi 			: out std_logic_vector(W-1 downto 0);
+	       	   	Lo 			: out std_logic_vector(W-1 downto 0);
+			   	Alu_Rslt	: out std_logic_vector(W-1 downto 0);
+			   	Zero 		: out std_logic;
+			   	Overflow	: out std_logic;
+			   	Carryout	: out std_logic);
 	end Component;
 
-	Component Mux_A is
-
-	PORT(ID_instr_1, ID_instr_2 : in std_logic_vector(31 downto 0);
-			mux_control,CLK: in std_logic;
-			instr_to_Ex: out std_logic_vector(31 downto 0));
-	end Component;
-
-	Component Mux_B is
-	PORT(ID_instr_1, ID_instr_2 : in std_logic_vector(31 downto 0);
-			mux_control,CLK: in std_logic;
-			instr_to_Ex: out std_logic_vector(31 downto 0));
-	end Component;
 
 	--SIGNALS FOR ALU
 	signal Mux_A, Mux_B : std_logic_vector(31 downto 0) :=(others=>'0');
@@ -67,12 +62,6 @@ Component alu is
 	signal Hi: std_logic_vector (31 downto 0) :=(others=>'0');
 	signal Lo: std_logic_vector (31 downto 0) :=(others=>'0');
 
-	--SIGNALS FOR MUXES
-	signal ID_instr_MA1: std_logic_vector(31 downto 0);
-	signal ID_instr_MA2: std_logic_vector(31 downto 0);
-	signal ID_instr_MB1: std_logic_vector(31 downto 0);
-	signal ID_instr_MB2: std_logic_vector(31 downto 0);
-
 begin
 
 	ALU: alu
@@ -88,18 +77,35 @@ begin
 				Zero,	
 				Overflow,
 				Carryout);
-	Mux_A: Mux_A
-	PORT MAP(
-			ID_instr_MA1,
-			ID_instr_MA2,
+
+
+	--MFHI, MFLO
+
+
+	--SW/LW
+
+
+	--Beq
+
+
+	--bne
+
+
+	--JAL
 
 
 
+	-- J
 
-		);
-	Mux_B: Mux_B
-	PORT MAp ();
 
+	--JR
+
+
+
+	--LUI
+
+
+	
 
 	pipeline: process
 		begin
