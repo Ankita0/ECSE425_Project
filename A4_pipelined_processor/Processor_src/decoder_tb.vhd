@@ -42,16 +42,7 @@ architecture arch of decoder_tb is
                 mem_write,
                 mem_read,
                 jump,
-                branch);
-				
-		clk_process: process
-		  begin
-		    clk <='0';
-		    wait for clk_period/2;
-		    clk<='1';
-		    wait for clk_period/2;
-		   end process;
-		   
+                branch);		   
 
 		test_process: process
 
