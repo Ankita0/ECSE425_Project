@@ -255,7 +255,11 @@ begin
 				jump<='0';
 				branch<='0';
 			when "101011" =>		--sw
-				alu_op_code<="100000";					
+				alu_op_code<="100000";	
+				-- M[R[rs]+SignExtImm] = R[rt] 
+				-- write to memory data = value of rt	
+
+							
 				reg_dst<='X';
 				reg_write<='0';
 				alu_src<='1';
