@@ -13,30 +13,30 @@ architecture arch of alu_testbed is
 	         F : natural :=6;
 	         clock_period : time := 1 ns);
 	
-	port( 	Mux_A	: in  std_logic_vector(W-1 downto 0);
-			   Mux_B	: in  std_logic_vector(W-1 downto 0);
-			   Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
-			   clock : in std_logic;
-			   shamt	: in std_logic_vector (F-2 downto 0);
-			   Hi 	: out std_logic_vector(W-1 downto 0);
-	       Lo 	: out std_logic_vector(W-1 downto 0);
-			   Alu_Rslt: out std_logic_vector(W-1 downto 0);
-			   Zero 	: out std_logic;
-			   Overflow: out std_logic;
-			   Carryout: out std_logic);
+	port( 		Mux_A	: in  std_logic_vector(W-1 downto 0);
+			   	Mux_B	: in  std_logic_vector(W-1 downto 0);
+			   	Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
+			   	clock 	: in std_logic;
+			   	shamt	: in std_logic_vector (F-2 downto 0);
+			   	Hi 		: out std_logic_vector(W-1 downto 0);
+	       		Lo 		: out std_logic_vector(W-1 downto 0);
+			   	Alu_Rslt: out std_logic_vector(W-1 downto 0);
+			   	Zero 	: out std_logic;
+			   	Overflow: out std_logic;
+			   	Carryout: out std_logic);
 	end Component;
 
 	constant clk_period : time := 1 ns;
 	signal Mux_A, Mux_B : std_logic_vector(31 downto 0) :=(others=>'0');
-	signal Alu_Ctrl : std_logic_vector(5 downto 0):=(others=>'0');
-	signal shamt : std_logic_vector(4 downto 0):=(others=>'0');
-	signal clk : std_logic := '0';
-	signal  Hi 	: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Lo 	: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Alu_Rslt : std_logic_vector(31 downto 0):=(others=>'0');
-	signal Zero : std_logic := '0';
-	signal Overflow : std_logic := '0';
-	signal Carryout : std_logic := '0';
+	signal Alu_Ctrl 	: std_logic_vector(5 downto 0):=(others=>'0');
+	signal shamt 		: std_logic_vector(4 downto 0):=(others=>'0');
+	signal clk 			: std_logic := '0';
+	signal Hi 			: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Lo 			: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Alu_Rslt 	: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Zero 		: std_logic := '0';
+	signal Overflow		: std_logic := '0';
+	signal Carryout 	: std_logic := '0';
 
 	BEGIN
 
