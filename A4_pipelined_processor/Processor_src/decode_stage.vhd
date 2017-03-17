@@ -8,7 +8,10 @@ entity decode_stage is
 
 	Port(	clock:in std_logic;	
 			result: in std_logic_vector (31 downto 0);
-			reg_value1,reg_value2,X,Y,Z: out std_logic_vector(31 downto 0));
+			PC_in: in integer;
+			reg_value1,reg_value2,X,Y,Z: out std_logic_vector(31 downto 0);
+			PC_out: out integer
+			);
 
 
 end decode_stage;
