@@ -5,6 +5,7 @@ use ieee.numeric_std.all;
 entity decoder is
 port(
 	instruction: in std_logic_vector(31 downto 0);
+	clock: in std_logic;
 	alu_op_code: out std_logic_vector(5 downto 0);
 	--register write
 	reg_dst: out std_logic; --Determines how the destination register is specified (rt or rd)
@@ -22,17 +23,17 @@ port(
 end decoder;
 
 architecture arch of decoder is
-	signal op_code: std_logic_vector(5 downto 0);
-	signal funct: std_logic_vector(5 downto 0);
 begin
 	process(instruction)
+	  Variable op_code: std_logic_vector(5 downto 0);
+	  Variable funct: std_logic_vector(5 downto 0);
 	begin
-		op_code <= instruction(31 downto 26);
+		op_code := instruction(31 downto 26);
 		
 		case op_code is
 			--R-Type
 			when "000000" =>
-				funct <= instruction(5 downto 0);
+				funct := instruction(5 downto 0);
 				case funct is
 					--Arithmetic
 					when "100000" =>		--add
