@@ -3,114 +3,107 @@ USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 
 ENTITY memory_controller is
+  GENERIC(
+    ram_size : INTEGER := 8192;
+  		mem_delay : time := 10 ns;
+		clock_period : time := 1 ns
+	);
   PORT(
       clock, reset: IN STD_LOGIC;
       
-		  data: INOUT STD_LOGIC_VECTOR (31 DOWNTO 0); --value of register
+      --control signals
+  		  do_memread: IN STD_LOGIC;
+  		  do_memwrite: IN STD_LOGIC;
+      
+      --coming from EX stage
+		  alu_data: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		  reg_dst: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+		  reg_write: IN STD_LOGIC;
   		  address: IN INTEGER RANGE 0 TO ram_size-1; --value of read/write address
-  		  
-  		  mem_ctrl: IN STD_LOGIC_VECTOR (3 DOWNTO 0);
-		  memwrite: OUT STD_LOGIC;
-		  memread: OUT STD_LOGIC;
-		  regwrite: OUT STD_LOGIC;
-		  regread:  OUT STD_LOGIC;
 
+      --going to WB stage
+  		  data_WB: OUT STD_LOGIC_VECTOR (31 DOWNTO 0); --from ALU/memory
+  		  reg_dst_out: OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
+  		  reg_write_out: OUT STD_LOGIC;
+  		  address_out: OUT INTEGER RANGE 0 TO ram_size-1
 		);
 END memory_controller;
 
-ARCHITECTURE behavioural of memory_controller is
+ARCHITECTURE behaviour of memory_controller is
 
-  SIGNAL data_to_WB       : STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => 'Z');  
- 	SIGNAL mm_address       : NATURAL                                       := 0;
-	SIGNAL mm_we            : STD_LOGIC                                     := '0';
-	SIGNAL mm_wr_done       : STD_LOGIC                                     := '0';
-	SIGNAL mm_re            : STD_LOGIC                                     := '0';
-	SIGNAL mm_rd_ready      : STD_LOGIC                                     := '0';
-	SIGNAL mm_initialize    : STD_LOGIC                                     := '0';
-	SIGNAL mem_ctrl         : STD_LOGIC_VECTOR (3 DOWNTO 0);
-	SIGNAL busymem          : STD_LOGIC                                     := '0';
-	SIGNAL busyreg          : STD_LOGIC := '0';
-	
-  PROCESS (clock, reset)
+  component data_memory is
+    port(
+      clock: IN STD_LOGIC;
+    		writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		  address: IN INTEGER RANGE 0 TO ram_size-1;
+		  memwrite: IN STD_LOGIC;
+		  memread: IN STD_LOGIC;
+		  readdata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+		  waitrequest: OUT STD_LOGIC
+	  );
+	end component;
+
+  SIGNAL data_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
+  SIGNAL clk: STD_LOGIC;  
+ 	SIGNAL mm_address: INTEGER RANGE 0 to ram_size-1;
+ 	SIGNAL data_memread: STD_LOGIC_VECTOR (31 DOWNTO 0);
+ 	SIGNAL data_memwrite: STD_LOGIC_VECTOR (31 DOWNTO 0);
+ 	SIGNAL mm_read: STD_LOGIC;
+ 	SIGNAL mm_write: STD_LOGIC;
+ 	SIGNAL waitrequest: STD_LOGIC; 
+  
+  BEGIN
+  
+		data_out <= data_memread when do_memread = '1' else alu_data;
+		
+    memory : data_memory
+      port map(
+         clk,
+         data_memwrite,
+		     mm_address,
+		     mm_write,
+		     mm_read,
+		     data_memread,
+		     waitrequest
+		  );
+         	
+  MEM_PROCESS : PROCESS  
   BEGIN
     		
-    	-- reset high
-	if (reset = '1') then
-		data <= (others => 'Z');
-
-	elsif rising_edge(clock) then
+    if rising_edge(clock) then
 		
-		-- assume the user will not read and write at the same time
-		case mem_ctrl is
-			-- writing to memory
-			when "0001" =>
-				mm_re	<= 	'0';
-				mm_we	<= 	'1';
-				data_to_WB	<= 	data;
-				mm_address	<= address;
-				busyreg 	<=	busyreg;
-				busymem	<=	'1';
-				
-				if mm_wr_done = '1' then
-					busymem <= '0';
-					mm_we <= '0';
-				end if;
-				
-			-- writing to register
-			when "0010" =>
-				mm_re	<= 	'0';
-				mm_we	<= 	'1';
-				data_to_WB	<= 	data;
-				mm_address	<= address;	
-				busyreg <=	'1';
-				busymem	<=	busymem;
-				
-				if mm_wr_done = '1' then
-					busyreg <= '0';
-					mm_we <= '0';
-				end if;
-				
+		  clk <= clock;
+		  
+		  if do_memread = '1' then
+		    mm_read <= '1';
+		  elsif do_memwrite = '1' then
+		    mm_write <= '1';
+		  end if;
+		  
+		  wait until rising_edge(waitrequest);
+		  
+		end if; 
+		
+	end process;
 	
-			-- reading to memory
-			when "0100" =>
-				mm_re	<= 	'1';
-				mm_we	<= 	'0';
-				data_to_WB	<= 	(others => 'Z');
-				mm_address	<= address;	
-				busyreg <= busyreg;
-				busymem	<=	'1';
-				
-  			 if mm_rd_ready = '1' then
-					busyreg <= '0';
-					mm_re <= '0';
-				end if;
-				
-			-- reading to register
-			when "1000" =>
-				mm_re	<= 	'1';
-				mm_we	<= 	'0';
-				data_to_WB	<= 	(others => 'Z');
-				mm_address	<= address;	
-				busyreg	<=	'1';
-				busymem	<=	busymem;
-				
-				if mm_rd_ready = '1' then
-					busyreg <= '0';
-					mm_re <= '0';
-				end if;
-				
-			-- no priority or invalid input
-			when others =>	
-				mm_re	<= 	'0';
-				mm_we	<= 	'0';
-				data_to_WB	<= 	(others => 'Z');
-				mm_address	<= address;	
-				busyreg <=	busyreg;
-				busymem	<=	busymem;
-				
-		end case;
-	end if;
-	
-END PROCESS;	
+	MEMSTAGE_PROCESS : PROCESS (clock, reset)	
+	BEGIN
+	  
+	  if reset = '1' then
+	    
+	    data_WB <= (others => '0');
+	    reg_dst_out <= (others => '0');
+	    
+	  elsif rising_edge(clock) then
+	    
+	    data_WB <= data_out;
+	    address_out <= address;
+	    reg_dst_out <= reg_dst;
+	    reg_write_out <= reg_write;
 
+	  end if;
+	
+  END PROCESS;	
+
+END behaviour;
       
