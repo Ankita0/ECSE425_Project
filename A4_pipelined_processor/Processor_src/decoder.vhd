@@ -293,8 +293,10 @@ begin
 				jump<='1';
 				branch<='0';
 			when "000011" =>		--jal
-				alu_op_code<=op_code;				
-				alu_op_code<="UUUUUU";					
+				alu_op_code<="100000"; --same op code as addition
+				--R[31]=PC+8
+				--addi PC $r31 signExtend(8)
+				--j address				
 				reg_dst<='0';
 				reg_write<='1'; --need to write PC+4 into $ra ($31)
 				alu_src<='0';
