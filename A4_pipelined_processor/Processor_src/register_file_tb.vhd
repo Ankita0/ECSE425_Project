@@ -2,6 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+
+--TODO: TEST FOR reading data from register array!!!
+
+
 entity register_file_tb is
 end register_file_tb;
 
@@ -51,10 +55,26 @@ architecture arch of register_file_tb is
 
 	end process;
 
-
 	test:process   
+	
+	begin
 
+	--test rs
+	rs<="00000";
+	wait for clk_period;
+	ASSERT(reg_value1=x"00000000") REPORT " REG Value 1 is supposed to be 00000" SEVERITY ERROR;
 
+	--test rt
+	rt<="00000";
+	wait for clk_period;
+	ASSERT(reg_value2=x"00000000") REPORT "REG VALUE 2 is supposed to be zero " SEVERITY ERROR;
+
+	--test write reg
+	rd<="00010";
+	reg_write<='1';
+	result<=x"00000300";
+	wait for clk_period;
+	--need to check for register array from waveform
 
 
 

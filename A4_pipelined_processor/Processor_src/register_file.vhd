@@ -23,23 +23,21 @@ begin
 	process(clock,rs,rt,rd)
 	begin
 		-- if there is a change in rs
-		if rs'event then
-			if rs="00000" then	--register $0 is wired to 0x0000
-				reg_value1=x"00000000";
+			if (unsigned(rs))="00000" then	--register $0 is wired to 0x0000
+				reg_value1<=x"00000000";
 			else
 				reg_value1<=register_file_array(to_integer(unsigned(rs))); --value of the register
 			end if;
-		end if;	
+	--	end if;	
 		-- if there is a change in rt
-		if rt'event then
-			if rt="00000" then	--register $0 is wired to 0x0000
-				reg_value2=x"00000000";
+			if (unsigned(rt))="00000" then	--register $0 is wired to 0x0000
+				reg_value2<=x"00000000";
 			else
 				reg_value2<=register_file_array(to_integer(unsigned(rt))); --value of the register
 			end if;
-		end if;
+		--end if;
 			--write to register file
-		if (rising_edge(clk) AND reg_write='1') then
+		if (rising_edge(clock) AND reg_write='1') then
 			register_file_array(to_integer(unsigned(rd)))<=result;
 		end if;
 	end process;
