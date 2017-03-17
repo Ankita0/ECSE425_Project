@@ -22,13 +22,13 @@ entity execute_stage is
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
 			Input_B: in std_logic_vector(31 downto 0);
-			alu_opcode: in std_logic_vector(4 downto 0);
+			alu_op_code: in std_logic_vector(4 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
 			
 			--ALU OUT
 			branch_taken: out std_logic;
-			Alu_Rslt: out std_logic_vector(31 downto 0);
+			result: out std_logic_vector(31 downto 0);
 
 			--Passing through OUT to MEM/WB
 			OUT_mem_write: in std_logic ;
@@ -77,58 +77,99 @@ Component alu is
 
 
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
-	signal Hi: std_logic_vector (31 downto 0) :=(others=>'0');
-	signal Lo: std_logic_vector (31 downto 0) :=(others=>'0');
+	signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
+	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
-begin
+	begin
 
-	ALU: alu
-	PORT MAP(
-				Mux_A,
-				Mux_B,
-				Alu_Ctrl,
-				clk,
-				shamt,
-				Hi,
-				Lo,
-				Alu_Rslt,
-				Zero,	
-				Overflow,
-				Carryout);
+		ALU: alu
+		PORT MAP(
+					Mux_A,
+					Mux_B,
+					Alu_Ctrl,
+					clk,
+					shamt,
+					Hi,
+					Lo,
+					Alu_Rslt,
+					Zero,	
+					Overflow,
+					Carryout);
 
+	pipeliine : process
 
-	--MFHI, MFLO
+		Variable alu_opcode : std_logic_vector(4 downto 0);
 
-
-
-	--SW/LW
-
-
-	--Beq
-
-
-	--bne
-
-
-	--JAL
-
-
-
-	-- J
-
-
-	--JR
-
-
-
-	--LUI
-
-
-
-
-	pipeline: process
 		begin
 
+			alu_opcode:= alu_op_code;
+
+			case alu_opcode is
+			------------------------------------------------
+			--Loads & Stores
+			------------------------------------------------
+
+			--MFHI
+			when "010000" =>
+				Hi_Reg<=Hi;
+				result<=Hi_Reg
+
+
+			--MFLO
+			when "010010"=>
+				Lo_Reg<=Lo;
+				result<=Lo_Reg
+
+			--LUI NEEDS rt
+			when "001111" =>
+
+				--line about shifting blah blah blah
+				result<=Mux_B(31 downto 16) & others => '0';
+
+			--SW/LW
+			--SW:101011
+			when "101011" =>
+
+
+			--LW:100011
+			when "100011"=>
+
+
+			------------------------------------------------
+			--BRANCHING & JUMPING
+			------------------------------------------------
+
+			--bne
+			when "000101"=>
+
+
+			--beq
+			when "000100"=>
+
+
+
+			--JAL
+			--alu_op_code:000011
+			when "000011"=>
+
+
+			-- J
+			--alu_op_code:00010
+			when "00010"=>
+
+
+
+			--JR
+			--alu_op_code:001000
+
+			when others => 
+
+
+			end case;
+
+			
+
+		Alu_Ctrl<=alu_op_code;
 		end process;
 
 	--PASS VALUES TO NEXT STAGE
