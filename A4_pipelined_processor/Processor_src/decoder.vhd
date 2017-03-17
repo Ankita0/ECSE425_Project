@@ -246,7 +246,7 @@ begin
 				branch<='0';
 			--Memory
 			when "100011" =>		--lw
-				alu_op_code<="UUUUUU";					
+				alu_op_code<="100000";					
 				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
@@ -255,7 +255,7 @@ begin
 				jump<='0';
 				branch<='0';
 			when "101011" =>		--sw
-				alu_op_code<="UUUUUU";					
+				alu_op_code<="100000";					
 				reg_dst<='X';
 				reg_write<='0';
 				alu_src<='1';

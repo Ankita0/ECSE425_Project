@@ -7,6 +7,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+
 entity execute_stage is
 
 	Port(	
@@ -99,81 +100,89 @@ Component alu is
 	pipeliine : process
 
 		Variable alu_opcode : std_logic_vector(4 downto 0);
+		Variable lui_shift : std_logic_vector(31 downto 0);
 
 		begin
 
 			alu_opcode:= alu_op_code;
 
 			case alu_opcode is
-			------------------------------------------------
-			--Loads & Stores
-			------------------------------------------------
+				------------------------------------------------
+				--Move Values & Load
+				------------------------------------------------
 
-			--MFHI
-			when "010000" =>
-				Hi_Reg<=Hi;
-				result<=Hi_Reg
-
-
-			--MFLO
-			when "010010"=>
-				Lo_Reg<=Lo;
-				result<=Lo_Reg
-
-			--LUI NEEDS rt
-			when "001111" =>
-
-				--line about shifting blah blah blah
-				result<=Mux_B(31 downto 16) & others => '0';
-
-			--SW/LW
-			--SW:101011
-			when "101011" =>
+				--MFHI needs rd as dst
+				when "010000" =>
+					Hi_Reg<=Hi;
+					result<=Hi_Reg
 
 
-			--LW:100011
-			when "100011"=>
+				--MFLO needs rd as dst
+				when "010010"=>
+					Lo_Reg<=Lo;
+					result<=Lo_Reg
+
+				--LUI NEEDS rt
+				when "001111" =>
+
+					lui_shift:= Mux_B sll 16 ;
+					result<=Mux_B(31 downto 16) & others => '0';
+
+				------------------------------------------------
+				--BRANCHING & JUMPING
+				------------------------------------------------
+
+				--bne
+				when "000101"=>
+
+				IF(Mux_A /= Mux_B) then 
+					--YES BRANCH TAKEN
+					branch_taken <='1';
+
+					-- Calculate address for branch
+					Alu_Ctrl<="100000";
+				end if;
+
+				--beq
+				when "000100"=>
+					IF(Mux_A = Mux_B) then
+
+					--YES BRANCH TAKEN
+					branch_taken <='1';
+
+					-- Calculate address for branch
+					Alu_Ctrl<="100000";
+
+				end if;
 
 
-			------------------------------------------------
-			--BRANCHING & JUMPING
-			------------------------------------------------
-
-			--bne
-			when "000101"=>
+				--JAL  --JUMP & STORE
+				when "000011"=>
 
 
-			--beq
-			when "000100"=>
+				-- J  JUMP TO TARGET
+				when "000010"=>
 
 
+				--JR NEEDS RS AS SOURCE and JUMP TO address inside
+				when "001000" =>
+				
 
-			--JAL
-			--alu_op_code:000011
-			when "000011"=>
-
-
-			-- J
-			--alu_op_code:00010
-			when "00010"=>
-
-
-
-			--JR
-			--alu_op_code:001000
-
-			when others => 
-
+				when others => NULL;
 
 			end case;
 
-			
+		--FINISH pipelining	
+
 
 		Alu_Ctrl<=alu_op_code;
 		end process;
 
 	--PASS VALUES TO NEXT STAGE
-
+		OUT_mem_write <=IN_mem_write;
+		OUT_mem_read <= IN_mem_read;
+		OUT_reg_write <= IN_reg_write;
+		OUT_reg_dst <=IN_reg_dst;
 
 
 end arch;
