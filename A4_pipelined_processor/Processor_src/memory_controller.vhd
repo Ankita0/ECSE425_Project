@@ -74,9 +74,6 @@ ARCHITECTURE behaviour of memory_controller is
 		
 		  clk <= clock;
 		  
-		  --byte addressable?
-		  mm_address <= unsigned(alu_data);
-	  
 		  if do_memread = '1' then
 		    mm_read <= '1';
 		  elsif do_memwrite = '1' then
@@ -95,7 +92,7 @@ ARCHITECTURE behaviour of memory_controller is
 	  if reset = '1' then
 	    
 	    data_WB <= (others => '0');
-	    reg_dst <= (others => '0');
+	    reg_dst_out <= (others => '0');
 	    
 	  elsif rising_edge(clock) then
 	    

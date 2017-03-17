@@ -31,12 +31,12 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
   		  data_WB: OUT STD_LOGIC_VECTOR (31 DOWNTO 0); --from ALU/memory
   		  reg_dst_out: OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
   		  reg_write_out: OUT STD_LOGIC;
-  		  address_out: OUT INTEGER RANGE 0 TO ram_size-1;
+  		  address_out: OUT INTEGER RANGE 0 TO ram_size-1
 		);
     END COMPONENT;
 
     --all the input signals with initial values
-    signal clk : std_logic := '0';
+    signal clock : std_logic := '0';
     signal reset : std_logic := '0';
     constant clk_period : time := 1 ns;
     signal address: INTEGER RANGE 0 TO 8192-1;
@@ -46,17 +46,16 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
     signal reg_dst: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others=> '0');
     signal reg_write: STD_LOGIC := '0';
     signal data_WB: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others=> '0');
-    signal reg_dst_out: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others=> '0');
+    signal reg_dst_out: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others=> '0');
     signal reg_write_out: STD_LOGIC := '0';
     signal address_out: INTEGER RANGE 0 TO 8192-1;
 
 BEGIN
 
     --dut => Device Under Test
-    dut: memory_controller GENERIC MAP(
-                )
+    dut: memory_controller 
                 PORT MAP(
-                    clk => clock,
+                    clock => clock,
                     reset => reset,
                     do_memread => memread,
                     do_memwrite => memwrite,
@@ -72,24 +71,24 @@ BEGIN
 
     clk_process : process
     BEGIN
-        clk <= '0';
+        clock <= '0';
         wait for clk_period/2;
-        clk <= '1';
+        clock <= '1';
         wait for clk_period/2;
     end process;
 
     test_process : process
     BEGIN
 
-        do_memread = '0';
-        do_memwrite = '1'; 
-        alu_data = "00000000000000000000000000000011";
+        memread <= '0';
+        memwrite <= '1'; 
+        alu_data <= "00000000000000000000000000000011";
         wait for clk_period;
         ASSERT (data_WB = "00000000000000000000000000000011") REPORT "NOT WRITTEN!" SEVERITY ERROR;
         
-        do_memread = '1';
-        do_memwrite = '0';
-        alu_data = "00000000000000000000000000000010";
+        memread <= '1';
+        memwrite <= '0';
+        alu_data <= "00000000000000000000000000000010";
         wait for clk_period;
         ASSERT (data_WB = "00000000000000000000000000000011") REPORT "NOT READ!" SEVERITY ERROR;
 
