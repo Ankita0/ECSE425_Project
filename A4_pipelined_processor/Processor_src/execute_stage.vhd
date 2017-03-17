@@ -9,15 +9,33 @@ use ieee.numeric_std.all;
 
 entity execute_stage is
 
-	Port(	Input_A	: in std_logic_vector(31 downto 0);
+	Port(	
+
+			clock: in std_logic;
+
+			--Passing through IN
+			IN_mem_write
+			IN_mem_read
+			IN_reg_write
+			IN_reg_dst
+
+			-- ALU INPUT
+			Input_A	: in std_logic_vector(31 downto 0);
 			Input_B: in std_logic_vector(31 downto 0);
 			alu_opcode: in std_logic_vector(4 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
-			Alu_Rslt: out std_logic_vector(31 downto 0);
+			
+			--ALU OUT
 			branch_taken: out std_logic;
-			rs: out std_logic_vector(31 downto 0);
-			data_to_mem: out std_logic_vector(31 downto 0));
+			Alu_Rslt: out std_logic_vector(31 downto 0);
+
+			--Passing through OUT to MEM/WB
+			OUT_mem_write: in std_logic ;
+			OUT_mem_read: in std_logic; 
+			OUT_reg_write: in std_logic;
+			OUT_reg_dst:in std_logic_vector(4 downto 0);
+	
 
 
 end execute_stage;
@@ -46,16 +64,16 @@ Component alu is
 
 
 	--SIGNALS FOR ALU
-	signal Mux_A, Mux_B : std_logic_vector(31 downto 0) :=(others=>'0');
-	signal Alu_Ctrl : std_logic_vector(5 downto 0):=(others=>'0');
-	signal shamt : std_logic_vector(4 downto 0):=(others=>'0');
-	signal clk : std_logic := '0';
-	signal Hi 	: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Lo 	: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Alu_Rslt : std_logic_vector(31 downto 0):=(others=>'0');
-	signal Zero : std_logic := '0';
-	signal Overflow : std_logic := '0';
-	signal Carryout : std_logic := '0';
+	signal Mux_A, Mux_B 	: std_logic_vector(31 downto 0) :=(others=>'0');
+	signal Alu_Ctrl 		: std_logic_vector(5 downto 0):=(others=>'0');
+	signal shamt 			: std_logic_vector(4 downto 0):=(others=>'0');
+	signal clk 				: std_logic := '0';
+	signal Hi 				: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Lo 				: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Alu_Rslt 		: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Zero 			: std_logic := '0';
+	signal Overflow 		: std_logic := '0';
+	signal Carryout 		: std_logic := '0';
 
 
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
@@ -82,6 +100,7 @@ begin
 	--MFHI, MFLO
 
 
+
 	--SW/LW
 
 
@@ -105,13 +124,14 @@ begin
 	--LUI
 
 
-	
+
 
 	pipeline: process
 		begin
 
 		end process;
 
+	--PASS VALUES TO NEXT STAGE
 
 
 
