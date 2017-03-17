@@ -21,8 +21,10 @@ BEGIN
 	--Reset to initialize PC
 	IF (INIT 'event AND INIT='1') THEN
 		PC_OUT<= 0;
-	ELSE
+	ELSIF (INIT ='0') THEN 
 		PC_OUT<= PC_IN;
+	ELSE 
+		PC_OUT<= 0;
 	END IF;
 	
 END PROCESS update_PC;

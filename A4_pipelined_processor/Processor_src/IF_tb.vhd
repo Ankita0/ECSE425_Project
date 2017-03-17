@@ -16,15 +16,15 @@ PORT(
 	PC_instr_from_EX: IN INTEGER;
 	CLK: IN STD_LOGIC;
 	control_vector: IN STD_LOGIC_VECTOR(1 downto 0); --stalling signal
-	PC_instr_plus4_out: OUT INTEGER;
-	program_instruction: OUT STD_LOGIC_VECTOR(31 downto 0)
+	PC_count_out: OUT INTEGER;
+	Instruction_out: OUT STD_LOGIC_VECTOR(31 downto 0)
 );
 END COMPONENT;
 
 	CONSTANT instr_mem_ram_size : integer := 1024;
 	CONSTANT clk_period: time := 1 ns;
 	SIGNAL control_vector: STD_LOGIC_VECTOR(1 downto 0):="00";
-	SIGNAL PC_counter_init: STD_LOGIC:= '1';
+	SIGNAL PC_counter_init: STD_LOGIC;
 	SIGNAL mux_control: STD_LOGIC:='0';
 	SIGNAL PC_instr_from_EX: INTEGER:=0;
 	SIGNAL CLK: STD_LOGIC:= '0';
@@ -45,48 +45,25 @@ IF_stage PORT MAP(
 
 clk_process : process
     BEGIN
-        clk <= '0';
+        CLK <= '0';
         wait for clk_period/2;
-        clk <= '1';
+        CLK <= '1';
         wait for clk_period/2;
     END process;
 
+
 test_process : process
-FILE file_name:         text;
-        VARIABLE line_num:      line;
-	VARIABLE char_vector_to_store: std_logic_vector(31 downto 0);
+
 BEGIN
-	IF (now < 1 ps) THEN
-	file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
-	--Read through 1024 lines of text file and save to memory	
-	For i in 0 to instr_mem_ram_size-1 LOOP
-		PC_OUT<=i;
-		readline (file_name, line_num); 
-		read (line_num, char_vector_to_store);
-		writedata <= char_vector_to_store;
-		memwrite<='1';
-		--WAIT FOR 0.0009 ns;	
-		memwrite<='0';
-		-- check if written in previous cycle
-		if (i>1) then
-			PC_OUT<=(i-1);
-		end if;
-		memread<='1';
-		--WAIT FOR 0.0009 ns;	
-		memread<='0';
-	END LOOP;
-	END IF;
-
-	WAIT FOR 0.25 ns;	
-	memread <= '0';
-	WAIT FOR 0.25 ns;
-
-	address <= 5; 
-	memread <= '1';
-	WAIT FOR 0.25 ns;	
-	memread <= '0';	
-	WAIT FOR 0.25 ns;
-	END LOOP;
+	if (now <1 ps) then
+		PC_counter_init<= '0';
+	end if;
+	control_vector<= "00";
+	WAIT FOR 1024*clk_period;
+	PC_counter_init<= '1';
+	WAIT FOR 1*clk_period;
+	PC_counter_init<= '0';
+	WAIT FOR 1*clk_period;
 END process;
 
 END ARCHITECTURE;

@@ -64,37 +64,38 @@ END COMPONENT;
 	CONSTANT clk_period: time := 1 ns;
 
 	--PC_counter
-	SIGNAL PC_IN : INTEGER;
-	SIGNAL INIT : STD_LOGIC:='1';
-	SIGNAL PC_OUT : INTEGER;
+	SIGNAL PC_IN :  INTEGER:=0;
+	SIGNAL PC_OUT :  INTEGER:=0;
 	-- mux
-	--SIGNAL PC_instr_from_EX: INTEGER;
-	SIGNAL PC_instr_plus4: INTEGER;
-	--SIGNAL mux_control: STD_LOGIC; 
-	SIGNAL PC_instr_to_fetch: INTEGER :=0;
+	SIGNAL PC_instr_plus4: INTEGER:=0;
+	SIGNAL PC_instr_to_fetch: INTEGER:=0;
 	--instruction mem
 	SIGNAL writedata:  STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL address: INTEGER RANGE 0 TO instr_mem_ram_size-1;
-	SIGNAL memwrite: STD_LOGIC;
-	SIGNAL memread: STD_LOGIC;
+	SIGNAL address: INTEGER RANGE 0 TO instr_mem_ram_size-1 :=0;
+	SIGNAL memwrite: STD_LOGIC:= '0';
+	SIGNAL memread: STD_LOGIC:= '0';
 	SIGNAL readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
 	SIGNAL waitrequest: STD_LOGIC;
 	-- adder
-	SIGNAL PC_instr_in: INTEGER;
-	--SIGNAL PC_instr_plus4_out: INTEGER;
+	SIGNAL PC_instr_in: INTEGER:= 0;
+	SIGNAL PC_inst_plus4_out: INTEGER:=0;
+	
+	--mapping signals
+	SIGNAL counter_out: INTEGER:=0;
+	SIGNAL final_count: INTEGER :=0;
 	
 BEGIN
-ADDER:
-IF_adder PORT MAP(
-	PC_instr_in,
-	PC_instr_plus4
-);
 
 COUNTER:
 PC_instruction_counter PORT MAP(
 	PC_IN,
-	INIT,
+	PC_counter_init,
 	PC_OUT
+);
+ADDER:
+IF_adder PORT MAP(
+	PC_instr_in,
+	PC_inst_plus4_out
 );
 
 MUX:
@@ -108,7 +109,7 @@ IF_mux PORT MAP(
 PC:
 instruction_memory GENERIC MAP(
 		ram_size => 1024
-		)
+	)
 	PORT MAP(
 	CLK,
 	writedata,
@@ -119,30 +120,60 @@ instruction_memory GENERIC MAP(
 	waitrequest
 );
 
-INIT<=PC_counter_init;
---mux_control<= mux_control;
---PC_instr_from_EX<= PC_instr_from_EX;
---clk<= CLK;
---control_vector<= control_vector;
-PC_IN<=PC_instr_to_fetch;
+PC_instr_in<=counter_out;
+address<=counter_out;
+PC_count_out <= final_count;
+PC_instr_plus4<= PC_inst_plus4_out;
+Instruction_out<=readdata;
 
-
-controller_process: PROCESS(PC_counter_init, mux_control, PC_instr_from_EX, CLK, control_vector)
+init_process: PROCESS
+	FILE file_name:         	text;
+        VARIABLE line_num:      	line;
+	VARIABLE char_vector_to_store: 	std_logic_vector(31 downto 0);
 BEGIN
-	IF (rising_edge(CLK))THEN
+
+IF (now < 1024 ns) THEN
+	file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
+	--Read through 1024 lines of text file and save to memory	
+	For i in 0 to instr_mem_ram_size-1 LOOP
+		counter_out<= i;
+		readline (file_name, line_num); 
+		read (line_num, char_vector_to_store);
+		writedata <= char_vector_to_store;
+		memwrite<='1';
+		WAIT FOR 0.5 ns;
+		memwrite<='0';
+		-- check if written in previous cycle
+		if (i>1) then
+			counter_out<=(i-1);
+		end if;
+		memread<='1';
+		WAIT FOR 0.5 ns;	
+		memread<='0';
+	END LOOP;
+END IF;
+counter_out<=PC_OUT;
+--END PROCESS;
+
+--controller_process: PROCESS(PC_counter_init, mux_control, PC_instr_from_EX, CLK, control_vector)
+--BEGIN
+if (now>1024 ns) then
+	IF (rising_edge(CLK)and PC_counter_init = '0')THEN
 		if (control_vector(0)= '0') then
 		--normal operation depending on inputs
 			memread<='1';
 			memwrite<='0';
-			PC_instr_in<=PC_OUT;
-			Instruction_out<=readdata;
+			final_count<= PC_instr_to_fetch;
+			PC_IN<=final_count;
+			memread<='0';
 		elsif (control_vector(0)= '1') then
 		--stalls
-			memread<='1';
+			memread<='0';
+			memwrite<='0';
 			Instruction_out<=x"00000000";
 		end if;
 	END IF;
-	
+end if;
 END PROCESS;
 	
 END ARCHITECTURE;
