@@ -236,7 +236,7 @@ begin
 				branch<='0';
 			--Transfer
 			when "001111" =>		--lui
-				alu_op_code<="UUUUUU";	
+				alu_op_code<="001111";	
 				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';

@@ -7,6 +7,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+--MISSING INPUTS FROM DECODE: TARGET ADDRESS FOR JUMP!!!
 
 entity execute_stage is
 
@@ -15,10 +16,10 @@ entity execute_stage is
 			clock: in std_logic;
 
 			--Passing through IN
-			IN_mem_write
-			IN_mem_read
-			IN_reg_write
-			IN_reg_dst
+			IN_mem_write: in std_logic ;
+			IN_mem_read: in std_logic ;
+			IN_reg_write: in std_logic ;
+			IN_reg_dst:in std_logic_vector(4 downto 0);
 
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
@@ -32,10 +33,10 @@ entity execute_stage is
 			result: out std_logic_vector(31 downto 0);
 
 			--Passing through OUT to MEM/WB
-			OUT_mem_write: in std_logic ;
-			OUT_mem_read: in std_logic; 
-			OUT_reg_write: in std_logic;
-			OUT_reg_dst:in std_logic_vector(4 downto 0);
+			OUT_mem_write: out std_logic ;
+			OUT_mem_read: out std_logic; 
+			OUT_reg_write: out std_logic;
+			OUT_reg_dst:out std_logic_vector(4 downto 0) );
 	
 
 
@@ -65,16 +66,16 @@ Component alu is
 
 
 	--SIGNALS FOR ALU
-	signal Mux_A, Mux_B 	: std_logic_vector(31 downto 0) :=(others=>'0');
-	signal Alu_Ctrl 		: std_logic_vector(5 downto 0):=(others=>'0');
-	signal shamt 			: std_logic_vector(4 downto 0):=(others=>'0');
-	signal clk 				: std_logic := '0';
-	signal Hi 				: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Lo 				: std_logic_vector(31 downto 0):=(others=>'0');
+	signal Mux_A, Mux_B 	: std_logic_vector(31 downto 0) :=(others=>'0');--done
+	signal Alu_Ctrl 		: std_logic_vector(5 downto 0):=(others=>'0');--done
+	signal shamt 			: std_logic_vector(4 downto 0):=(others=>'0');--missing
+	signal clk 				: std_logic := '0'; -- dont need to port over
+	signal Hi 				: std_logic_vector(31 downto 0):=(others=>'0'); --done
+	signal Lo 				: std_logic_vector(31 downto 0):=(others=>'0'); -- done
 	signal Alu_Rslt 		: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Zero 			: std_logic := '0';
-	signal Overflow 		: std_logic := '0';
-	signal Carryout 		: std_logic := '0';
+	signal Zero 			: std_logic := '0'; -- dont need to port over
+	signal Overflow 		: std_logic := '0'; -- dont need to port over
+	signal Carryout 		: std_logic := '0'; -- dont need to port over
 
 
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
@@ -172,10 +173,14 @@ Component alu is
 
 			end case;
 
-		--FINISH pipelining	
+		--PIPELINE!!!!
 
-
-		Alu_Ctrl<=alu_op_code;
+		if(rising_edge(clock)) then
+			Mux_A<= Input_A;
+			Mux_B<=Input_B;
+			Alu_Ctrl<=alu_op_code;
+			result<=Alu_Rslt;
+		end if;
 		end process;
 
 	--PASS VALUES TO NEXT STAGE
