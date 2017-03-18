@@ -171,32 +171,40 @@ begin
 
 			--Memory
 			when "100011" =>		--lw
-
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 				
 			when "101011" =>		--sw
-
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 				
 			--Control-flow
 			when "000100" =>		--beq
-
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 
 				
 			when "000101" =>		--bne
-
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 
 				
 			--J-type
 			when "000010" =>		--j
-
+				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
 
 
 
 			when "000011" =>		--jal
-
+				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
 
 
 				
