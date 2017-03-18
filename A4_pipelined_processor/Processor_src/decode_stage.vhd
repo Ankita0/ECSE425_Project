@@ -188,66 +188,7 @@ begin
 	dataflow: process(clock)
 	begin
 	if(rising_edge(clock)) then
-			case op_code is
-			--R-Type
-			when "000000" =>
-				reg_value1<=reg_value1;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= reg_dst;
-				shamt <= instruction(10 downto 6);
-				
-			--I-Type
-			when "001000" =>		--addi
-				reg_value1<=reg_value1;
-				reg_value2<=reg_value2;
-				
-			when "001010" =>		--slti
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
-				
 
-			--Logical
-			when "001100" =>		--andi
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
-				
-
-			when "001101" =>		--ori
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
-				
-
-			when "001110" =>		--xori
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
-
-			--Transfer
-			when "001111" =>		--lui
-				reg_value1<=signextended;
-				reg_dest_addr<= regdst;
-				
-			--Memory
-			when "100011" =>		--lw
-				
-			when "101011" =>		--sw
-				
-			--Control-flow
-			when "000100" =>		--beq
-				
-			when "000101" =>		--bne
-				
-			--J-type
-			when "000010" =>		--j
-				
-			when "000011" =>		--jal
-				
-			when others =>
-							
-		end case;
 		end if;
 	end process;
 end arch;
