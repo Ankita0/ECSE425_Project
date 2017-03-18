@@ -135,16 +135,33 @@ begin
 				reg_value2<=reg_value2;
 				
 			when "001010" =>		--slti
+				reg_value1<=signextended;
+				reg_value2<=reg_value2;
+				reg_dest_addr<= regdst;
+				
 
 			--Logical
 			when "001100" =>		--andi
+				reg_value1<=signextended;
+				reg_value2<=reg_value2;
+				reg_dest_addr<= regdst;
 				
+
 			when "001101" =>		--ori
+				reg_value1<=signextended;
+				reg_value2<=reg_value2;
+				reg_dest_addr<= regdst;
 				
+
 			when "001110" =>		--xori
-				
+				reg_value1<=signextended;
+				reg_value2<=reg_value2;
+				reg_dest_addr<= regdst;
+
 			--Transfer
 			when "001111" =>		--lui
+				reg_value1<=signextended;
+				reg_dest_addr<= regdst;
 				
 			--Memory
 			when "100011" =>		--lw
