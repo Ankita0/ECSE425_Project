@@ -116,7 +116,7 @@ begin
 	mem_write<= mem_write;
 	mem_read<= mem_read;
 	reg_write<= reg_write;
-	
+	--writing to register needs to happen at clock edges
 	pipeline: process (result, clock)
 		begin
 		if (rising_edge(clock)) then
