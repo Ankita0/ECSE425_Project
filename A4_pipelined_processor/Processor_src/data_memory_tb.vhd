@@ -65,7 +65,6 @@ BEGIN
         address <= 14; 
         writedata <= X"00000012";
         memwrite <= '1';
-        
         --waits are NOT synthesizable and should not be used in a hardware design
         WAIT FOR 0.25 ns;	
         memwrite <= '0';
@@ -73,6 +72,7 @@ BEGIN
  	WAIT FOR 0.25 ns;	
         assert readdata = x"00000012" report "write unsuccessful" severity error;
         memread <= '0';
+	writedata <= X"00000013";
         wait for clk_period;
         address <= 12;
 	memread <= '1';
@@ -80,10 +80,10 @@ BEGIN
         assert readdata = x"0000000c" report "write unsuccessful" severity error;
         memread <= '0';
 	wait for clk_period;
-        address <= 12;
+        address <= 14;
 	memread <= '1';
         WAIT FOR 0.25 ns;	
-        assert readdata = x"0000000c" report "write unsuccessful" severity error;
+        assert readdata = x"00000012" report "write unsuccessful" severity error;
         memread <= '0';
         wait;
 
