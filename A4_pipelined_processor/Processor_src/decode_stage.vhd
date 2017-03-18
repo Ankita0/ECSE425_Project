@@ -10,9 +10,7 @@ entity decode_stage is
 			result: in std_logic_vector (31 downto 0);
 			reg_value1,reg_value2,X,Y,Z: out std_logic_vector(31 downto 0));
 
-
 end decode_stage;
-
 
 architecture arch of decode_stage is
 
@@ -50,7 +48,7 @@ Component decoder is
 	end Component;
 
 	--SIGNALS FOR DECODER
-	signal instruction : std_logic_vector(31 downto 0);
+	signal instruction : std_logic_vector(31 downto 0):= x"00000000";
 	signal alu_op_code : std_logic_vector(5 downto 0);
     signal reg_dst : std_logic;
     signal reg_write : std_logic;
@@ -81,11 +79,52 @@ begin
 
 	signextension: signextension
 	PORT MAP(instruction(15 downto 0),signextended);
-
-
-	pipeline: process
+	
+	instruction<=result;
+	pipeline: process (result, clock)
 		begin
+		if (rising_edge(clock)) then
+			
+			case op_code is
+			--R-Type
+			when "000000" =>
+				reg_value1<=reg_value1;
+				reg_value2<=reg_value2;
+				
+			--I-Type
+			when "001000" =>		--addi
+							
+			when "001010" =>		--slti
 
+			--Logical
+			when "001100" =>		--andi
+				
+			when "001101" =>		--ori
+				
+			when "001110" =>		--xori
+				
+			--Transfer
+			when "001111" =>		--lui
+				
+			--Memory
+			when "100011" =>		--lw
+				
+			when "101011" =>		--sw
+				
+			--Control-flow
+			when "000100" =>		--beq
+				
+			when "000101" =>		--bne
+				
+			--J-type
+			when "000010" =>		--j
+				
+			when "000011" =>		--jal
+				
+			when others =>
+							
+		end case;
+		end if;
 		end process;
 
 
