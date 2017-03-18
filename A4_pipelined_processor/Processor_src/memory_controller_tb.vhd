@@ -41,13 +41,13 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
     --signal address: INTEGER RANGE 0 TO 8192-1;
     signal memwrite: STD_LOGIC := '0';
     signal memread: STD_LOGIC := '0';
-    signal alu_result: STD_LOGIC_VECTOR (31 DOWNTO 0);
-    signal reg_dst: STD_LOGIC_VECTOR (4 DOWNTO 0);
-    signal reg_write: STD_LOGIC;
-    signal data_to_WB: STD_LOGIC_VECTOR (31 DOWNTO 0);
-    signal writedata: STD_LOGIC_VECTOR (31 DOWNTO 0);
-    signal reg_dst_out: STD_LOGIC_VECTOR (4 DOWNTO 0);
-    signal reg_write_out: STD_LOGIC ;
+    signal alu_result: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
+    signal reg_dst: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+    signal reg_write: STD_LOGIC := '0';
+    signal data_to_WB: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
+    signal writedata: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
+    signal reg_dst_out: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+    signal reg_write_out: STD_LOGIC := '0';
     --signal address_out: INTEGER RANGE 0 TO 8192-1;
 
 BEGIN
