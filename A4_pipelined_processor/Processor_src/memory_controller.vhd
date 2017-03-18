@@ -78,7 +78,7 @@ BEGIN
 		elsif do_memwrite = '1' then
 			mm_write <= '1';
 		end if;
-		wait until rising_edge(waitrequest);
+		--wait until rising_edge(waitrequest);
 	end if; 
 end process;
 	
