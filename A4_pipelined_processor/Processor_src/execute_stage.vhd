@@ -24,7 +24,7 @@ entity execute_stage is
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
 			Input_B: in std_logic_vector(31 downto 0);
-			alu_op_code: in std_logic_vector(4 downto 0);
+			alu_op_code: in std_logic_vector(5 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jumop_addr: in std_logic_vector(25 downto 0);
@@ -66,6 +66,15 @@ Component alu is
 			   	Carryout	: out std_logic);
 	end Component;
 
+COMPONENT Ex_mux is
+
+PORT(ID_instr_1 : in std_logic_vector(31 downto 0);
+	ID_instr_2 : in std_logic_vector(31 downto 0);
+		mux_control: in std_logic_vector(31 downto 0);
+		CLK: in std_logic;
+		instr_to_Ex: out std_logic_vector(31 downto 0));
+
+end COMPONENT;
 
 	--SIGNALS FOR ALU
 	signal Mux_A, Mux_B 	: std_logic_vector(31 downto 0) :=(others=>'0');--done
@@ -80,16 +89,31 @@ Component alu is
 	signal Carryout 		: std_logic := '0'; -- dont need to port over
 
 
+
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
 	signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
 	signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
+	
 
+	--Signals for MUX A
+	SIGNAL MUX_A_ID_instr_1 : std_logic_vector(31 downto 0);
+	SIGNAL MUX_A_ID_instr_2 : std_logic_vector(31 downto 0);
+	SIGNAL MUX_A_mux_control: std_logic_vector(31 downto 0);
+	SIGNAL MUX_A_CLK: std_logic;
+	SIGNAL MUX_A_instr_to_Ex: std_logic_vector(31 downto 0);
+
+	--Signals for MUX B
+	SIGNAL MUX_B_ID_instr_1 : std_logic_vector(31 downto 0);
+	SIGNAL MUX_B_ID_instr_2 : std_logic_vector(31 downto 0);
+	SIGNAL MUX_B_mux_control: std_logic_vector(31 downto 0);
+	SIGNAL MUX_B_CLK: std_logic;
+	SIGNAL MUX_B_instr_to_Ex: std_logic_vector(31 downto 0);
 	begin
 
-		ALU: alu
-		PORT MAP(
+	EX_ALU: alu
+	PORT MAP(
 					Mux_A,
 					Mux_B,
 					Alu_Ctrl,
@@ -100,11 +124,30 @@ Component alu is
 					Alu_Rslt,
 					Zero,	
 					Overflow,
-					Carryout);
+					Carryout
+	);
+	EX_MUX_A: EX_Mux
+	PORT MAP(
+		MUX_A_ID_instr_1,
+		MUX_A_ID_instr_2,
+		MUX_A_mux_control,
+		MUX_A_CLK,
+		MUX_A_instr_to_Ex
+	);
 
-	pipeliine : process
+	EX_MUX_B: EX_Mux
+	PORT MAP(
+		MUX_B_ID_instr_1,
+		MUX_B_ID_instr_2,
+		MUX_B_mux_control,
+		MUX_B_CLK,
+		MUX_B_instr_to_Ex
+	);
 
-		Variable alu_opcode : std_logic_vector(4 downto 0);
+
+	pipeline : process
+
+		Variable alu_opcode : std_logic_vector(5 downto 0);
 		Variable lui_shift : std_logic_vector(31 downto 0);
 
 		begin
