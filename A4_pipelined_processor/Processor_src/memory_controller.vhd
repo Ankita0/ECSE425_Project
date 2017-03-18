@@ -3,7 +3,10 @@ USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 
 ENTITY memory_controller is
-  PORT(
+GENERIC(
+	ram_size : INTEGER := 8192
+);
+PORT(
       clock, reset: IN STD_LOGIC;
       
       --control signals
@@ -26,13 +29,13 @@ END memory_controller;
 
 ARCHITECTURE behaviour of memory_controller is
 
-  component data_memory is
+COMPONENT data_memory is
   	GENERIC(
 		ram_size : INTEGER := 8192;
 		mem_delay : time := 10 ns;
 		clock_period : time := 1 ns
 	);
-	PORT (
+	PORT(
 		clock: IN STD_LOGIC;
 		writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
 		address: IN INTEGER RANGE 0 TO ram_size-1;
@@ -41,10 +44,10 @@ ARCHITECTURE behaviour of memory_controller is
 		readdata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
 		waitrequest: OUT STD_LOGIC
 	);
-	end component;
+END COMPONENT;
 
-    SIGNAL data_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
-    SIGNAL clk: STD_LOGIC;  
+	SIGNAL data_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	--SIGNAL clk: STD_LOGIC;  
  	SIGNAL mm_address: INTEGER RANGE 0 to ram_size-1;
  	SIGNAL data_memread: STD_LOGIC_VECTOR (31 DOWNTO 0);
  	SIGNAL data_memwrite: STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -52,41 +55,34 @@ ARCHITECTURE behaviour of memory_controller is
  	SIGNAL mm_write: STD_LOGIC;
  	SIGNAL waitrequest: STD_LOGIC; 
   
-  BEGIN
-  
-		data_out <= data_memread when do_memread = '1' else alu_data;
-		
-    memory : data_memory
+BEGIN
+data_out <= data_memread when do_memread = '1' else alu_data;
+
+DUT: data_memory
       port map(
-         clk,
-         data_memwrite,
-		     mm_address,
-		     mm_write,
-		     mm_read,
-		     data_memread,
-		     waitrequest
-		  );
-         	
-  MEM_PROCESS : PROCESS  
-  BEGIN
-    		
-    if rising_edge(clock) then
-		
-		  clk <= clock;
-		  
-		  if do_memread = '1' then
-		    mm_read <= '1';
-		  elsif do_memwrite = '1' then
-		    mm_write <= '1';
-		  end if;
-		  
-		  wait until rising_edge(waitrequest);
-		  
-		end if; 
-		
-	end process;
+	clock,
+	data_memwrite,
+	mm_address,
+	mm_write,
+	mm_read,
+	data_memread,
+	waitrequest
+);
+
+mm_address<=address;
+MEM_PROCESS : PROCESS  
+BEGIN
+	if rising_edge(clock) then
+		if do_memread = '1' then
+			mm_read <= '1';
+		elsif do_memwrite = '1' then
+			mm_write <= '1';
+		end if;
+		wait until rising_edge(waitrequest);
+	end if; 
+end process;
 	
-	MEMSTAGE_PROCESS : PROCESS (clock, reset)	
+MEMSTAGE_PROCESS : PROCESS (clock, reset)	
 	BEGIN
 	  
 	  if reset = '1' then
