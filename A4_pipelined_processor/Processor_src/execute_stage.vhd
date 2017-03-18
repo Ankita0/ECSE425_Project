@@ -27,6 +27,7 @@ entity execute_stage is
 			alu_op_code: in std_logic_vector(4 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
+			jumop_addr: in std_logic_vector(25 downto 0);
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -82,6 +83,8 @@ Component alu is
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
 	signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
+
+	signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
 
 	begin
 
@@ -169,7 +172,7 @@ Component alu is
 				Mux_A<= Input_A;
 				Mux_B<=Input_B;
 				Alu_Ctrl<=alu_op_code;
-				result<=Alu_Rslt;
+				inter_result<=Alu_Rslt;
 				if (branch_taken = '1') then
 					PC_OUT<=result;
 				end if;
@@ -179,13 +182,17 @@ Component alu is
 		jumpin : process (jump)
 
 			if(jump='1') then
-				PC_OUT<=Mux_A;
+				PC_OUT<=Input_A;
 
-			elsif(alu_opcode="") then --- need op_code for jal
+			elsif(alu_opcode="111110") then --- need op_code for jal
+				PC_OUT<=inter_result;
 
 			end if;
 
 		end process;
+
+	--RESULT OUT
+	result<=inter_result;
 
 	--PASS VALUES TO NEXT STAGE
 		OUT_mem_write <=IN_mem_write;
