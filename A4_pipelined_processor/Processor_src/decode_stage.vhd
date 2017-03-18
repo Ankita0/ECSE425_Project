@@ -6,11 +6,27 @@ use ieee.numeric_std.all;
 
 entity decode_stage is
 
-	Port(	clock:in std_logic;	
-			result: in std_logic_vector (31 downto 0);
-			PC_in: in integer;
-			reg_value1,reg_value2,X,Y,Z: out std_logic_vector(31 downto 0);
-			PC_out: out integer
+	Port(	clock			:in std_logic;	
+			instruction		: in std_logic_vector(31 downto 0); --instruction from IF stage
+			PC_counter_in	: in integer;	--to propagate to EX stage
+			WB_data 		: in std_logic_vector (31 downto 0);
+			WB_data_addr	: in std_logic_vector (31 downto 0);
+			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
+												--it's the reg_write propogated to WB stage and coming back
+			PC_counter_out	: out integer;	--to propagate to EX stage
+			reg_value1		: out std_logic_vector(31 downto 0); --MuxA
+			reg_value2		: out std_logic_vector(31 downto 0); --MuxB
+			reg_dest_addr	: out std_logic_vector(4 downto 0);	--$rd (r-type) or $rt (i-type)
+			shamt			: out std_logic_vector(4 downto 0);	--shift amount
+			j_address		: out integer;	--to_integer(unsign(std_logic_vector(25 downto 0)))
+			alu_op_code		: out std_logic_vector(5 downto 0);
+
+			--control signals
+			reg_write		: out std_logic;	--to be propagated to WB and back to DE
+			mem_read		: out std_logic;	--for MEM stage
+			mem_write		: out std_logic;	--for MEM stage
+			branch			: out std_logic;
+			jump			: out std_logic
 			);
 
 
