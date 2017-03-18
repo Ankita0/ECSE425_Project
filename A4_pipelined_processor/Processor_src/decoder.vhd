@@ -167,7 +167,7 @@ begin
 						branch<='0';
 					--control-flow
 					when "001000" =>		--jr
-						alu_op_code<="UUUUUU";	
+						alu_op_code<="111100";	
 						reg_dst<='0';	--not writing back to register 
 						reg_write<='0'; --if reg_write is not 0, will overwrite a register *BAD*
 						alu_src<='X';
@@ -259,7 +259,7 @@ begin
 				-- M[R[rs]+SignExtImm] = R[rt] 
 				-- write to memory data = value of rt	
 
-							
+
 				reg_dst<='X';
 				reg_write<='0';
 				alu_src<='1';
@@ -288,7 +288,7 @@ begin
 				branch<='1';
 			--J-type
 			when "000010" =>		--j
-				alu_op_code<="UUUUUU";					
+				alu_op_code<="111111";					
 				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='0';
@@ -297,7 +297,7 @@ begin
 				jump<='1';
 				branch<='0';
 			when "000011" =>		--jal
-				alu_op_code<="100000"; --same op code as addition
+				alu_op_code<="111110"; --same op code as addition
 				--R[31]=PC+8
 				--addi PC $r31 signExtend(8)
 				--j address				
