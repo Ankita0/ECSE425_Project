@@ -1,24 +1,16 @@
 --EXECUTE PIPELINE STAGE FOR ECSE 425 PROJECT WINTER 2017
---GROUP 
+--GROUP 8
 --Author: Alina Mambo
---TO IMEPLENT FORWARIND I NEED a WAY to PRESENT MY ANSWER AS SOON AS IT IS READY IF ITS NEEDED!!!
---HAZARD DETECTON INSERT STALL FOR BRANCHING
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+--TO IMEPLENT FORWARIND I NEED a WAY to PRESENT MY ANSWER AS SOON AS IT IS READY IF ITS NEEDED!!!
+--HAZARD DETECTON INSERT STALL FOR BRANCHING
+
+--MAY NEED TO MOVE JUMP AND BRANCH TO THE PIPELINE PROCESS.
 --PROBLEM : BNE AND BEQ NEED TO ADD ADDR-> IN DECODER MAKE OP CODE ADDI
-
---MAY NEED TO  MOVE jump_and_branch to pipeline process
---JAL NEEDS TO: 1) ADD 8 to CURRENT PC => ALU_RSLT STORE IN R_addr = 31
-			--	2) UPDATE CURRENT PC TO TARGET
-			--SOLUTION 1: HAVE JAL special case in alu (ADD 8 to PC) with alu_rslt going to be stored in r31 
-			--and then send target over A to be updated.
-			--SOLUTION 2: Have decode send target over another signal. Have PC in A and 8 in B send to alu.
-			--SOlutions 3: Have target sent over Input A and then in execute replace A and B with PC and 8.
-
-
-
 entity execute_stage is
 
 	Port(	
@@ -200,8 +192,13 @@ Component alu is
 						IF_MUX_CTRL<='1';
 					end if;
 			end if;
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 873a9dd111f34f0dd36a080c6d51db1a19037276
 			--RESULT OUT
 			result<=inter_result;
 
