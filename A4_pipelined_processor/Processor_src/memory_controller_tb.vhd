@@ -9,12 +9,8 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
 
 --Declare the component that you are testing:
     COMPONENT memory_controller IS
-        GENERIC(
-    ram_size : INTEGER := 8192;
-  		mem_delay : time := 10 ns;
-		clock_period : time := 1 ns
-	);
-  PORT(
+
+      PORT(
       clock, reset: IN STD_LOGIC;
       
       --control signals

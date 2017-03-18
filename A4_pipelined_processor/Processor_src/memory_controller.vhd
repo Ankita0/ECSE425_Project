@@ -3,11 +3,6 @@ USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 
 ENTITY memory_controller is
-  GENERIC(
-    ram_size : INTEGER := 8192;
-  		mem_delay : time := 10 ns;
-		clock_period : time := 1 ns
-	);
   PORT(
       clock, reset: IN STD_LOGIC;
       
@@ -32,19 +27,24 @@ END memory_controller;
 ARCHITECTURE behaviour of memory_controller is
 
   component data_memory is
-    port(
-      clock: IN STD_LOGIC;
-    		writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-		  address: IN INTEGER RANGE 0 TO ram_size-1;
-		  memwrite: IN STD_LOGIC;
-		  memread: IN STD_LOGIC;
-		  readdata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
-		  waitrequest: OUT STD_LOGIC
-	  );
+  	GENERIC(
+		ram_size : INTEGER := 8192;
+		mem_delay : time := 10 ns;
+		clock_period : time := 1 ns
+	);
+	PORT (
+		clock: IN STD_LOGIC;
+		writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+		address: IN INTEGER RANGE 0 TO ram_size-1;
+		memwrite: IN STD_LOGIC;
+		memread: IN STD_LOGIC;
+		readdata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+		waitrequest: OUT STD_LOGIC
+	);
 	end component;
 
-  SIGNAL data_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
-  SIGNAL clk: STD_LOGIC;  
+    SIGNAL data_out: STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL clk: STD_LOGIC;  
  	SIGNAL mm_address: INTEGER RANGE 0 to ram_size-1;
  	SIGNAL data_memread: STD_LOGIC_VECTOR (31 DOWNTO 0);
  	SIGNAL data_memwrite: STD_LOGIC_VECTOR (31 DOWNTO 0);
