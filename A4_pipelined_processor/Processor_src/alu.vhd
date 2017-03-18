@@ -1,3 +1,6 @@
+--EXECUTE PIPELINE STAGE FOR ECSE 425 PROJECT WINTER 2017
+--GROUP 8
+--Author: Alina Mambo
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

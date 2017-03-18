@@ -1,3 +1,6 @@
+--EXECUTE PIPELINE STAGE FOR ECSE 425 PROJECT WINTER 2017
+--GROUP 8
+--Author: Alina Mambo
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -137,10 +140,7 @@ Component execute_stage is
 	    	wait for clk_period;
 	    	ASSERT(result="10000000") REPORT "Lui incorret should be 10000000 !!" SEVERITY ERROR;
 
-	    	--TEST SW
-
-	    	--TEST LW
-
+	    	
 	    	--TEST BNE 
 	    	Input_A<=x"00001000";
 	    	Input_B<=x"01000000";
@@ -173,7 +173,7 @@ Component execute_stage is
 
 
 	    	--TEST JAL
-	    	
+
 
 
 
