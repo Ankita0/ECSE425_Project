@@ -30,6 +30,7 @@ ARCHITECTURE behaviour of WB_STAGE is
 		  mux_control,CLK: in std_logic;
 		  instr_to_Ex: out std_logic_vector(31 downto 0));
     end component;
+    
   BEGIN
     MUX: EX_MUX PORT MAP(readdata, alu_data, mux_control, clock, mux_data);
       

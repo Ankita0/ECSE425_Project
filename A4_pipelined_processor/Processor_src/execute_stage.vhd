@@ -188,7 +188,7 @@ Component alu is
 
 					if(jal='1') then
 						--SET MUX AND NEW PC VALUE
-						PC_OUT<=to_integer(unsigned(inter_result));
+						PC_OUT<=to_integer(unsigned(jump_addr));
 						IF_MUX_CTRL<='1';
 					end if;
 			end if;
