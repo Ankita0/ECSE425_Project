@@ -63,45 +63,169 @@ architecture arch of decoder_tb is
                 instruction<=x"200B07D0";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
-                    
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+  
                 --001000 00000 01111 0000000000000100
                 instruction<=x"200F0004";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
                 --001000 00000000010000000000000011
                 instruction<=x"20010003";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
                 --001000 00000000100000000000000100
                 instruction<=x"20020004";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
                 --000000 00001000100001100000 100100
                 instruction<=x"00221824";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100100") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR; 
 
                 --001000 00000010100000000000000000
                 instruction<=x"200A0000";
                 wait for clk_period;
                 ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR; 
 
                 --000000 01010011110000000000 011000
                 instruction<=x"014F0018";
                 wait for clk_period;
                 ASSERT (alu_op_code = "011000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR; 
 
                 --000000 00000000000110000000 010010
                 instruction<=x"00006012";
                 wait for clk_period;
                 ASSERT (alu_op_code = "010010") REPORT "alu_op_code mismatch" SEVERITY ERROR;
- 
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
+                --000000 01011011000110100000 100000
+               instruction<=x"016C6820";
+                wait for clk_period;
+                ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
+                --101011 01101000100000000000000000
+               instruction<=x"ADA20000";
+                wait for clk_period;
+                ASSERT (alu_op_code = "100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='X') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='0') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='1') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='1') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
+                --000100 00001000000000000000001001
+               instruction<=x"20400012";
+                wait for clk_period;
+                ASSERT (alu_op_code = "000100") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='X') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='0') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='1') REPORT "branch mismatch" SEVERITY ERROR;
+
+                --000000 01010011110000000000 011000
+               instruction<=x"20400012";
+                wait for clk_period;
+                ASSERT (alu_op_code = "011000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='1') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+
+                --000010 00000000000000000000010110
+                instruction<=x"08000016";
+                wait for clk_period;
+                ASSERT (alu_op_code = "111111") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='0') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='0') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='1') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='0') REPORT "branch mismatch" SEVERITY ERROR;               
+
+                --000101 00001000000000000000001001
+                instruction<=x"14200009";
+                wait for clk_period;
+                ASSERT (alu_op_code = "000101") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+                ASSERT (reg_dst='X') REPORT "reg_dst mismatch" SEVERITY ERROR;
+                ASSERT (reg_write='0') REPORT "reg_write mismatch" SEVERITY ERROR;
+                ASSERT (alu_src='0') REPORT "alu_src mismatch" SEVERITY ERROR;
+                ASSERT (mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+                ASSERT (mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+                ASSERT (jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+                ASSERT (branch='1') REPORT "branch mismatch" SEVERITY ERROR; 
   end process;
 
 end arch;
