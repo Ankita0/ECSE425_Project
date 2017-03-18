@@ -7,10 +7,10 @@ use ieee.numeric_std.all;
 entity decode_stage is
 
 	Port(	clock			: in std_logic;	
-			instruction	: in std_logic_vector(31 downto 0); --instruction from IF stage
+			instruction		: in std_logic_vector(31 downto 0); --instruction from IF stage
 			PC_counter_in	: in integer;	--to propagate to EX stage
-			WB_data 	: in std_logic_vector (31 downto 0);
-			WB_data_addr	: in std_logic_vector (31 downto 0);
+			WB_data 		: in std_logic_vector (31 downto 0);
+			WB_data_addr	: in std_logic_vector (4 downto 0);
 			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
 												--it's the reg_write propogated to WB stage and coming back
 			PC_counter_out	: out integer;	--to propagate to EX stage
@@ -71,13 +71,17 @@ Component decoder is
 	signal instruction_s: std_logic_vector(31 downto 0);
 --	signal clock: std_logic;
 	signal alu_op_code : std_logic_vector(5 downto 0);
-    	signal reg_dst : std_logic;
+    signal reg_dst : std_logic;
     signal reg_write : std_logic;
     signal alu_src : std_logic;
     signal mem_write : std_logic;
     signal mem_read : std_logic;
     signal jump : std_logic;
     signal branch : std_logic;
+
+    signal WB_data_addr: std_logic_vector(4 downto 0);
+    signal WB_data_write: std_logic;
+    signal WB_data: std_logic_vector(31 downto 0);
 
     signal signextended: std_logic_vector(31 downto 0);  
 
@@ -101,9 +105,9 @@ begin
 	PORT MAP(clock,
 		instruction_s(25 downto 21),
 		instruction_s(20 downto 16),
-		instruction_s(15 downto 11),
-		reg_write,
-		result,
+		WB_data_addr,
+		WB_data_write,
+		WB_data,
 		reg_value1,
 		reg_value2);
 
@@ -112,7 +116,8 @@ begin
 			signextended);
 
 
-	instruction_s<=result;
+	--instruction_s<=result;	
+	instruction_s<= instruction;
 	mem_write<= mem_write;
 	mem_read<= mem_read;
 	reg_write<= reg_write;
@@ -126,61 +131,91 @@ begin
 			when "000000" =>
 				reg_value1<=reg_value1;
 				reg_value2<=reg_value2;
-				reg_dest_addr<= reg_dst;
-				shamt <= instruction(10 downto 6);
+				reg_dest_addr<= instruction_s(15 downto 11);
+				shamt <= instruction_s(10 downto 6);
 				
 			--I-Type
 			when "001000" =>		--addi
 				reg_value1<=reg_value1;
-				reg_value2<=reg_value2;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 				
 			when "001010" =>		--slti
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
-				
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 			--Logical
 			when "001100" =>		--andi
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 				
 
 			when "001101" =>		--ori
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 				
 
 			when "001110" =>		--xori
-				reg_value1<=signextended;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= regdst;
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
 
 			--Transfer
 			when "001111" =>		--lui
-				reg_value1<=signextended;
-				reg_dest_addr<= regdst;
-				
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
+
 			--Memory
 			when "100011" =>		--lw
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
+
 				
 			when "101011" =>		--sw
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
+
 				
 			--Control-flow
 			when "000100" =>		--beq
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
+
+
 				
 			when "000101" =>		--bne
+				reg_value1<=reg_value1;
+				reg_value2<=signextended;
+				reg_dest_addr<= instruction_s(20 downto 16);
+
+
 				
 			--J-type
 			when "000010" =>		--j
-				
+				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
+
+
+
 			when "000011" =>		--jal
+				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
+
+
 				
 			when others =>
+
+
+
 							
 		end case;
 		end if;
-		end process;
+	end process;
+
+
 end arch;
