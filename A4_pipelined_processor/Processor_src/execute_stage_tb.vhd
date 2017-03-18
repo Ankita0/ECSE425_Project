@@ -92,28 +92,88 @@ Component execute_stage is
 		    END process;
 
 	    test: process
-
+	    Variable var_result : std_logic_vector(31 downto 0);
 	    begin
+	    	var_result:=others=>'0';
 
 	    	---TEST ALU OPERATION: ADD
+	    	Input_A<=x"00000001";
+	    	Input_B<=x"00000002";
+	    	alu_op_code<="100000";
+	    	wait for clk_period;
+	    	ASSERT(result=x"00000003") REPORT "ALU OPERATIONS NOT WORKING" SEVERITY ERROR;
 
-	    	--TEST ALU OPERATION: AND
+	    	--TEST PASSING
+	    	PC_IN<=2;
+	    	IN_mem_write<='1';
+			IN_mem_read<='0';
+			IN_reg_write<='1'
+			IN_r_dst_addr<="00010";
+			wait for clk_period;
+			ASSERT(PC_OUT=2) REPORT "PC_OUT PASS NOT WORKING" SEVERITY ERROR;
+			ASSERT 	(OUT_mem_write = '1') REPORT "MEM_WRITE PASS NOT WORKING" SEVERITY ERROR;
+			ASSERT	(OUT_mem_read ='0') REPORT "MEM READ PASS OPERATIONS NOT WORKING" SEVERITY ERROR;
+			ASSERT	(OUT_reg_write='1') REPORT "REG WRITE PASS NOT WORKING" SEVERITY ERROR;
+			ASSERT	(OUT_r_dst_addr="00010") REPORT "REG DEST ADDR PASS NOT WORKING" SEVERITY ERROR;
 
-	    	--TEST MFHI
 
-	    	--TEST MFLO
+	    	--TEST MFHI /MFLO
+			Input_A <= x"FF00FF24";
+			Input_B<= x"00028800";
+			alu_op_code<="011000";
+			wait for clk_period;
+
+			alu_op_code<="010000"; --MOVE HI
+			ASSERT (result = x"FFFFFD7A") REPORT "Hi is incorret should be FFFFFD7A !!" SEVERITY ERROR;
+			wait for clk_period;
+
+
+			alu_op_code<="010010"; --MOVE LO
+			ASSERT (result = x"85D32000") REPORT "Lo is incorret should be 85D32000 !!" SEVERITY ERROR;
 
 	    	--TEST LUI
+	    	Input_B<=x"00001000";
+	    	alu_op_code<="001111";
+	    	wait for clk_period;
+	    	ASSERT(result="10000000") REPORT "Lui incorret should be 10000000 !!" SEVERITY ERROR;
+
+	    	--TEST SW
+
+	    	--TEST LW
 
 	    	--TEST BNE 
+	    	Input_A<=x"00001000";
+	    	Input_B<=x"01000000";
+	    	Branch<='1';
+	    	alu_op_code<="000101";
+	    	wait for clk_period;
+	    	var_result:=result;
+	    	ASSERT(branch_taken = '1') REPORT "BNE-BRANCH TAKEN NOT SET!" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=var_result) REPORT "BNE-INCORRECT PC VALUE" SEVERITY ERROR;
 
 	    	--TEST BEQ
+	    	Input_A<=x"00001000";
+	    	Input_B<=x"00001000";
+	    	Branch<='1';
+	    	alu_op_code<="000100";
+	    	wait for clk_period;
+	    	var_result:=result;
+	    	ASSERT(branch_taken = '1') REPORT "BEQ-BRANCH TAKEN NOT SET!" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=var_result) REPORT "BEQ-INCORRECT PC VALUE" SEVERITY ERROR;
 
 	    	--TEST JR
+	    	Input_A<=x"00000002";
+	    	Jump<='1';
+	    	ASSERT(PC_OUT=2) REPORT "JR PC OUT IS SUPPOSED TO BE 2" SEVERITY ERROR;
 
 	    	--TEST J
+	    	Input_A<=x"00000006";
+	    	Jump<='1';
+	    	ASSERT(PC_OUT=6) REPORT "J PC OUT IS SUPPOSED TO BE 6" SEVERITY ERROR;
+
 
 	    	--TEST JAL
+	    	
 
 
 

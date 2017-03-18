@@ -7,6 +7,17 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+--PROBLEM : BNE AND BEQ NEED TO ADD ADDR-> IN DECODER MAKE OP CODE ADDI
+
+--MAY NEED TO  MOVE jump_and_branch to pipeline process
+--JAL NEEDS TO: 1) ADD 8 to CURRENT PC => ALU_RSLT STORE IN R_addr = 31
+			--	2) UPDATE CURRENT PC TO TARGET
+			--SOLUTION 1: HAVE JAL special case in alu (ADD 8 to PC) with alu_rslt going to be stored in r31 
+			--and then send target over A to be updated.
+			--SOLUTION 2: Have decode send target over another signal. Have PC in A and 8 in B send to alu.
+			--SOlutions 3: Have target sent over Input A and then in execute replace A and B with PC and 8.
+
+
 
 entity execute_stage is
 
@@ -27,7 +38,7 @@ entity execute_stage is
 			alu_op_code: in std_logic_vector(4 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
-			jumop_addr: in std_logic_vector(25 downto 0);
+			jump_addr: in std_logic_vector(25 downto 0);
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -85,6 +96,8 @@ Component alu is
 	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
 	signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
+	signal branch_taken := '0';
+	signal jal : std_logic := '0';
 
 	begin
 
@@ -102,7 +115,36 @@ Component alu is
 					Overflow,
 					Carryout);
 
-	pipeliine : process
+	jump_and_branch : process (jump,branch)
+
+		------------------------------------------------
+		--BRANCHING & JUMPING CHECK
+		------------------------------------------------
+
+			if(jump='1') then
+				PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
+			elsif(alu_opcode="111110") then --- set jal high so we can get the addr fro alu
+				jal<='1';
+			end if;
+
+			if(branch ='1') then
+					--bne
+					IF(Input_A /= Input_B) then 
+
+						--YES BRANCH TAKEN
+						branch_taken <='1';					
+					end if;
+
+					--beq
+					IF(Input_A = Input_B) then
+
+						--YES BRANCH TAKEN
+						branch_taken <='1';					
+					end if;			
+			end if;
+		end process;
+
+	pipeline : process
 
 		Variable alu_opcode : std_logic_vector(4 downto 0);
 		Variable lui_shift : std_logic_vector(31 downto 0);
@@ -110,6 +152,7 @@ Component alu is
 		begin
 
 			alu_opcode:= alu_op_code;
+
 
 			case alu_opcode is
 				------------------------------------------------
@@ -130,69 +173,39 @@ Component alu is
 				--LUI NEEDS rt
 				when "001111" =>
 
-					lui_shift:= Mux_B sll 16 ;
-					result<=Mux_B(31 downto 16) & others => '0';
-
-				------------------------------------------------
-				--BRANCHING
-				------------------------------------------------
-
-				--bne
-				when "000101"=>
-
-				IF(Input_A /= Input_B) then 
-					--YES BRANCH TAKEN
-					branch_taken <='1';
-
-					-- Calculate address for branch
-					Alu_Ctrl<="100000";
-					--SET MUX AND NEW PC VALUE
-				end if;
-
-				--beq
-				when "000100"=>
-					IF(Input_A = Input_B) then
-
-					--YES BRANCH TAKEN
-					branch_taken <='1';
-
-					-- Calculate address for branch
-					Alu_Ctrl<="100000";
-					--SET MUX AND NEW PC VALUE
-
-				end if;
+					lui_shift:= Mux_A sll 16 ;
+					result<=Mux_A(31 downto 16) & others => '0';
 				
 				when others => NULL;
 
 			end case;
 
-		--PIPELINE!!!!
-
+			------------------------------------------------
+			--EXECUTE
+			------------------------------------------------
 			if(rising_edge(clock)) then
-				Mux_A<= Input_A;
-				Mux_B<=Input_B;
-				Alu_Ctrl<=alu_op_code;
-				inter_result<=Alu_Rslt;
-				if (branch_taken = '1') then
-					PC_OUT<=result;
-				end if;
-			end if;
-		end process;
+					Mux_A<= Input_A;
+					Mux_B<=Input_B;
+					Alu_Ctrl<=alu_op_code;
+					inter_result<=Alu_Rslt;
+					if (branch_taken = '1') then
+						--SET MUX AND NEW PC VALUE
+						PC_OUT<=to_integer(unsigned(inter_result));
+						IF_MUX_CTRL<='1';
+					end if;
 
-		jumpin : process (jump)
-
-			if(jump='1') then
-				PC_OUT<=Input_A;
-
-			elsif(alu_opcode="111110") then --- need op_code for jal
-				PC_OUT<=inter_result;
-
+					if(jal='1') then
+						--SET MUX AND NEW PC VALUE
+						PC_OUT<=to_integer(unsigned(inter_result));
+						IF_MUX_CTRL<='1';
+					end if;
 			end if;
 
-		end process;
 
-	--RESULT OUT
-	result<=inter_result;
+			--RESULT OUT
+			result<=inter_result;
+
+		end process;
 
 	--PASS VALUES TO NEXT STAGE
 		OUT_mem_write <=IN_mem_write;
