@@ -73,7 +73,7 @@ BEGIN
 
   mm_address <= to_integer(unsigned(alu_result));
   
-  MEM_PROCESS : PROCESS  
+  MEM_PROCESS : PROCESS  (clock)
   BEGIN
     
 	 if rising_edge(clock) then
