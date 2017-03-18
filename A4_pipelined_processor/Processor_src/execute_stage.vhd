@@ -7,13 +7,13 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
---MISSING INPUTS FROM DECODE: TARGET ADDRESS FOR JUMP!!!
 
 entity execute_stage is
 
 	Port(	
 
 			clock: in std_logic;
+			PC_IN: in integer;
 
 			--Passing through IN
 			IN_mem_write: in std_logic ;
@@ -29,8 +29,9 @@ entity execute_stage is
 			Branch: in std_logic;
 			
 			--ALU OUT
-			branch_taken: out std_logic;
 			result: out std_logic_vector(31 downto 0);
+			PC_OUT: out integer;
+			IF_MUX_CTRL: out std_logic;
 
 			--Passing through OUT to MEM/WB
 			OUT_mem_write: out std_logic ;
@@ -130,57 +131,60 @@ Component alu is
 					result<=Mux_B(31 downto 16) & others => '0';
 
 				------------------------------------------------
-				--BRANCHING & JUMPING
+				--BRANCHING
 				------------------------------------------------
 
 				--bne
 				when "000101"=>
 
-				IF(Mux_A /= Mux_B) then 
+				IF(Input_A /= Input_B) then 
 					--YES BRANCH TAKEN
 					branch_taken <='1';
 
 					-- Calculate address for branch
 					Alu_Ctrl<="100000";
+					--SET MUX AND NEW PC VALUE
 				end if;
 
 				--beq
 				when "000100"=>
-					IF(Mux_A = Mux_B) then
+					IF(Input_A = Input_B) then
 
 					--YES BRANCH TAKEN
 					branch_taken <='1';
 
 					-- Calculate address for branch
 					Alu_Ctrl<="100000";
+					--SET MUX AND NEW PC VALUE
 
 				end if;
-
-
-				--JAL  --JUMP & STORE
-				when "000011"=>
-
-
-				-- J  JUMP TO TARGET
-				when "000010"=>
-
-
-				--JR NEEDS RS AS SOURCE and JUMP TO address inside
-				when "001000" =>
 				
-
 				when others => NULL;
 
 			end case;
 
 		--PIPELINE!!!!
 
-		if(rising_edge(clock)) then
-			Mux_A<= Input_A;
-			Mux_B<=Input_B;
-			Alu_Ctrl<=alu_op_code;
-			result<=Alu_Rslt;
-		end if;
+			if(rising_edge(clock)) then
+				Mux_A<= Input_A;
+				Mux_B<=Input_B;
+				Alu_Ctrl<=alu_op_code;
+				result<=Alu_Rslt;
+				if (branch_taken = '1') then
+					PC_OUT<=result;
+				end if;
+			end if;
+		end process;
+
+		jumpin : process (jump)
+
+			if(jump='1') then
+				PC_OUT<=Mux_A;
+
+			elsif(alu_opcode="") then --- need op_code for jal
+
+			end if;
+
 		end process;
 
 	--PASS VALUES TO NEXT STAGE
