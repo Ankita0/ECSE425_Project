@@ -28,43 +28,45 @@ ARCHITECTURE rtl OF memory IS
 	SIGNAL read_waitreq_reg: STD_LOGIC := '1';
 BEGIN
 	--This is the main section of the SRAM model
-	mem_process: PROCESS (clock)
+	mem_process: PROCESS (clock, memwrite)
 	BEGIN
 		--This is a cheap trick to initialize the SRAM in simulation
+		--Left in just in case. All 0s should correspond to zero instruction????
 		IF(now < 1 ps)THEN
 			For i in 0 to ram_size-1 LOOP
-				ram_block(i) <= std_logic_vector(to_unsigned(i,32));
+				ram_block(i) <= std_logic_vector(to_unsigned(0,32));
 			END LOOP;
 		end if;
 
 		--This is the actual synthesizable SRAM block
-		IF (clock'event AND clock = '1') THEN
-			IF (memwrite = '1') THEN
-				ram_block(address) <= writedata;
-			END IF;
-		read_address_reg <= address;
+		IF (memwrite = '1') THEN
+			ram_block(address) <= writedata;
 		END IF;
 	END PROCESS;
+	read_address_reg <= address;
 	readdata <= ram_block(read_address_reg);
-
 
 	--The waitrequest signal is used to vary response time in simulation
 	--Read and write should never happen at the same time.
 	waitreq_w_proc: PROCESS (memwrite)
 	BEGIN
 		IF(memwrite'event AND memwrite = '1')THEN
-			write_waitreq_reg <= '0' after mem_delay, '1' after mem_delay + clock_period;
-
+			write_waitreq_reg <= '0';
+		END IF;
+		IF(memwrite'event AND memwrite = '0')THEN
+			write_waitreq_reg <= '1';
 		END IF;
 	END PROCESS;
 
 	waitreq_r_proc: PROCESS (memread)
 	BEGIN
 		IF(memread'event AND memread = '1')THEN
-			read_waitreq_reg <= '0' after mem_delay, '1' after mem_delay + clock_period;
+			read_waitreq_reg <= '0';
+		END IF;
+		IF(memread'event AND memread = '0')THEN
+			read_waitreq_reg <= '1';
 		END IF;
 	END PROCESS;
-	waitrequest <= write_waitreq_reg and read_waitreq_reg;
-
+	waitrequest <= not(write_waitreq_reg and read_waitreq_reg);
 
 END rtl;
