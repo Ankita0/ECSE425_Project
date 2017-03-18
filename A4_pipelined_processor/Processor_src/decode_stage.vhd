@@ -28,7 +28,7 @@ Component decoder is
 	end Component;
 
 	Component register_file is
-
+	Generic(W : natural := 32);
 	port(
 	clock: in std_logic;
 	rs: in std_logic_vector(4 downto 0);
