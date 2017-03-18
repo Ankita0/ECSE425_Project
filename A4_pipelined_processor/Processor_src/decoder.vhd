@@ -269,7 +269,7 @@ begin
 				branch<='0';
 			--Control-flow
 			when "000100" =>		--beq
-				alu_op_code<=op_code;					
+				alu_op_code<="100000";					
 				reg_dst<='X';
 				reg_write<='0';
 				alu_src<='0';
@@ -278,7 +278,7 @@ begin
 				jump<='0';
 				branch<='1';
 			when "000101" =>		--bne
-				alu_op_code<=op_code;	
+				alu_op_code<="100000";
 				reg_dst<='X';
 				reg_write<='0';
 				alu_src<='0';
