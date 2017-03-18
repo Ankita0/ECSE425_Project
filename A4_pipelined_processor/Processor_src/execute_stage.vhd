@@ -22,7 +22,7 @@ entity execute_stage is
 			IN_mem_write: in std_logic ;
 			IN_mem_read: in std_logic ;
 			IN_reg_write: in std_logic ;
-			IN_reg_dst:in std_logic_vector(4 downto 0);
+			IN_r_addr:in std_logic_vector(4 downto 0);
 
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
@@ -41,7 +41,7 @@ entity execute_stage is
 			OUT_mem_write: out std_logic ;
 			OUT_mem_read: out std_logic; 
 			OUT_reg_write: out std_logic;
-			OUT_reg_dst:out std_logic_vector(4 downto 0) );
+			OUT_r_addr:out std_logic_vector(4 downto 0));
 	
 
 
@@ -192,13 +192,7 @@ Component alu is
 						IF_MUX_CTRL<='1';
 					end if;
 			end if;
-<<<<<<< HEAD
 
-
-=======
-
-
->>>>>>> 873a9dd111f34f0dd36a080c6d51db1a19037276
 			--RESULT OUT
 			result<=inter_result;
 
