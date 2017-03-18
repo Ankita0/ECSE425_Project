@@ -4,8 +4,8 @@ USE ieee.numeric_std.all;
 USE ieee.std_logic_textio.all;
 USE STD.textio.all; 
 
-entity instruction_memory_tb is
-end instruction_memory_tb;
+entity data_memory_tb is
+end data_memory_tb;
 
 architecture foo of data_memory_tb is
     COMPONENT data_memory IS
