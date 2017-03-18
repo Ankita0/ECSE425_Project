@@ -6,7 +6,7 @@ use ieee.numeric_std.all;
 
 entity decode_stage is
 
-	Port(	clock			:in std_logic;	
+	Port(	clock			: in std_logic;	
 			instruction		: in std_logic_vector(31 downto 0); --instruction from IF stage
 			PC_counter_in	: in integer;	--to propagate to EX stage
 			WB_data 		: in std_logic_vector (31 downto 0);
@@ -28,8 +28,6 @@ entity decode_stage is
 			branch			: out std_logic;
 			jump			: out std_logic
 			);
-
-
 end decode_stage;
 
 
@@ -38,6 +36,7 @@ architecture arch of decode_stage is
 Component decoder is
 
 	port(	instruction	: in std_logic_vector(31 downto 0);
+			clock		: in std_logic;
 			alu_op_code	: out std_logic_vector(5 downto 0);
 			reg_dst		: out std_logic;
 			reg_write	: out std_logic;
@@ -70,6 +69,7 @@ Component decoder is
 
 	--SIGNALS FOR DECODER
 	signal instruction : std_logic_vector(31 downto 0);
+	signal clock: std_logic;
 	signal alu_op_code : std_logic_vector(5 downto 0);
     signal reg_dst : std_logic;
     signal reg_write : std_logic;
@@ -86,7 +86,16 @@ Component decoder is
 begin
 
 	decoder: decoder
-	PORT MAP(instruction,alu_op_code,reg_dst,reg_write,alu_src,mem_write,mem_read,jump,branch);
+	PORT MAP(instruction,
+			clock,
+			alu_op_code,
+			reg_dst,
+			reg_write,
+			alu_src,
+			mem_write,
+			mem_read,
+			jump,
+			branch);
 
 	register_file: register_file
 	PORT MAP(clock,
@@ -99,7 +108,8 @@ begin
 		reg_value2);
 
 	signextension: signextension
-	PORT MAP(instruction(15 downto 0),signextended);
+	PORT MAP(instruction(15 downto 0),
+			signextended);
 
 
 	pipeline: process
