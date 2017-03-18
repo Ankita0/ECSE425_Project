@@ -173,13 +173,15 @@ Component execute_stage is
 
 
 	    	--TEST JAL
-
-
-
+	    	jump_addr<="00000000000000000000011111"; 
+	    	Input_A<=std_logic_vector(unsgined(5,32)); --PC COUNT
+	    	Input_B<=std_logic_vector(unsgined(2,32)); --PC + 8
+	    	wait for clk_period;
+	    	ASSERT(result=x"00000007") REPORT "JAL- ADDI DID NOT CALC THE CORRECT PC ADDRESS" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=31) REPORT "JAL- DID NOT GET THE CORRECT JUMP ADDRESS" SEVERITY ERROR;
 
 
 	    end process;
-
 
 
 end arch;

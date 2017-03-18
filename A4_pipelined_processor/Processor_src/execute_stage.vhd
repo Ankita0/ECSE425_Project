@@ -10,19 +10,20 @@ use ieee.numeric_std.all;
 --HAZARD DETECTON INSERT STALL FOR BRANCHING
 
 --MAY NEED TO MOVE JUMP AND BRANCH TO THE PIPELINE PROCESS.
---PROBLEM : BNE AND BEQ NEED TO ADD ADDR-> IN DECODER MAKE OP CODE ADDI
+--PROBLEM : JAL NEEDS TO POINT TO ADDI IN DECODER
 entity execute_stage is
 
 	Port(	
 
 			clock: in std_logic;
-			PC_IN: in integer;
+			PC_IN: in integer; -- PC from IF and Decode
 
 			--Passing through IN
-			IN_mem_write: in std_logic ;
-			IN_mem_read: in std_logic ;
-			IN_reg_write: in std_logic ;
-			IN_r_addr:in std_logic_vector(4 downto 0);
+			IN_mem_write: in std_logic; --MEM write
+			IN_mem_read: in std_logic;  --- MEM READ
+			IN_mem_data_wr: in std_logic_vector(31 downto 0); --WRITE DATA TO MEM
+			IN_wb_write: in std_logic; -- WB WRITE
+			IN_wb_addr:in std_logic_vector(4 downto 0);
 
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
@@ -38,10 +39,11 @@ entity execute_stage is
 			IF_MUX_CTRL: out std_logic;
 
 			--Passing through OUT to MEM/WB
-			OUT_mem_write: out std_logic ;
+			OUT_mem_write: out std_logic;
 			OUT_mem_read: out std_logic; 
-			OUT_reg_write: out std_logic;
-			OUT_r_addr:out std_logic_vector(4 downto 0));
+			OUT_mem_data_wr: out std_logic(31 downto 0);
+			OUT_wb_write:out std_logic;
+			OUT_wb_addr: out std_logic_vector(4 downto 0));
 	
 
 
@@ -201,8 +203,8 @@ Component alu is
 	--PASS VALUES TO NEXT STAGE
 		OUT_mem_write <=IN_mem_write;
 		OUT_mem_read <= IN_mem_read;
-		OUT_reg_write <= IN_reg_write;
-		OUT_reg_dst <=IN_reg_dst;
-
-
+		OUT_mem_data_wr<= IN_mem_data_wr;
+		OUT_wb_write<= IN_wb_write;
+		OUT_wb_addr<= IN_wb_addr;
+	
 end arch;
