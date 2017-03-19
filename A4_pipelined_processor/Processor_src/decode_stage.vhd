@@ -76,6 +76,21 @@ end Component;
     signal reg_value1_s: std_logic_vector(31 downto 0);
     signal reg_value2_s: std_logic_vector(31 downto 0);
 
+--			alu_op_code<= alu_op_code_s;
+--			reg_write<=reg_write_s;
+--			mem_read<=mem_read_s;
+--			mem_write<=mem_write_s;
+--			branch<=branch_s;
+--			jump<=jump_s;
+
+
+
+
+
+
+
+
+
 begin
 
 	decoder: decoder
@@ -110,11 +125,18 @@ begin
 
 	pipeline: process (clock)
 		begin
+		--all outputs should be clock synchronized 
 		if (rising_edge(clock)) then
 			PC_counter_out<=PC_counter_in;
 			reg_value1<=reg_value1_s; 
 			shamt<= instruction(4 downto 0);	--shift amount
 			j_address<= instruction(25 downto 0);
+			alu_op_code<= alu_op_code_s;
+			reg_write<=reg_write_s;
+			mem_read<=mem_read_s;
+			mem_write<=mem_write_s;
+			branch<=branch_s;
+			jump<=jump_s;
 
 			if(alu_src='1') then 
 			-- use sign extended value
@@ -131,8 +153,6 @@ begin
 				reg_dest_addr<= instruction(20 downto 16);	--$rt (i-type)
 			end if;
 			
-			
-
 
 
 		end if;
