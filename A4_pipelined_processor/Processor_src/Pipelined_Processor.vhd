@@ -247,7 +247,7 @@ DUT_DE_stage:
 decode_stage PORT MAP(	
 	PP_CLK,	
 	DE_instruction,		--instruction from IF stage
-	DE_PC_counter_in, 	--to propagate to EX stage
+	IF_PC_count_out, 	--to propagate to EX stage
 	DE_WB_data,		--signals propagated from WB
 	DE_WB_data_addr,	--signals propagated from WB	
 	DE_WB_data_write,	--signal to check if WB_data needs to be written in WB_data_addr
@@ -275,7 +275,7 @@ decode_stage PORT MAP(
 DUT_EX_stage: 
 execute_stage PORT MAP(	
 	PP_CLK,
-	EX_PC_IN,-- PC from IF and Decode
+	DE_PC_counter_out,-- PC from IF and Decode
 
 	--Passing through IN
 	EX_IN_mem_write, --MEM write
