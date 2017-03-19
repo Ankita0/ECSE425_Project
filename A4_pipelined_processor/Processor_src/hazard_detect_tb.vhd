@@ -32,7 +32,7 @@ architecture arch of hazard_detect_tb is
 	BEGIN
 
 		dut: hazard_detect 
-			PORT MAP(
+			PORT MAP(   clock,
                         instruction_in,
                         EX_reg_dest_addr,
                         MEM_reg_dest_addr,
@@ -51,7 +51,7 @@ architecture arch of hazard_detect_tb is
         --I-type instruction
         --should go to the 2nd if loop and check for ra only
                 instruction_in<=x"200B07D0";
-                EX_reg_dest_addr<="00001";
+                EX_reg_dest_addr<="00000";
                 MEM_reg_dest_addr<="00010";
                 WB_reg_dest_addr<="00011";
                 wait for 1ns;
@@ -60,16 +60,17 @@ architecture arch of hazard_detect_tb is
                 ASSERT (stall = '0') REPORT "stall mismatch for NO STALL" SEVERITY ERROR;
 
 
-        --001000 00000 01011 0000011111010000
-        --addi $rs $rt 2000
-        --rs 00000
-        --rt 01011
-        --I-type instruction
-        --should go to the 2nd if loop and check for ra only
-                instruction_in<=x"200B07D0";
-                EX_reg_dest_addr<="01011";
-                MEM_reg_dest_addr<="00010";
-                WB_reg_dest_addr<="00011";
+        --000000 00001 00010 00011 00000 100100
+        --AND $v1 $at $v0
+        --rs 00001
+        --rt 00010
+        --rd 00011
+        --R-type instruction
+        --should go to the 1st if loop and check for ra and rb
+                instruction_in<=x"00221824";
+                EX_reg_dest_addr<="00000";
+                MEM_reg_dest_addr<="00000";
+                WB_reg_dest_addr<="00001";
                 wait for 1ns;
                 ASSERT (instruction_out = x"00000020") REPORT "I-type instruction_out mismatch for STALL" SEVERITY ERROR;
                --stall needed
@@ -78,3 +79,6 @@ architecture arch of hazard_detect_tb is
   end process;
 
 end arch;
+
+
+
