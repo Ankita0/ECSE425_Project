@@ -157,25 +157,32 @@ IF (now < 1024 ns) THEN
 		PC_count_out <= PC_instr_to_fetch;
 		memread<='0';
 	END LOOP;
-
+end if;
 counter_out<=PC_OUT;
 
-elsif (now>=1024 ns) then
+if (now>=1024 ns) then
 	IF (rising_edge(CLK)and PC_counter_init = '0')THEN
-		if (control_vector(0)= '0') then
-		--normal operation depending on inputs
-			memread<='1';
-			memwrite<='0';
-			PC_count_out <= PC_instr_to_fetch;
-			PC_IN<=final_count;
-			Instruction_out<=readdata;
-			memread<='0';
-		elsif (control_vector(0)= '1') then
-		--stalls
-			memread<='0';
-			memwrite<='0';
-			Instruction_out<=x"00000020";
-		end if;
+			--with stalls
+			case control_vector is 
+				when "00" =>
+					--normal operation depending on inputs
+					memread<='1';
+					memwrite<='0';
+					PC_count_out <= PC_instr_to_fetch;
+					PC_IN<=final_count;
+					Instruction_out<=readdata;
+					memread<='0';
+				when "01" =>
+					memread<='0';
+					memwrite<='0';
+					Instruction_out<=x"00000020";
+
+				when "10"=>
+
+				when "11"=>
+
+			
+		
 	ELSIF (rising_edge(CLK)and PC_counter_init = '1')THEN
 		PC_count_out<= 0;
 		PC_IN<= 0;

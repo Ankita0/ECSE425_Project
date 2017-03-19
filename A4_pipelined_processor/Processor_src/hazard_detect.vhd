@@ -33,7 +33,6 @@ begin
 		rb := instruction_in(20 downto 16);
 		--check for both ra and rb
 		if (op_code="000000") then
-
 			if ((NOT(ra = "00000") AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
@@ -52,6 +51,7 @@ begin
 
 		--only check for ra
 		else
+
 			if (NOT(ra = "00000") AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
