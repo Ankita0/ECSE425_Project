@@ -106,7 +106,7 @@ Component execute_stage is
 	    begin
 	    	var_result:= (others=>'0');
 	    	
-	    	IF_MUX_CTRL<= '0';
+	     IF_MUX_CTRL<= '0';
 	    	
 	    	
 	    	--wait for clk_period;
@@ -116,14 +116,15 @@ Component execute_stage is
 	    	Input_B<=x"00000002";
 	    	alu_op_code<="100000";
 	    	wait for clk_period;
-	    	ASSERT(result=x"00000003") REPORT "ALU OPERATIONS NOT WORKING" SEVERITY ERROR;
 	    	
-	    	 	--TEST MFHI /MFLO
+	    	
+	    	 	--TEST MULT
 			Input_A <= x"FF00FF24";
 			Input_B<= x"00028800";
 			alu_op_code<="011000";
 			wait for clk_period;
-
+      ASSERT(result=x"00000003") REPORT "ALU OPERATIONS NOT WORKING" SEVERITY ERROR;
+      
 	    	--TEST PASSING
 	    	Input_A<=x"00000000";
 	    	Input_B<=x"00000000";
@@ -140,19 +141,21 @@ Component execute_stage is
 	   --TEST MOVE HI
 			alu_op_code<="010000"; 
 			wait for clk_period;
-			ASSERT (result = x"FFFFFD7A") REPORT "Hi is incorret should be FFFFFD7A !!" SEVERITY ERROR;
+			
 		
 
       	
 			alu_op_code<="010010"; --MOVE LO
 			wait for clk_period;
-			ASSERT (result = x"85D32000") REPORT "Lo is incorret should be 85D32000 !!" SEVERITY ERROR;
+			ASSERT (result = x"FFFFFD7A") REPORT "Hi is incorret should be FFFFFD7A !!" SEVERITY ERROR;
+			
 
-	    	--TEST LUI
+--	    	--TEST LUI
 	    	Input_B<=x"00001000";
 	    	alu_op_code<="001111";
 	    	wait for clk_period;
-	    	ASSERT(result=x"10000000") REPORT "Lui incorret should be 10000000 !!" SEVERITY ERROR;
+	    	ASSERT (result = x"85D32000") REPORT "Lo is incorret should be 85D32000 !!" SEVERITY ERROR;
+	  
 
 	    	
 	    	--TEST BNE 
@@ -162,7 +165,8 @@ Component execute_stage is
 	    	alu_op_code<="000101";
 	    	wait for clk_period;
 	    	var_result:=result;
-	    	ASSERT(PC_OUT=to_integer(unsigned(var_result))) REPORT "BNE-INCORRECT PC VALUE" SEVERITY ERROR;
+	    	ASSERT(result=x"10000000") REPORT "Lui incorret should be 10000000 !!" SEVERITY ERROR;
+	    	
 
 	    	--TEST BEQ
 	    	Input_A<=x"00001000";
@@ -171,25 +175,31 @@ Component execute_stage is
 	    	alu_op_code<="000100";
 	    	wait for clk_period;
 	    	var_result:=result;
-	    	ASSERT(PC_OUT=to_integer(unsigned(var_result))) REPORT "BEQ-INCORRECT PC VALUE" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=to_integer(unsigned(var_result))) REPORT "BNE-INCORRECT PC VALUE" SEVERITY ERROR;
+	    
 
 	    	--TEST JR
 	    	Input_A<=x"00000002";
 	    	Jump<='1';
 	    	wait for clk_period;
-	    	ASSERT(PC_OUT=2) REPORT "JR PC OUT IS SUPPOSED TO BE 2" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=to_integer(unsigned(var_result))) REPORT "BEQ-INCORRECT PC VALUE" SEVERITY ERROR;
+	    	
 
 	    	--TEST J
 	    	Input_A<=x"00000006";
 	    	Jump<='1';
 	    	wait for clk_period;
-	    	ASSERT(PC_OUT=6) REPORT "J PC OUT IS SUPPOSED TO BE 6" SEVERITY ERROR;
+	    	ASSERT(PC_OUT=2) REPORT "JR PC OUT IS SUPPOSED TO BE 2" SEVERITY ERROR;
+	    
 
 
 	    	--TEST JAL
 	    	jump_addr<="00000000000000000000011111"; 
 	    	Input_A<=std_logic_vector(to_unsigned(5,32)); --PC COUNT
 	    	Input_B<=std_logic_vector(to_unsigned(2,32)); --PC + 8
+	    	wait for clk_period;
+	    	ASSERT(PC_OUT=6) REPORT "J PC OUT IS SUPPOSED TO BE 6" SEVERITY ERROR;
+	    	
 	    	wait for clk_period;
 	    	ASSERT(result=x"00000007") REPORT "JAL- ADDI DID NOT CALC THE CORRECT PC ADDRESS" SEVERITY ERROR;
 	    	ASSERT(PC_OUT=31) REPORT "JAL- DID NOT GET THE CORRECT JUMP ADDRESS" SEVERITY ERROR;

@@ -60,15 +60,12 @@ Component alu is
 	
 	port( 		Mux_A		: in  std_logic_vector(W-1 downto 0); --RS
 			   	Mux_B		: in  std_logic_vector(W-1 downto 0); --RT
-			  	Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
+          Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
 			   	clock 		: in std_logic;
 			   	shamt		: in std_logic_vector (F-2 downto 0);
 			   	Hi 			: out std_logic_vector(W-1 downto 0);
-	       	   	Lo 			: out std_logic_vector(W-1 downto 0);
-			   	Alu_Rslt	: out std_logic_vector(W-1 downto 0);
-			   	Zero 		: out std_logic;
-			   	Overflow	: out std_logic;
-			   	Carryout	: out std_logic);
+	       	Lo 			: out std_logic_vector(W-1 downto 0);
+			   	Alu_Rslt	: out std_logic_vector(W-1 downto 0));
 	end Component;
 
 
@@ -80,18 +77,17 @@ Component alu is
 	signal Hi 				: std_logic_vector(31 downto 0):=(others=>'0'); --done
 	signal Lo 				: std_logic_vector(31 downto 0):=(others=>'0'); -- done
 	signal Alu_Rslt 		: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Zero 			: std_logic := '0'; -- dont need to port over
-	signal Overflow 		: std_logic := '0'; -- dont need to port over
-	signal Carryout 		: std_logic := '0'; -- dont need to port over
+
 
 
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
 	signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
-	signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
+	--signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
 	signal branch_taken:std_logic := '0';
 	signal jal : std_logic := '0';
+	signal rslt_set : std_logic :='0';
 
 	begin
 
@@ -104,28 +100,63 @@ Component alu is
 					shamt,
 					Hi,
 					Lo,
-					Alu_Rslt,
-					Zero,	
-					Overflow,
-					Carryout);
+					Alu_Rslt);
 
-	--jump_and_branch : process (jump,branch)
---   begin
---		------------------------------------------------
---		--BRANCHING & JUMPING CHECK
---		------------------------------------------------
---
---		--if(jump='1') then
---			--	PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
---		  if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
+	pipeline : process (alu_op_code,clock,branch,jump)
+
+		Variable alu_opcode : std_logic_vector(5 downto 0);
+		Variable inter_rslt : std_logic_vector(31 downto 0);
+
+		begin
+    
+			alu_opcode:= alu_op_code;
+			rslt_set<='0';
+
+    if(rising_edge(clock)) then
+     
+    
+    
+			case alu_opcode is
+				------------------------------------------------
+				--Move Values & Load
+				------------------------------------------------
+
+				--MFHI needs rd as dst
+				when "010000" =>
+					Hi_Reg<=Hi;
+					inter_rslt:=Hi_Reg;
+          rslt_set<='1';
+
+				--MFLO needs rd as dst
+				when "010010"=>
+					Lo_Reg<=Lo;
+					inter_rslt:=Lo_Reg;
+					rslt_set<='1';
+
+				--LUI NEEDS rt
+				when "001111" =>
+					--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
+					inter_rslt:=std_logic_vector(unsigned(Mux_A)sll 16) ;
+					rslt_set<='1';
+				when "111110" =>
+				  jal<='1';
+				
+				when others => inter_rslt := (others => '0');
+
+			end case;
+		
+			
+			--if(jump='1') then
+				--PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
+				
+			--if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
 --				jal<='1';
 --			end if;
---
---			if(branch ='1') then
+
+			--if(branch ='1') then
 --					--bne
---					IF(Input_A /= Input_B) then 
---
---						--YES BRANCH TAKEN
+--					IF(Input_A /= Input_B) then
+--					--YES BRANCH TAKEN
 --						branch_taken <='1';					
 --					end if;
 --
@@ -136,80 +167,24 @@ Component alu is
 --						branch_taken <='1';					
 --					end if;			
 --			end if;
---		end process;
-
-	pipeline : process (alu_op_code,clk,branch,jump)
-
-		Variable alu_opcode : std_logic_vector(5 downto 0);
-		Variable inter_result : std_logic_vector(31 downto 0);
-
-		begin
-    
-			alu_opcode:= alu_op_code;
-			inter_result:= (others => '0');
-
-    
-			case alu_opcode is
-				------------------------------------------------
-				--Move Values & Load
-				------------------------------------------------
-
-				--MFHI needs rd as dst
-				when "010000" =>
-					Hi_Reg<=Hi;
-					inter_result:=Hi_Reg;
-
-
-				--MFLO needs rd as dst
-				when "010010"=>
-					Lo_Reg<=Lo;
-					inter_result:=Lo_Reg;
-
-				--LUI NEEDS rt
-				when "001111" =>
-
-					--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
-					inter_result:=std_logic_vector(unsigned(Mux_A)sll 16) ;
-				
-				when others => NULL;
-
-			end case;
-		
-			
-			--if(jump='1') then
-				--PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
-				
-			if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
-				jal<='1';
-			end if;
-
-			if(branch ='1') then
-					--bne
-					IF(Input_A /= Input_B) then
-					--YES BRANCH TAKEN
-						branch_taken <='1';					
-					end if;
-
-					--beq
-					IF(Input_A = Input_B) then
-
-						--YES BRANCH TAKEN
-						branch_taken <='1';					
-					end if;			
-			end if;
 
 			------------------------------------------------
 			--EXECUTE
 			------------------------------------------------
-		if(clock'event) then
+		  if(rslt_set ='0') then
 					Mux_A<= Input_A;
 					Mux_B<=Input_B;
 					Alu_Ctrl<=alu_op_code;
-					inter_result:=Alu_Rslt;
-					if (branch_taken = '1') then
+					inter_rslt:=Alu_Rslt;
+					if (branch = '1') then
+					   IF(Input_A /= Input_B) then
+					       PC_OUT<=to_integer(unsigned(inter_rslt));
+						    IF_MUX_CTRL<='1';
+					   elsif (Input_A = Input_B) then
 						--SET MUX AND NEW PC VALUE
-						PC_OUT<=to_integer(unsigned(inter_result));
-						IF_MUX_CTRL<='1';
+						    PC_OUT<=to_integer(unsigned(inter_rslt));
+						    IF_MUX_CTRL<='1';
+						    end if;
 					end if;
           if(jump='1') then
 					   if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
@@ -221,9 +196,10 @@ Component alu is
 						    IF_MUX_CTRL<='1';
 					   end if;
 			     end if;
+			   end if;
 			     --RESULT OUT
-			     result<=inter_result;
-      end if;
+			     result<=inter_rslt;
+    end if;
 			
 		end process;
 
