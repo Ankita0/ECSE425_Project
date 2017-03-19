@@ -124,7 +124,6 @@ PC_instr_in<=counter_out;
 address<=counter_out;
 PC_count_out <= final_count;
 PC_instr_plus4<= PC_inst_plus4_out;
-Instruction_out<=readdata;
 
 init_process: PROCESS
 	FILE file_name:         	text;
@@ -142,22 +141,23 @@ IF (now < 1024 ns) THEN
 		writedata <= char_vector_to_store;
 		memwrite<='1';
 		WAIT FOR 0.5 ns;
+		Instruction_out<=readdata;
 		memwrite<='0';
+	END LOOP;
+
+	FOR j in 0 to instr_mem_ram_size-1 LOOP
 		-- check if written in previous cycle
-		if (i>1) then
-			counter_out<=(i-1);
-		end if;
+		counter_out<=j;
 		memread<='1';
-		WAIT FOR 0.5 ns;	
+		WAIT FOR 0.5 ns;
+		Instruction_out<=readdata;
 		memread<='0';
 	END LOOP;
 END IF;
-counter_out<=PC_OUT;
---END PROCESS;
 
---controller_process: PROCESS(PC_counter_init, mux_control, PC_instr_from_EX, CLK, control_vector)
---BEGIN
-if (now>1024 ns) then
+counter_out<=PC_OUT;
+
+if (now>=1024 ns) then
 	IF (rising_edge(CLK)and PC_counter_init = '0')THEN
 		if (control_vector(0)= '0') then
 		--normal operation depending on inputs
@@ -165,6 +165,7 @@ if (now>1024 ns) then
 			memwrite<='0';
 			final_count<= PC_instr_to_fetch;
 			PC_IN<=final_count;
+			Instruction_out<=readdata;
 			memread<='0';
 		elsif (control_vector(0)= '1') then
 		--stalls
