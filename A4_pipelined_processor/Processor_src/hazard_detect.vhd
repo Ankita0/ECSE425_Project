@@ -10,7 +10,8 @@ entity hazard_detect is
 	MEM_reg_dest_addr: in std_logic_vector(4 downto 0);
 	WB_reg_dest_addr: in std_logic_vector(4 downto 0);
 
-	instruction_out: out std_logic_vector(31 downto 0)
+	instruction_out: out std_logic_vector(31 downto 0);
+	stall: out std_logic
 	);
 end hazard_detect;
 
@@ -43,8 +44,10 @@ begin
 			 	(rb = WB_reg_dest_addr)))) then 
 			--insert an add $r0, $r0, $r0
 			instruction_out<=x"00000020";
+			stall<='1';
 			else
 			instruction_out<=instruction_in;
+			stall<='0';
 			end if;
 
 		--only check for ra
@@ -55,8 +58,10 @@ begin
 			 	(ra = WB_reg_dest_addr))) then 
 			--insert an add $r0, $r0, $r0
 			instruction_out<=x"00000020";
+			stall<='1';
 			else
 			instruction_out<=instruction_in;
+			stall<='0';
 			end if;
 
 		end if;
