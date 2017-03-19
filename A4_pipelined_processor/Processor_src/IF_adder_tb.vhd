@@ -28,11 +28,11 @@ test_process : process
     BEGIN
         PC_instr_in<=0;
 	WAIT for 0.5*clk_period;
-        ASSERT PC_instr_plus4_out = 4 REPORT "add unsuccessful" SEVERITY error;
+        ASSERT PC_instr_plus4_out = 1 REPORT "add unsuccessful" SEVERITY error;
 	WAIT for 0.5*clk_period;
         PC_instr_in<= 116;
         WAIT for 0.5*clk_period;
-        ASSERT PC_instr_plus4_out = 120 REPORT "add unsuccessful" SEVERITY error;
+        ASSERT PC_instr_plus4_out = 117 REPORT "add unsuccessful" SEVERITY error;
         WAIT;
     END process;
 

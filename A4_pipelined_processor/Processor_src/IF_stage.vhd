@@ -83,6 +83,7 @@ END COMPONENT;
 	--mapping signals
 	SIGNAL counter_out: INTEGER:=0;
 	SIGNAL final_count: INTEGER :=0;
+	--SIGNAL init_done: INTEGER:=0;
 	
 BEGIN
 
@@ -141,7 +142,7 @@ IF (now < 1024 ns) THEN
 		memwrite<='1';
 		WAIT FOR 0.5 ns;
 		Instruction_out<=readdata;
-		--final_count<= PC_instr_to_fetch;
+		final_count<= PC_instr_to_fetch;
 		PC_count_out <= PC_instr_to_fetch;
 		memwrite<='0';
 	END LOOP;
@@ -152,15 +153,14 @@ IF (now < 1024 ns) THEN
 		memread<='1';
 		WAIT FOR 0.5 ns;
 		Instruction_out<=readdata;
-		--final_count<= PC_instr_to_fetch;
+		final_count<= PC_instr_to_fetch;
 		PC_count_out <= PC_instr_to_fetch;
 		memread<='0';
 	END LOOP;
-END IF;
 
 counter_out<=PC_OUT;
 
-if (now>=1024 ns) then
+elsif (now>=1024 ns) then
 	IF (rising_edge(CLK)and PC_counter_init = '0')THEN
 		if (control_vector(0)= '0') then
 		--normal operation depending on inputs
@@ -174,8 +174,12 @@ if (now>=1024 ns) then
 		--stalls
 			memread<='0';
 			memwrite<='0';
-			Instruction_out<=x"00000000";
+			Instruction_out<=x"00000020";
 		end if;
+	ELSIF (rising_edge(CLK)and PC_counter_init = '1')THEN
+		PC_count_out<= 0;
+		PC_IN<= 0;
+		Instruction_out<=x"00000020";
 	END IF;
 end if;
 END PROCESS;

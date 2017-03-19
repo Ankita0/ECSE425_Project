@@ -26,7 +26,7 @@ END COMPONENT;
 	SIGNAL control_vector: STD_LOGIC_VECTOR(1 downto 0):="00";
 	SIGNAL PC_counter_init: STD_LOGIC;
 	SIGNAL mux_control: STD_LOGIC:='0';
-	SIGNAL PC_instr_from_EX: INTEGER:=0;
+	SIGNAL PC_instr_from_EX: INTEGER:=18;
 	SIGNAL CLK: STD_LOGIC:= '0';
 	SIGNAL PC_instr_plus4_out: INTEGER:= 0;
 	SIGNAL program_instruction: STD_LOGIC_VECTOR(31 downto 0):= x"00000000";
@@ -59,10 +59,8 @@ BEGIN
 		PC_counter_init<= '0';
 	end if;
 	control_vector<= "00";
-	WAIT FOR 1024*clk_period;
-	PC_counter_init<= '1';
-	WAIT FOR 1*clk_period;
-	PC_counter_init<= '0';
+	PC_counter_init<= '1' after 1024 ns;
+	PC_counter_init<= '0' after 1025 ns;
 	WAIT FOR 1*clk_period;
 END process;
 

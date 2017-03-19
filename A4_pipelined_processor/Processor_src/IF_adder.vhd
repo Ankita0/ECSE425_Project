@@ -15,9 +15,9 @@ ARCHITECTURE arch OF IF_adder IS
 --Declare signal with integer value 4
 BEGIN
 
---Add 4 to program instruction count
+--Add 1 to program instruction count
 PC_count_up: PROCESS(PC_instr_in)
 BEGIN
-	PC_instr_plus4_out <= PC_instr_in+ 4;
+	PC_instr_plus4_out <= PC_instr_in+ 1;
 END PROCESS PC_count_up;
 END arch;
