@@ -28,7 +28,7 @@ entity execute_stage is
 			-- ALU INPUT
 			Input_A	: in std_logic_vector(31 downto 0);
 			Input_B: in std_logic_vector(31 downto 0);
-			alu_op_code: in std_logic_vector(4 downto 0);
+			alu_op_code: in std_logic_vector(5 downto 0);
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jump_addr: in std_logic_vector(25 downto 0);
@@ -41,7 +41,7 @@ entity execute_stage is
 			--Passing through OUT to MEM/WB
 			OUT_mem_write: out std_logic;
 			OUT_mem_read: out std_logic; 
-			OUT_mem_data_wr: out std_logic(31 downto 0);
+			OUT_mem_data_wr: out std_logic_vector(31 downto 0);
 			OUT_wb_write:out std_logic;
 			OUT_wb_addr: out std_logic_vector(4 downto 0));
 	
@@ -90,12 +90,12 @@ Component alu is
 	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
 	signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
-	signal branch_taken := '0';
+	signal branch_taken:std_logic := '0';
 	signal jal : std_logic := '0';
 
 	begin
 
-		ALU: alu
+		alu_1: alu
 		PORT MAP(
 					Mux_A,
 					Mux_B,
@@ -109,23 +109,84 @@ Component alu is
 					Overflow,
 					Carryout);
 
-	jump_and_branch : process (jump,branch)
+	--jump_and_branch : process (jump,branch)
+--   begin
+--		------------------------------------------------
+--		--BRANCHING & JUMPING CHECK
+--		------------------------------------------------
+--
+--		--if(jump='1') then
+--			--	PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
+--		  if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
+--				jal<='1';
+--			end if;
+--
+--			if(branch ='1') then
+--					--bne
+--					IF(Input_A /= Input_B) then 
+--
+--						--YES BRANCH TAKEN
+--						branch_taken <='1';					
+--					end if;
+--
+--					--beq
+--					IF(Input_A = Input_B) then
+--
+--						--YES BRANCH TAKEN
+--						branch_taken <='1';					
+--					end if;			
+--			end if;
+--		end process;
 
-		------------------------------------------------
-		--BRANCHING & JUMPING CHECK
-		------------------------------------------------
+	pipeline : process (alu_op_code,clk,branch,jump)
 
-			if(jump='1') then
-				PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
-			elsif(alu_opcode="111110") then --- set jal high so we can get the addr fro alu
+		Variable alu_opcode : std_logic_vector(5 downto 0);
+		Variable inter_result : std_logic_vector(31 downto 0);
+
+		begin
+    
+			alu_opcode:= alu_op_code;
+			inter_result:= (others => '0');
+
+    
+			case alu_opcode is
+				------------------------------------------------
+				--Move Values & Load
+				------------------------------------------------
+
+				--MFHI needs rd as dst
+				when "010000" =>
+					Hi_Reg<=Hi;
+					inter_result:=Hi_Reg;
+
+
+				--MFLO needs rd as dst
+				when "010010"=>
+					Lo_Reg<=Lo;
+					inter_result:=Lo_Reg;
+
+				--LUI NEEDS rt
+				when "001111" =>
+
+					--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
+					inter_result:=std_logic_vector(unsigned(Mux_A)sll 16) ;
+				
+				when others => NULL;
+
+			end case;
+		
+			
+			--if(jump='1') then
+				--PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
+				
+			if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
 				jal<='1';
 			end if;
 
 			if(branch ='1') then
 					--bne
-					IF(Input_A /= Input_B) then 
-
-						--YES BRANCH TAKEN
+					IF(Input_A /= Input_B) then
+					--YES BRANCH TAKEN
 						branch_taken <='1';					
 					end if;
 
@@ -136,68 +197,34 @@ Component alu is
 						branch_taken <='1';					
 					end if;			
 			end if;
-		end process;
-
-	pipeline : process
-
-		Variable alu_opcode : std_logic_vector(4 downto 0);
-		Variable lui_shift : std_logic_vector(31 downto 0);
-
-		begin
-
-			alu_opcode:= alu_op_code;
-
-
-			case alu_opcode is
-				------------------------------------------------
-				--Move Values & Load
-				------------------------------------------------
-
-				--MFHI needs rd as dst
-				when "010000" =>
-					Hi_Reg<=Hi;
-					result<=Hi_Reg
-
-
-				--MFLO needs rd as dst
-				when "010010"=>
-					Lo_Reg<=Lo;
-					result<=Lo_Reg
-
-				--LUI NEEDS rt
-				when "001111" =>
-
-					lui_shift:= Mux_A sll 16 ;
-					result<=Mux_A(31 downto 16) & others => '0';
-				
-				when others => NULL;
-
-			end case;
 
 			------------------------------------------------
 			--EXECUTE
 			------------------------------------------------
-			if(rising_edge(clock)) then
+		if(clock'event) then
 					Mux_A<= Input_A;
 					Mux_B<=Input_B;
 					Alu_Ctrl<=alu_op_code;
-					inter_result<=Alu_Rslt;
+					inter_result:=Alu_Rslt;
 					if (branch_taken = '1') then
 						--SET MUX AND NEW PC VALUE
 						PC_OUT<=to_integer(unsigned(inter_result));
 						IF_MUX_CTRL<='1';
 					end if;
-
-					if(jal='1') then
-						--SET MUX AND NEW PC VALUE
-						PC_OUT<=to_integer(unsigned(jump_addr));
-						IF_MUX_CTRL<='1';
-					end if;
-			end if;
-
-			--RESULT OUT
-			result<=inter_result;
-
+          if(jump='1') then
+					   if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
+						    --SET MUX AND NEW PC VALUE
+						     PC_OUT<=to_integer(unsigned(jump_addr));
+						    IF_MUX_CTRL<='1';
+						  else
+						    PC_OUT<=to_integer(unsigned(Input_A));
+						    IF_MUX_CTRL<='1';
+					   end if;
+			     end if;
+			     --RESULT OUT
+			     result<=inter_result;
+      end if;
+			
 		end process;
 
 	--PASS VALUES TO NEXT STAGE
