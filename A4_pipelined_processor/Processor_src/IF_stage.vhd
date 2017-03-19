@@ -122,7 +122,6 @@ instruction_memory GENERIC MAP(
 
 PC_instr_in<=counter_out;
 address<=counter_out;
-PC_count_out <= final_count;
 PC_instr_plus4<= PC_inst_plus4_out;
 
 init_process: PROCESS
@@ -142,6 +141,8 @@ IF (now < 1024 ns) THEN
 		memwrite<='1';
 		WAIT FOR 0.5 ns;
 		Instruction_out<=readdata;
+		--final_count<= PC_instr_to_fetch;
+		PC_count_out <= PC_instr_to_fetch;
 		memwrite<='0';
 	END LOOP;
 
@@ -151,6 +152,8 @@ IF (now < 1024 ns) THEN
 		memread<='1';
 		WAIT FOR 0.5 ns;
 		Instruction_out<=readdata;
+		--final_count<= PC_instr_to_fetch;
+		PC_count_out <= PC_instr_to_fetch;
 		memread<='0';
 	END LOOP;
 END IF;
@@ -163,7 +166,7 @@ if (now>=1024 ns) then
 		--normal operation depending on inputs
 			memread<='1';
 			memwrite<='0';
-			final_count<= PC_instr_to_fetch;
+			PC_count_out <= PC_instr_to_fetch;
 			PC_IN<=final_count;
 			Instruction_out<=readdata;
 			memread<='0';
