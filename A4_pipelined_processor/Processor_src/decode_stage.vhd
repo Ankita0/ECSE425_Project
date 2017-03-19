@@ -67,43 +67,35 @@ Component signextension is
 end Component;
 
 	--SIGNALS FOR DECODER
-    signal reg_dst : std_logic;
-    signal alu_src : std_logic;
+    signal reg_dst_s 			: std_logic;
+    signal alu_src_s 			: std_logic;
 
     signal sign_extended_imm: std_logic_vector(31 downto 0);  
 
     --SIGNALS FOR REGISTER FILE
-    signal reg_value1_s: std_logic_vector(31 downto 0);
-    signal reg_value2_s: std_logic_vector(31 downto 0);
+    signal reg_value1_s		: std_logic_vector(31 downto 0);
+    signal reg_value2_s 	: std_logic_vector(31 downto 0);
 
---			alu_op_code<= alu_op_code_s;
---			reg_write<=reg_write_s;
---			mem_read<=mem_read_s;
---			mem_write<=mem_write_s;
---			branch<=branch_s;
---			jump<=jump_s;
-
-
-
-
-
-
-
-
+	signal alu_op_code_s	: std_logic_vector(5 downto 0);
+	signal reg_write_s		: std_logic;
+	signal mem_read_s		: std_logic;
+	signal mem_write_s		: std_logic;
+	signal branch_s			: std_logic;
+	signal jump_s			: std_logic;
 
 begin
 
 	decoder: decoder
 	PORT MAP(	instruction,
 				clock,
-				alu_op_code,
-				reg_dst,
-				reg_write,
-				alu_src,
-				mem_write,
-				mem_read,
-				jump,
-				branch
+				alu_op_code_s,
+				reg_dst_s,
+				reg_write_s,
+				alu_src_s,
+				mem_write_s,
+				mem_read_s,
+				jump_s,
+				branch_s
 			);
 
 	register_file: register_file
@@ -127,36 +119,33 @@ begin
 		begin
 		--all outputs should be clock synchronized 
 		if (rising_edge(clock)) then
-			PC_counter_out<=PC_counter_in;
-			reg_value1<=reg_value1_s; 
-			shamt<= instruction(4 downto 0);	--shift amount
-			j_address<= instruction(25 downto 0);
-			alu_op_code<= alu_op_code_s;
-			reg_write<=reg_write_s;
-			mem_read<=mem_read_s;
-			mem_write<=mem_write_s;
-			branch<=branch_s;
-			jump<=jump_s;
+			PC_counter_out <= PC_counter_in;
+			reg_value1 <= reg_value1_s; 
+			shamt <= instruction(4 downto 0);	--shift amount
+			j_address <= instruction(25 downto 0);
+			alu_op_code <= alu_op_code_s;
+			reg_write <= reg_write_s;
+			mem_read <= mem_read_s;
+			mem_write <= mem_write_s;
+			branch <= branch_s;
+			jump <= jump_s;
 
-			if(alu_src='1') then 
+			if(alu_src_s = '1') then 
 			-- use sign extended value
-				reg_value2<=sign_extended_imm; 
-			else --alu_src='1' 
+				reg_value2 <= sign_extended_imm; 
+			else --alu_src_s='1' 
 			--use reg_value2_s from register file
-				reg_value2<=reg_value2_s; 
+				reg_value2 <= reg_value2_s; 
 			end if;
 
-			--if reg_dst='1' (r-type), '0' (i-type)
-			if (reg_dst = '1') then
-				reg_dest_addr<= instruction(15 downto 11);	--$rd (r-type)
-			else -- reg_dst='0'
-				reg_dest_addr<= instruction(20 downto 16);	--$rt (i-type)
+			--if reg_dst_s='1' (r-type), '0' (i-type)
+			if (reg_dst_s = '1') then
+				reg_dest_addr <= instruction(15 downto 11);	--$rd (r-type)
+			else -- reg_dst_s='0'
+				reg_dest_addr <= instruction(20 downto 16);	--$rt (i-type)
 			end if;
-			
-
 
 		end if;
 	end process;
-
 
 end arch;
