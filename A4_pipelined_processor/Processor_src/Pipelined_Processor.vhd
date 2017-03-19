@@ -50,7 +50,8 @@ PORT(
 			mem_read		: out std_logic;	--for MEM stage
 			mem_write		: out std_logic;	--for MEM stage
 			branch			: out std_logic;
-			jump			: out std_logic
+			jump			: out std_logic;
+			IF_stall		: out std_logic
 			);
 END COMPONENT;
 
@@ -172,6 +173,7 @@ end COMPONENT;
 	SIGNAL DE_mem_write		: std_logic;	--for MEM stage
 	SIGNAL DE_branch		: std_logic;
 	SIGNAL DE_jump			: std_logic;
+	SIGNAL DE_IF_stall		: std_logic:='0';
 
 	--EX stage mapping
 	SIGNAL EX_PC_IN		: integer; -- PC from IF and Decode
@@ -267,7 +269,8 @@ decode_stage PORT MAP(
 	DE_mem_read,		--for MEM stage
 	DE_mem_write,		--for MEM stage
 	DE_branch,
-	DE_jump
+	DE_jump,
+	DE_IF_stall
 );
 
 DUT_EX_stage: 

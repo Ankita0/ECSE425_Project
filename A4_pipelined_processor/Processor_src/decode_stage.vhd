@@ -26,7 +26,8 @@ entity decode_stage is
 			mem_read		: out std_logic;	--for MEM stage
 			mem_write		: out std_logic;	--for MEM stage
 			branch			: out std_logic;
-			jump			: out std_logic
+			jump			: out std_logic;
+			IF_stall		: out std_logic
 			);
 end decode_stage;
 
