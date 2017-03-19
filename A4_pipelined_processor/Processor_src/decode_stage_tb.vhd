@@ -79,16 +79,44 @@ DUT: decode_stage
 				jump
 			);
 
-clock_process : process
-BEGIN
-	clock <= '0';
-        wait for clock_period/2;
-        clock <= '1';
-        wait for clock_period/2;
-end process;
 
-test_process: PROCESS
+	clock_process : PROCESS
+	BEGIN
+		clock <= '0';
+		wait for clock_period/2;
+		clock <= '1';
+		wait for clock_period/2;
+	END PROCESS;
 
-END PROCESS; 
+
+	test_process: PROCESS
+	BEGIN
+        --001000 00000 01011 0000011111010000
+        --addi $rs $rt 2000
+		instruction<=x"200B07D0";
+		PC_counter_in<=1;
+		--from previous instructions
+		WB_data<=x"00000003";		--e.g. 3	
+		--from previous instructions
+		WB_data_addr<="00010";	--e.g r2
+		--from previous instructions
+		WB_data_write<='1';	
+		wait for clock_period;
+		
+		ASSERT	(PC_counter_out=1) REPORT "PC_counter_out mismatch" SEVERITY ERROR;
+		ASSERT	(reg_value1=x"00000000") REPORT "reg_value1 mismatch" SEVERITY ERROR;
+		-- reg_value2 = sign extended imm = 2000
+		ASSERT	(reg_value2=x"000007D0") REPORT "reg_value2 mismatch" SEVERITY ERROR;
+		ASSERT	(reg_dest_addr="01011") REPORT "reg_dest_addr mismatch" SEVERITY ERROR;
+		ASSERT	(shamt="10000") REPORT "shamt mismatch" SEVERITY ERROR;
+		ASSERT	(j_address="00000010110000011111010000") REPORT "j_address mismatch" SEVERITY ERROR;
+		ASSERT	(alu_op_code="100000") REPORT "alu_op_code mismatch" SEVERITY ERROR;
+		ASSERT	(reg_write='1') REPORT "reg_write mismatch" SEVERITY ERROR;
+		ASSERT	(mem_read='0') REPORT "mem_read mismatch" SEVERITY ERROR;
+		ASSERT	(mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
+		ASSERT	(branch='0') REPORT "branch mismatch" SEVERITY ERROR;
+		ASSERT	(jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+		
+	END PROCESS;
 
 END ARCHITECTURE;
