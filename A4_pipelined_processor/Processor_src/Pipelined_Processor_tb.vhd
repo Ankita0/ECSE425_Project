@@ -19,12 +19,21 @@ PORT(
 );
 END COMPONENT;
       
-	SIGNAL 
+	SIGNAL PP_Init: STD_LOGIC:='0';
+	SIGNAL PP_CLK: STD_LOGIC:='0';
+	SIGNAL POOP: STD_LOGIC:='0';
+	SIGNAL PP_reg_data: STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
+	SIGNAL PP_mm_data: STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
 
 BEGIN
 
 DUT: 
 Pipelined_Processor PORT MAP(
+	PP_Init,
+	PP_CLK,
+	POOP,
+	PP_reg_data,
+	PP_mm_data
 
 );
 	clk_process: process
