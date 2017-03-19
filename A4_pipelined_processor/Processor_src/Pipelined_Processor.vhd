@@ -246,14 +246,14 @@ IF_stage PORT MAP(
 DUT_DE_stage:
 decode_stage PORT MAP(	
 	PP_CLK,	
-	DE_instruction,		--instruction from IF stage
+	IF_Instruction_out,		--instruction from IF stage
 	IF_PC_count_out, 	--to propagate to EX stage
-	DE_WB_data,		--signals propagated from WB
-	DE_WB_data_addr,	--signals propagated from WB	
-	DE_WB_data_write,	--signal to check if WB_data needs to be written in WB_data_addr
-	DE_EX_reg_dest_addr,
-	DE_MEM_reg_dest_addr,
-	DE_WB_reg_dest_addr,
+    WB_writedata,	--  	DE_WB_data,		--signals propagated from WB
+	WB_reg_dst_out,	--signals propagated from WB	
+	WB_reg_write_out,	--signal to check if WB_data needs to be written in WB_data_addr
+	EX_OUT_wb_addr,
+	MEM_reg_dst_out,
+	WB_reg_dst_out,
 			--it's the reg_write propogated to WB stage and coming back
 	DE_PC_counter_out,	--to propagate to EX stage
 	DE_reg_value1,		--MuxA	
@@ -278,19 +278,19 @@ execute_stage PORT MAP(
 	DE_PC_counter_out,-- PC from IF and Decode
 
 	--Passing through IN
-	EX_IN_mem_write, --MEM write
-	EX_IN_mem_read,  --- MEM READ
-	EX_IN_mem_data_wr, --WRITE DATA TO MEM
-	EX_IN_wb_write, -- WB WRITE
-	EX_IN_wb_addr,
+	DE_mem_write, --MEM write
+	DE_mem_read,  --- MEM READ
+	DE_reg_value2, --WRITE DATA TO MEM, value of rt from i-type instruction
+	DE_mem_write, -- WB WRITE
+	DE_reg_dest_addr, --to propagate to WB and back to DE
 
 	-- ALU INPUT
-	EX_Input_A,
-	EX_Input_B,
-	EX_alu_op_code,
-	EX_Jump,
-	EX_Branch,
-	EX_jump_addr,
+	DE_reg_value1,
+	DE_reg_value2,
+	DE_alu_op_code,
+	DE_jump,
+	DE_branch,
+	DE_j_address,
 			
 	--ALU OUT
 	EX_result,
@@ -312,14 +312,14 @@ memory_controller PORT MAP(
 	PP_Init,
       
       --control signals
-	MEM_do_memread,
-	MEM_do_memwrite,
-	MEM_reg_write,
+	EX_OUT_mem_read,
+	EX_OUT_mem_write,
+	EX_OUT_wb_write,
       
       --coming from EX stage
-	MEM_alu_result,
-	MEM_writedata,
-	MEM_reg_dst,
+	EX_result,
+	EX_OUT_mem_data_wr,
+	EX_OUT_wb_addr,
 
       --going to WB stage
 	MEM_alu_result_out,
@@ -332,10 +332,11 @@ memory_controller PORT MAP(
 DUT_WB_stage:
 WB_STAGE PORT MAP(
       PP_CLK,
-      WB_reg_write,
-      WB_alu_data,
-      WB_mem_data,
-      WB_reg_dst,
+      MEM_reg_write_out,
+      MEM_alu_result_out,
+      MEM_data_to_WB,
+      MEM_reg_dst_out,
+      
       WB_reg_write_out,
       WB_reg_dst_out,
       WB_writedata 
