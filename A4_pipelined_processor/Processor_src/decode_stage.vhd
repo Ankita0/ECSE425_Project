@@ -67,6 +67,19 @@ Component signextension is
 		);
 end Component;
 
+Component hazard_detect is
+	port(
+	clock: in std_logic;
+	instruction_in: in std_logic_vector(31 downto 0);
+	EX_reg_dest_addr: in std_logic_vector(4 downto 0);
+	MEM_reg_dest_addr: in std_logic_vector(4 downto 0);
+	WB_reg_dest_addr: in std_logic_vector(4 downto 0);
+
+	instruction_out: out std_logic_vector(31 downto 0);
+	stall: out std_logic
+	);
+end Component;
+
 	--SIGNALS FOR DECODER
     signal reg_dst_s 			: std_logic;
     signal alu_src_s 			: std_logic;
@@ -84,10 +97,13 @@ end Component;
 	signal branch_s			: std_logic;
 	signal jump_s			: std_logic;
 
+	signal stall_s			: std_logic;
+	signal instruction_s	: std_logic_vector(31 downto 0);
+
 begin
 
 	decoder1: decoder
-	PORT MAP(	instruction,
+	PORT MAP(	instruction_s,
 				clock,
 				alu_op_code_s,
 				reg_dst_s,
@@ -101,8 +117,8 @@ begin
 
 	register_file1: register_file
 	PORT MAP(	clock,
-				instruction(25 downto 21),
-				instruction(20 downto 16),
+				instruction_s(25 downto 21),
+				instruction_s(20 downto 16),
 				WB_data_addr,
 				WB_data_write,
 				WB_data,
@@ -111,8 +127,18 @@ begin
 			);
 
 	signextension1: signextension
-	PORT MAP(	instruction(15 downto 0),
+	PORT MAP(	instruction_s(15 downto 0),
 				sign_extended_imm
+			);
+
+	hazard_detect1: hazard_detect
+	PORT MAP(	clock,
+				instruction,
+				EX_reg_dest_addr,
+				MEM_reg_dest_addr,
+				WB_reg_dest_addr,
+				instruction_s,
+				stall_s
 			);
 
 
@@ -122,14 +148,15 @@ begin
 		if (rising_edge(clock)) then
 			PC_counter_out <= PC_counter_in;
 			reg_value1 <= reg_value1_s; 
-			shamt <= instruction(4 downto 0);	--shift amount
-			j_address <= instruction(25 downto 0);
+			shamt <= instruction_s(4 downto 0);	--shift amount
+			j_address <= instruction_s(25 downto 0);
 			alu_op_code <= alu_op_code_s;
 			reg_write <= reg_write_s;
 			mem_read <= mem_read_s;
 			mem_write <= mem_write_s;
 			branch <= branch_s;
 			jump <= jump_s;
+			IF_stall <= stall_s;
 
 			if(alu_src_s = '1') then 
 			-- use sign extended value
@@ -141,9 +168,9 @@ begin
 
 			--if reg_dst_s='1' (r-type), '0' (i-type)
 			if (reg_dst_s = '1') then
-				reg_dest_addr <= instruction(15 downto 11);	--$rd (r-type)
+				reg_dest_addr <= instruction_s(15 downto 11);	--$rd (r-type)
 			else -- reg_dst_s='0'
-				reg_dest_addr <= instruction(20 downto 16);	--$rt (i-type)
+				reg_dest_addr <= instruction_s(20 downto 16);	--$rt (i-type)
 			end if;
 
 		end if;

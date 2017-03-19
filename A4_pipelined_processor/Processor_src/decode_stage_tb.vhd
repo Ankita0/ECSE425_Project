@@ -56,7 +56,7 @@ END COMPONENT;
 	SIGNAL mem_read			: std_logic:= '0';	--for MEM stage
 	SIGNAL mem_write		: std_logic:= '0';	--for MEM stage
 	SIGNAL branch			: std_logic:= '0';
-	SIGNAL jump			: std_logic:= '0';
+	SIGNAL jump				: std_logic:= '0';
 	SIGNAL IF_stall			: std_logic:= '0';
 
 
@@ -120,6 +120,7 @@ DUT: decode_stage
 		ASSERT	(mem_write='0') REPORT "mem_write mismatch" SEVERITY ERROR;
 		ASSERT	(branch='0') REPORT "branch mismatch" SEVERITY ERROR;
 		ASSERT	(jump='0') REPORT "jump mismatch" SEVERITY ERROR;
+		ASSERT	(IF_stall='0') REPORT "IF_stall mismatch" SEVERITY ERROR;
 		
 	END PROCESS;
 
