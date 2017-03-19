@@ -14,12 +14,12 @@ entity decode_stage is
 			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
 												--it's the reg_write propogated to WB stage and coming back
 			PC_counter_out	: out integer;	--to propagate to EX stage
-			reg_value1	: out std_logic_vector(31 downto 0); --MuxA
-			reg_value2	: out std_logic_vector(31 downto 0); --MuxB
+			reg_value1	 	: out std_logic_vector(31 downto 0); --MuxA
+			reg_value2	 	: out std_logic_vector(31 downto 0); --MuxB
 			reg_dest_addr	: out std_logic_vector(4 downto 0);	--$rd (r-type) or $rt (i-type), equivalent to the WB_X signals
-			shamt		: out std_logic_vector(4 downto 0);	--shift amount
-			j_address	: out integer;	--to_integer(unsign(std_logic_vector(25 downto 0)))
-			alu_op_code	: out std_logic_vector(5 downto 0);
+			shamt			: out std_logic_vector(4 downto 0);	--shift amount
+			j_address		: out std_logic_vector(25 downto 0);
+			alu_op_code		: out std_logic_vector(5 downto 0);
 
 			--control signals
 			reg_write		: out std_logic;	--to be propagated to WB and back to DE
@@ -67,157 +67,85 @@ Component signextension is
 end Component;
 
 	--SIGNALS FOR DECODER
-	signal instruction_s: std_logic_vector(31 downto 0);
+    signal reg_dst_s 			: std_logic;
+    signal alu_src_s 			: std_logic;
 
-	signal alu_op_code : std_logic_vector(5 downto 0);
-    signal reg_dst : std_logic;
-    signal reg_write : std_logic;
-    signal alu_src : std_logic;
-    signal mem_write : std_logic;
-    signal mem_read : std_logic;
-    signal jump : std_logic;
-    signal branch : std_logic;
+    signal sign_extended_imm: std_logic_vector(31 downto 0);  
 
-    signal WB_data_addr: std_logic_vector(4 downto 0); --signals propagated from WB
-    signal WB_data_write: std_logic;				--signals propagated from WB
-    signal WB_data: std_logic_vector(31 downto 0);	--signals propagated from WB
+    --SIGNALS FOR REGISTER FILE
+    signal reg_value1_s		: std_logic_vector(31 downto 0);
+    signal reg_value2_s 	: std_logic_vector(31 downto 0);
 
-    signal signextended: std_logic_vector(31 downto 0);  
-
-
+	signal alu_op_code_s	: std_logic_vector(5 downto 0);
+	signal reg_write_s		: std_logic;
+	signal mem_read_s		: std_logic;
+	signal mem_write_s		: std_logic;
+	signal branch_s			: std_logic;
+	signal jump_s			: std_logic;
 
 begin
 
-	decoder: decoder
-	PORT MAP(	instruction_s,
+	decoder1: decoder
+	PORT MAP(	instruction,
 				clock,
-				alu_op_code,
-				reg_dst,
-				reg_write,
-				alu_src,
-				mem_write,
-				mem_read,
-				jump,
-				branch
+				alu_op_code_s,
+				reg_dst_s,
+				reg_write_s,
+				alu_src_s,
+				mem_write_s,
+				mem_read_s,
+				jump_s,
+				branch_s
 			);
 
-	register_file: register_file
+	register_file1: register_file
 	PORT MAP(	clock,
-				instruction_s(25 downto 21),
-				instruction_s(20 downto 16),
+				instruction(25 downto 21),
+				instruction(20 downto 16),
 				WB_data_addr,
 				WB_data_write,
 				WB_data,
-				reg_value1,
-				reg_value2
+				reg_value1_s,
+				reg_value2_s
 			);
 
-	signextension: signextension
-	PORT MAP(	instruction_s(15 downto 0),
-				signextended
+	signextension1: signextension
+	PORT MAP(	instruction(15 downto 0),
+				sign_extended_imm
 			);
 
 
-	--instruction_s<=result;	
-	instruction_s<= instruction;
-	mem_write<= mem_write;
-	mem_read<= mem_read;
-	reg_write<= reg_write;
-	--writing to register needs to happen at clock edges
-	pipeline: process (result, clock)
+	pipeline: process (clock)
 		begin
+		--all outputs should be clock synchronized 
 		if (rising_edge(clock)) then
-			
-			case op_code is
-			--R-Type
-			when "000000" =>
-				reg_value1<=reg_value1;
-				reg_value2<=reg_value2;
-				reg_dest_addr<= instruction_s(15 downto 11);
-				shamt <= instruction_s(10 downto 6);
-				
-			--I-Type
-			when "001000" =>		--addi
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-				
-			when "001010" =>		--slti
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
+			PC_counter_out <= PC_counter_in;
+			reg_value1 <= reg_value1_s; 
+			shamt <= instruction(4 downto 0);	--shift amount
+			j_address <= instruction(25 downto 0);
+			alu_op_code <= alu_op_code_s;
+			reg_write <= reg_write_s;
+			mem_read <= mem_read_s;
+			mem_write <= mem_write_s;
+			branch <= branch_s;
+			jump <= jump_s;
 
-			--Logical
-			when "001100" =>		--andi
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-				
+			if(alu_src_s = '1') then 
+			-- use sign extended value
+				reg_value2 <= sign_extended_imm; 
+			else --alu_src_s='1' 
+			--use reg_value2_s from register file
+				reg_value2 <= reg_value2_s; 
+			end if;
 
-			when "001101" =>		--ori
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-				
+			--if reg_dst_s='1' (r-type), '0' (i-type)
+			if (reg_dst_s = '1') then
+				reg_dest_addr <= instruction(15 downto 11);	--$rd (r-type)
+			else -- reg_dst_s='0'
+				reg_dest_addr <= instruction(20 downto 16);	--$rt (i-type)
+			end if;
 
-			when "001110" =>		--xori
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-			--Transfer
-			when "001111" =>		--lui
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-			--Memory
-			when "100011" =>		--lw
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-				
-			when "101011" =>		--sw
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-				
-			--Control-flow
-			when "000100" =>		--beq
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-
-				
-			when "000101" =>		--bne
-				reg_value1<=reg_value1;
-				reg_value2<=signextended;
-				reg_dest_addr<= instruction_s(20 downto 16);
-
-
-				
-			--J-type
-			when "000010" =>		--j
-				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
-
-
-
-			when "000011" =>		--jal
-				j_address<= to_integer(unsign(instruction_s(25 downto 0)));
-
-
-				
-			when others =>
-
-
-
-							
-		end case;
 		end if;
 	end process;
-
 
 end arch;
