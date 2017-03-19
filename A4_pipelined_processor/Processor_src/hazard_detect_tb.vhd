@@ -44,16 +44,36 @@ architecture arch of hazard_detect_tb is
 		test_process: process
 
 			BEGIN
-                instruction_in<=x"07C0";
+        --001000 00000 01011 0000011111010000
+        --addi $rs $rt 2000
+        --rs 00000
+        --rt 01011
+        --I-type instruction
+        --should go to the 2nd if loop and check for ra only
+                instruction_in<=x"200B07D0";
+                EX_reg_dest_addr<="00001";
+                MEM_reg_dest_addr<="00010";
+                WB_reg_dest_addr<="00011";
                 wait for 1ns;
-                ASSERT (instruction_out = x"000007C0") REPORT "instruction_out mismatch" SEVERITY ERROR;
-                ASSERT (stall = '0') REPORT "stall mismatch" SEVERITY ERROR;
+                ASSERT (instruction_out = x"200B07D0") REPORT "I-type instruction_out mismatch for NO STALL" SEVERITY ERROR;
+               --no stalls needed
+                ASSERT (stall = '0') REPORT "stall mismatch for NO STALL" SEVERITY ERROR;
 
-                instruction_in<=x"07C0";
+
+        --001000 00000 01011 0000011111010000
+        --addi $rs $rt 2000
+        --rs 00000
+        --rt 01011
+        --I-type instruction
+        --should go to the 2nd if loop and check for ra only
+                instruction_in<=x"200B07D0";
+                EX_reg_dest_addr<="01011";
+                MEM_reg_dest_addr<="00010";
+                WB_reg_dest_addr<="00011";
                 wait for 1ns;
-                ASSERT (instruction_out = x"000007C0") REPORT "instruction_out mismatch" SEVERITY ERROR;
-                ASSERT (stall = '0') REPORT "stall mismatch" SEVERITY ERROR;
-  					
+                ASSERT (instruction_out = x"00000020") REPORT "I-type instruction_out mismatch for STALL" SEVERITY ERROR;
+               --stall needed
+                ASSERT (stall = '1') REPORT "stall mismatch for STALL" SEVERITY ERROR;
 
   end process;
 
