@@ -81,27 +81,40 @@ BEGIN
     test_process : process
     BEGIN
 
-        wait for clk_period;      
- 
-        alu_result <= x"00000001";
-        writedata <= x"00000002";
+        --TEST WRITE
+        alu_result <= x"00000001"; --addr in mem
+        writedata <= x"00000002"; --value inside rt
+        memwrite <= '1';
+        wait for clk_period;  
 
-        --wait until rising_edge(waitrequest);
+        memwrite <= '0';
+        memread <= '1';
+        wait for clk_period;
+        
+        ASSERT data_to_WB = x"00000002" REPORT "unsuccessful write" SEVERITY ERROR;
+        
+        wait for clk_period;
+        
+        alu_result <= x"00000003";
+        memread <= '0';
+        
+        wait for clk_period;        
+   
+        --TEST READ     
+        memread <= '1';
+        assert data_to_WB = x"00000000" report "unsuccessful read" severity error;
+
+        wait for clk_period;
+        writedata <= x"00000004";
         memread <= '0';
         memwrite <= '1';
-        --wait until rising_edge(waitrequest);
-        ASSERT data_to_WB = x"00000001" REPORT "alu_result unsuccessful pass" SEVERITY ERROR;
-        memwrite <= '0';
         wait for clk_period;
-        memread <= '1';
-        --wait until rising_edge(waitrequest);
-        assert data_to_WB = x"00000002" report "unsuccessful read from memory" severity error;
+        
+        assert data_t_WB = x"00000004" report "unsuccessful write" severity error;
+        wait for clk_period;
+        
         memread <= '0';
         wait;
-        --wait for clk_period;
-        --memread <= '1';
-        --wait until rising_edge(waitrequest);
-        --ASSERT data_to_WB = x"00000000000000000000000000000011") REPORT "NOT READ!" SEVERITY ERROR;
 
     END PROCESS;
 

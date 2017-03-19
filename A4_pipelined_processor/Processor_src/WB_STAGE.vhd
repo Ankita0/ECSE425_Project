@@ -6,10 +6,10 @@ ENTITY WB_STAGE is
   PORT(
       clock: IN STD_LOGIC;
       reg_write: IN STD_LOGIC;
+      mux_control: IN STD_LOGIC;
       alu_data: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
       mem_data: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
       reg_dst: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-      mux_input: IN STD_LOGIC;
       
       reg_write_out: OUT STD_LOGIC;
       reg_dst_out: OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
