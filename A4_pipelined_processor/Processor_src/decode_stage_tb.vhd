@@ -15,6 +15,10 @@ COMPONENT decode_stage is
 			WB_data_addr	: in std_logic_vector (4 downto 0);--signals propagated from WB
 			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
 												--it's the reg_write propogated to WB stage and coming back
+			EX_reg_dest_addr: in std_logic_vector(4 downto 0);	--for hazard detection
+			MEM_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+			WB_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+
 			PC_counter_out	: out integer;	--to propagate to EX stage
 			reg_value1	 	: out std_logic_vector(31 downto 0); --MuxA
 			reg_value2	 	: out std_logic_vector(31 downto 0); --MuxB
@@ -43,6 +47,11 @@ END COMPONENT;
 	SIGNAL WB_data_write	: std_logic:= '0'; 	--signal to check if WB_data needs to be written in WB_data_addr
 	SIGNAL PC_counter_out	: integer:= 0;	--to propagate to EX stage
 
+	SIGNAL EX_reg_dest_addr	: std_logic_vector(4 downto 0);	--for hazard detection
+	SIGNAL MEM_reg_dest_addr: std_logic_vector(4 downto 0); --for hazard detection
+	SIGNAL WB_reg_dest_addr	: std_logic_vector(4 downto 0); --for hazard detection
+
+
 	SIGNAL reg_value1		: std_logic_vector(31 downto 0):=x"00000000"; --MuxA
 	SIGNAL reg_value2		: std_logic_vector(31 downto 0):=x"00000000"; --MuxB
 	SIGNAL reg_dest_addr	: std_logic_vector(4 downto 0):= (others => '0');	--$rd (r-type) or $rt (i-type)
@@ -68,6 +77,9 @@ DUT: decode_stage
 				WB_data,
 				WB_data_addr,
 				WB_data_write,
+				EX_reg_dest_addr,
+				MEM_reg_dest_addr,
+				WB_reg_dest_addr,	
 				PC_counter_out,
 				reg_value1,
 				reg_value2,
@@ -105,6 +117,13 @@ DUT: decode_stage
 		WB_data_addr<="00010";	--e.g r2
 		--from previous instructions
 		WB_data_write<='1';	
+		--from EX stage
+		EX_reg_dest_addr<="00000";
+		--from MEM stage
+		MEM_reg_dest_addr<="00010";
+		--from WB stage
+		WB_reg_dest_addr<="00011";
+
 		wait for clock_period;
 		
 		ASSERT	(PC_counter_out=1) REPORT "PC_counter_out mismatch" SEVERITY ERROR;

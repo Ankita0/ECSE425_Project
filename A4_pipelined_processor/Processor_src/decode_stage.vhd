@@ -13,6 +13,10 @@ entity decode_stage is
 			WB_data_addr	: in std_logic_vector (4 downto 0);--signals propagated from WB
 			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
 												--it's the reg_write propogated to WB stage and coming back
+			EX_reg_dest_addr: in std_logic_vector(4 downto 0);	--for hazard detection
+			MEM_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+			WB_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+
 			PC_counter_out	: out integer;	--to propagate to EX stage
 			reg_value1	 	: out std_logic_vector(31 downto 0); --MuxA
 			reg_value2	 	: out std_logic_vector(31 downto 0); --MuxB
