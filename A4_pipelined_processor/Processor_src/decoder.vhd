@@ -168,9 +168,9 @@ begin
 					--control-flow
 					when "001000" =>		--jr
 						alu_op_code<="111100";	
-						reg_dst<='0';	--not writing back to register 
+						reg_dst<='1';	--not writing back to register 
 						reg_write<='0'; --if reg_write is not 0, will overwrite a register *BAD*
-						alu_src<='X';
+						alu_src<='0';
 						mem_write<='0';
 						mem_read<='0';
 						jump<='1';
@@ -190,7 +190,7 @@ begin
 			--Arithmetic
 			when "001000" =>		--addi
 				alu_op_code<="100000"; 	--funct of add (r-type)
-				reg_dst<='1';
+				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
 				mem_write<='0';
@@ -199,7 +199,7 @@ begin
 				branch<='0';				
 			when "001010" =>		--slti
 				alu_op_code<="101010";--funct of slt (r-type)
-				reg_dst<='1';
+				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
 				mem_write<='0';
@@ -209,7 +209,7 @@ begin
 			--Logical
 			when "001100" =>		--andi
 				alu_op_code<="100100";	--funct of and (r-type)
-				reg_dst<='1';
+				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
 				mem_write<='0';
@@ -218,7 +218,7 @@ begin
 				branch<='0';
 			when "001101" =>		--ori
 				alu_op_code<="100101"; --funct of or (r-type)
-				reg_dst<='1';
+				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
 				mem_write<='0';
@@ -227,7 +227,7 @@ begin
 				branch<='0';
 			when "001110" =>		--xori
 				alu_op_code<="100110"; --funct of xor (r-type)
-				reg_dst<='1';
+				reg_dst<='0';
 				reg_write<='1';
 				alu_src<='1';
 				mem_write<='0';
@@ -260,7 +260,7 @@ begin
 				-- write to memory data = value of rt	
 
 
-				reg_dst<='X';
+				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='1';
 				mem_write<='1';
@@ -270,7 +270,7 @@ begin
 			--Control-flow
 			when "000100" =>		--beq
 				alu_op_code<="100000";					
-				reg_dst<='X';
+				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='0';
 				mem_write<='0';
@@ -279,7 +279,7 @@ begin
 				branch<='1';
 			when "000101" =>		--bne
 				alu_op_code<="100000";
-				reg_dst<='X';
+				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='0';
 				mem_write<='0';
