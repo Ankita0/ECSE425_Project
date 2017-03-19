@@ -1,9 +1,12 @@
---EXECUTE PIPELINE STAGE FOR ECSE 425 PROJECT WINTER 2017
---GROUP 8
---Author: Alina Mambo
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+
+
+
+--MISING: LUI,J,JR address calculations!!!
+--SW AND LW will point to addi NEED an opcode for them
 
 --ALU for the execute stage
 --MUX_A should be the 1st operand in the instruction
@@ -13,18 +16,14 @@ entity alu is
 
 	Generic(W : natural := 32; F : natural :=6;clock_period : time := 1 ns);
 	
-	port(  
-			Mux_A		: in  std_logic_vector(W-1 downto 0);
-			Mux_B		: in  std_logic_vector(W-1 downto 0);
-			Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
-			clock 		: in std_logic;
-			shamt		: in std_logic_vector (F-2 downto 0);
-			Hi 			: out std_logic_vector(W-1 downto 0);
-	       	Lo 			: out std_logic_vector(W-1 downto 0);
-			Alu_Rslt	: out std_logic_vector(W-1 downto 0);
-			Zero 		: out std_logic;
-			Overflow	: out std_logic;
-			Carryout	: out std_logic);
+	port(  Mux_A	: in  std_logic_vector(W-1 downto 0);
+			   Mux_B	: in  std_logic_vector(W-1 downto 0);
+			   Alu_Ctrl: in  std_logic_vector(F-1 downto 0);
+			   clock : in std_logic;
+			   shamt	: in std_logic_vector (F-2 downto 0);
+			   Hi 	: out std_logic_vector(W-1 downto 0);
+	       Lo 	: out std_logic_vector(W-1 downto 0);
+			   Alu_Rslt: out std_logic_vector(W-1 downto 0));
 
 end alu;
 
@@ -35,10 +34,10 @@ architecture arch of alu is
 
 		process(Alu_Ctrl)
 
-		Variable Y 		: std_logic_vector(W-1 downto 0);
+		Variable Y : std_logic_vector(W-1 downto 0);
 		Variable sign_A,sign_B : signed(W-1 downto 0);
-		Variable alu_c 	: std_logic_vector(5 downto 0);
-		variable MD_rslt: std_logic_vector(63 downto 0);
+		Variable alu_c : std_logic_vector(5 downto 0);
+		variable MD_rslt : std_logic_vector(63 downto 0);
 		variable shift_zeroes: std_logic_vector(W-1 downto 0);
 		
 
@@ -78,27 +77,76 @@ architecture arch of alu is
 				when "000000"=> Y:= std_logic_vector(unsigned(Mux_B) sll (to_integer(unsigned(shamt))));	--shift left logical (sll), shift zeroes into LSB
 				when "000010"=>	Y:= std_logic_vector(unsigned(Mux_B) srl (to_integer(unsigned(shamt))));--shift right logical (srl), shift zeroes into MSB
 				when "000011"=>	Y:= to_stdlogicvector(to_bitvector(Mux_B) sra (to_integer(unsigned(shamt))));--shift right arithmetic (sra) NEED TO FIX THE CONCAT
-				  
+				  --IF(Mux_B(31)='1')then
+				   -- Y:= Mux_B((to_integer(unsigned(shamt))) downto 0) & (others => '1');
+					--else
+						--Y:= Mux_B((to_integer(unsigned(shamt))) downto 0) & (others => '0');
+				--	END IF;
+
+				--when "010000"=>	Y	:=Hi;--mfhi
+			--	when "010010"=>	Y	:=Lo;--mflo duplicate code of OR
+
+				-- I type 
+				-- Note: andi/addi/ori/xori are the same logic as add/and/or/xor R type
+				-- because the control vector tells the mux which value to send to the alu (register or sign extended value)
+
+				when "001011"=> --set on less than immediate (slti)
+					IF(Mux_A<Mux_B) then--set on less than (slt)
+						Y:="00000000000000000000000000000001";
+					else
+						Y:="00000000000000000000000000000000";
+					END IF;
+
+				when "001000"=>	Y	:= std_logic_vector(signed(Mux_A)+ signed(Mux_B)); --addi,SW,LW
+				when "001100"=>	Y	:= Mux_A AND Mux_B;--andi
+				when "001101"=>	Y	:= Mux_A OR Mux_B;--ori
+				when "001110"=>	Y	:= (Mux_A AND (NOT Mux_B)) OR ((NOT Mux_A) AND Mux_B);--xori
+
+				--when "000100"=>	--beq
+				--	IF(Mux_A=Mux_B) then 
+					--	Zero<= '0';
+				--	END IF;
+				--when "000101"=>	Y	:=;--bne
+
+				--LUI
+
+				--J-type
+				--when "000011"=>	Y	:=;--jal
+				--when "" => Y :=; --j
+				--when "" => Y :=; --jr
+
 				when others => Y := (others => 'X');
 
 			end case;
 
 
-			--Check Zero For Branching 
+			--Check Zero
 
-			if Y ="00000000000000000000000000000000" then
-				Zero<='1';
-			else
-				Zero <='0';
-			end if;
-
-
-			--Check Carryout
-			if Mux_A(31)='1' AND Mux_B(31)='1' then
-				Carryout<='1';
-			else
-				Carryout <='0';
-			end if;
+				--if Y ="00000000000000000000000000000000" then
+--				Zero<='1';
+--			else
+--				Zero <='0';
+--			end if;
+--
+--
+--			--Check Carryout
+--			if Mux_A(31)='1' AND Mux_B(31)='1' then
+--				Carryout<='1';
+--			else
+--				Carryout <='0';
+--			end if;	--if Y ="00000000000000000000000000000000" then
+--				Zero<='1';
+--			else
+--				Zero <='0';
+--			end if;
+--
+--
+--			--Check Carryout
+--			if Mux_A(31)='1' AND Mux_B(31)='1' then
+--				Carryout<='1';
+--			else
+--				Carryout <='0';
+--			end if;
 
 			--Check Overflow, if it is implmented then we need to change Y to 33 bits 
 
