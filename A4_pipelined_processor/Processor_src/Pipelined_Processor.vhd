@@ -29,7 +29,7 @@ PORT(
 END COMPONENT;
 
 COMPONENT decode_stage is
-PORT(	
+Port(		
 			clock			: in std_logic;	
 			instruction		: in std_logic_vector(31 downto 0); --instruction from IF stage
 			PC_counter_in	: in integer;	--to propagate to EX stage
@@ -37,6 +37,10 @@ PORT(
 			WB_data_addr	: in std_logic_vector (4 downto 0);--signals propagated from WB
 			WB_data_write	: in std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
 												--it's the reg_write propogated to WB stage and coming back
+			EX_reg_dest_addr: in std_logic_vector(4 downto 0);	--for hazard detection
+			MEM_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+			WB_reg_dest_addr: in std_logic_vector(4 downto 0); --for hazard detection
+
 			PC_counter_out	: out integer;	--to propagate to EX stage
 			reg_value1	 	: out std_logic_vector(31 downto 0); --MuxA
 			reg_value2	 	: out std_logic_vector(31 downto 0); --MuxB
@@ -85,7 +89,8 @@ PORT(
 			OUT_mem_read: out std_logic; 
 			OUT_mem_data_wr: out std_logic_vector(31 downto 0);
 			OUT_wb_write:out std_logic;
-			OUT_wb_addr: out std_logic_vector(4 downto 0));
+			OUT_wb_addr: out std_logic_vector(4 downto 0)
+			);
 	
 END COMPONENT;
 
@@ -94,7 +99,7 @@ GENERIC(
 	ram_size : INTEGER := 8192
 );
 PORT(
-      		clock: IN STD_LOGIC;
+     	clock: IN STD_LOGIC;
  		reset: IN STD_LOGIC;
       
       --control signals
@@ -129,19 +134,6 @@ COMPONENT WB_STAGE is
       );
 END COMPONENT;
 
-COMPONENT hazard_detect is
-	port(
-	clock: in std_logic;
-	instruction_in: in std_logic_vector(31 downto 0);
-	EX_reg_dest_addr: in std_logic_vector(4 downto 0);
-	MEM_reg_dest_addr: in std_logic_vector(4 downto 0);
-	WB_reg_dest_addr: in std_logic_vector(4 downto 0);
-
-	instruction_out: out std_logic_vector(31 downto 0);
-	stall: out std_logic
-);
-end COMPONENT;
-
 	--SIGNAL CLK		:std_logic;
 	
 	--IF stage mapping
@@ -153,21 +145,25 @@ end COMPONENT;
 	SIGNAL IF_Instruction_out	: STD_LOGIC_VECTOR(31 downto 0);
 	
 	--DE stage mapping	
-	SIGNAL DE_instruction		: std_logic_vector(31 downto 0); --instruction from IF stage
+	SIGNAL DE_instruction	: std_logic_vector(31 downto 0); --instruction from IF stage
 	SIGNAL DE_PC_counter_in	: integer;	--to propagate to EX stage
 	SIGNAL DE_WB_data 		: std_logic_vector (31 downto 0);	--signals propagated from WB
-	SIGNAL DE_WB_data_addr		: std_logic_vector (4 downto 0);--signals propagated from WB
+	SIGNAL DE_WB_data_addr	: std_logic_vector (4 downto 0);--signals propagated from WB
 	SIGNAL DE_WB_data_write	: std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
-				--it's the reg_write propogated to WB stage and coming back
-	SIGNAL DE_PC_counter_out	: integer;	--to propagate to EX stage
-	SIGNAL DE_reg_value1	 	: std_logic_vector(31 downto 0); --MuxA
-	SIGNAL DE_reg_value2	 	: std_logic_vector(31 downto 0); --MuxB
-	SIGNAL DE_reg_dest_addr	: std_logic_vector(4 downto 0);	--$rd (r-type) or $rt (i-type), equivalent to the WB_X signals
-	SIGNAL DE_shamt		: std_logic_vector(4 downto 0);	--shift amount
-	SIGNAL DE_j_address		: std_logic_vector(25 downto 0);
-	SIGNAL DE_alu_op_code		: std_logic_vector(5 downto 0);
+	SIGNAL DE_EX_reg_dest_addr: std_logic_vector(4 downto 0);
+	SIGNAL DE_MEM_reg_dest_addr: std_logic_vector(4 downto 0);
+	SIGNAL DE_WB_reg_dest_addr: std_logic_vector(4 downto 0);
 
-			--control signals
+											--it's the reg_write propogated to WB stage and coming back
+	SIGNAL DE_PC_counter_out: integer;	--to propagate to EX stage
+	SIGNAL DE_reg_value1	: std_logic_vector(31 downto 0); --MuxA
+	SIGNAL DE_reg_value2	: std_logic_vector(31 downto 0); --MuxB
+	SIGNAL DE_reg_dest_addr	: std_logic_vector(4 downto 0);	--$rd (r-type) or $rt (i-type), equivalent to the WB_X signals
+	SIGNAL DE_shamt			: std_logic_vector(4 downto 0);	--shift amount
+	SIGNAL DE_j_address		: std_logic_vector(25 downto 0);
+	SIGNAL DE_alu_op_code	: std_logic_vector(5 downto 0);
+
+	--control signals
 	SIGNAL DE_reg_write		: std_logic;	--to be propagated to WB and back to DE
 	SIGNAL DE_mem_read		: std_logic;	--for MEM stage
 	SIGNAL DE_mem_write		: std_logic;	--for MEM stage
@@ -255,6 +251,9 @@ decode_stage PORT MAP(
 	DE_WB_data,		--signals propagated from WB
 	DE_WB_data_addr,	--signals propagated from WB	
 	DE_WB_data_write,	--signal to check if WB_data needs to be written in WB_data_addr
+	DE_EX_reg_dest_addr,
+	DE_MEM_reg_dest_addr,
+	DE_WB_reg_dest_addr,
 			--it's the reg_write propogated to WB stage and coming back
 	DE_PC_counter_out,	--to propagate to EX stage
 	DE_reg_value1,		--MuxA	
