@@ -145,14 +145,14 @@ END COMPONENT;
 	SIGNAL IF_Instruction_out	: STD_LOGIC_VECTOR(31 downto 0);
 	
 	--DE stage mapping	
-	SIGNAL DE_instruction	: std_logic_vector(31 downto 0); --instruction from IF stage
-	SIGNAL DE_PC_counter_in	: integer;	--to propagate to EX stage
-	SIGNAL DE_WB_data 		: std_logic_vector (31 downto 0);	--signals propagated from WB
-	SIGNAL DE_WB_data_addr	: std_logic_vector (4 downto 0);--signals propagated from WB
-	SIGNAL DE_WB_data_write	: std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
-	SIGNAL DE_EX_reg_dest_addr: std_logic_vector(4 downto 0);
-	SIGNAL DE_MEM_reg_dest_addr: std_logic_vector(4 downto 0);
-	SIGNAL DE_WB_reg_dest_addr: std_logic_vector(4 downto 0);
+	--SIGNAL DE_instruction	: std_logic_vector(31 downto 0); --instruction from IF stage
+	--SIGNAL DE_PC_counter_in	: integer;	--to propagate to EX stage
+	--SIGNAL DE_WB_data 		: std_logic_vector (31 downto 0);	--signals propagated from WB
+	--SIGNAL DE_WB_data_addr	: std_logic_vector (4 downto 0);--signals propagated from WB
+	--SIGNAL DE_WB_data_write	: std_logic; 	--signal to check if WB_data needs to be written in WB_data_addr
+	--SIGNAL DE_EX_reg_dest_addr: std_logic_vector(4 downto 0);
+	--SIGNAL DE_MEM_reg_dest_addr: std_logic_vector(4 downto 0);
+	--SIGNAL DE_WB_reg_dest_addr: std_logic_vector(4 downto 0);
 
 											--it's the reg_write propogated to WB stage and coming back
 	SIGNAL DE_PC_counter_out: integer;	--to propagate to EX stage
@@ -172,22 +172,22 @@ END COMPONENT;
 	SIGNAL DE_IF_stall		: std_logic:='0';
 
 	--EX stage mapping
-	SIGNAL EX_PC_IN		: integer; -- PC from IF and Decode
+	--SIGNAL EX_PC_IN		: integer; -- PC from IF and Decode
 
 	--Passing through IN
-	SIGNAL EX_IN_mem_write		: std_logic; --MEM write
-	SIGNAL EX_IN_mem_read		: std_logic;  --- MEM READ
-	SIGNAL EX_IN_mem_data_wr	: std_logic_vector(31 downto 0); --WRITE DATA TO MEM
-	SIGNAL EX_IN_wb_write		: std_logic; -- WB WRITE
-	SIGNAL EX_IN_wb_addr		: std_logic_vector(4 downto 0);
+	--SIGNAL EX_IN_mem_write		: std_logic; --MEM write
+	--SIGNAL EX_IN_mem_read		: std_logic;  --- MEM READ
+	--SIGNAL EX_IN_mem_data_wr	: std_logic_vector(31 downto 0); --WRITE DATA TO MEM
+	--SIGNAL EX_IN_wb_write		: std_logic; -- WB WRITE
+	--SIGNAL EX_IN_wb_addr		: std_logic_vector(4 downto 0);
 	
 	-- ALU INPUT
-	SIGNAL EX_Input_A		: std_logic_vector(31 downto 0);
-	SIGNAL EX_Input_B		: std_logic_vector(31 downto 0);
-	SIGNAL EX_alu_op_code		: std_logic_vector(5 downto 0);
-	SIGNAL EX_Jump			: std_logic;
-	SIGNAL EX_Branch		: std_logic;
-	SIGNAL EX_jump_addr		: std_logic_vector(25 downto 0);
+	--SIGNAL EX_Input_A		: std_logic_vector(31 downto 0);
+	--SIGNAL EX_Input_B		: std_logic_vector(31 downto 0);
+	--SIGNAL EX_alu_op_code		: std_logic_vector(5 downto 0);
+	--SIGNAL EX_Jump			: std_logic;
+	--SIGNAL EX_Branch		: std_logic;
+	--SIGNAL EX_jump_addr		: std_logic_vector(25 downto 0);
 	
 	--ALU OUT
 	SIGNAL EX_result		: std_logic_vector(31 downto 0);
@@ -202,17 +202,17 @@ END COMPONENT;
 	SIGNAL EX_OUT_wb_addr		: std_logic_vector(4 downto 0);
 	
 	--MEM stage mapping
-	SIGNAL MEM_reset		: STD_LOGIC;
+	--SIGNAL MEM_reset		: STD_LOGIC;
       
       --control signals
-	SIGNAL MEM_do_memread		: STD_LOGIC;
-	SIGNAL MEM_do_memwrite		: STD_LOGIC;
-	SIGNAL MEM_reg_write		: STD_LOGIC;
+	--SIGNAL MEM_do_memread		: STD_LOGIC;
+	--SIGNAL MEM_do_memwrite		: STD_LOGIC;
+	--SIGNAL MEM_reg_write		: STD_LOGIC;
       
       --coming from EX stage
-	SIGNAL MEM_alu_result		: STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL MEM_writedata		: STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL MEM_reg_dst		: STD_LOGIC_VECTOR (4 DOWNTO 0);
+	--SIGNAL MEM_alu_result		: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	--SIGNAL MEM_writedata		: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	--SIGNAL MEM_reg_dst		: STD_LOGIC_VECTOR (4 DOWNTO 0);
 
       --going to WB stage
 	SIGNAL MEM_alu_result_out	: STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -221,10 +221,10 @@ END COMPONENT;
 	SIGNAL MEM_reg_write_out	: STD_LOGIC;
 
 	--WB stage mapping
-	SIGNAL WB_reg_write		: STD_LOGIC;
-	SIGNAL WB_alu_data		: STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL WB_mem_data		: STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL WB_reg_dst		: STD_LOGIC_VECTOR (4 DOWNTO 0);
+	--SIGNAL WB_reg_write		: STD_LOGIC;
+	--SIGNAL WB_alu_data		: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	--SIGNAL WB_mem_data		: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	--SIGNAL WB_reg_dst		: STD_LOGIC_VECTOR (4 DOWNTO 0);
       
 	SIGNAL WB_reg_write_out		: STD_LOGIC;
 	SIGNAL WB_reg_dst_out		: STD_LOGIC_VECTOR (4 DOWNTO 0);
@@ -336,7 +336,7 @@ WB_STAGE PORT MAP(
       MEM_alu_result_out,
       MEM_data_to_WB,
       MEM_reg_dst_out,
-      
+
       WB_reg_write_out,
       WB_reg_dst_out,
       WB_writedata 
