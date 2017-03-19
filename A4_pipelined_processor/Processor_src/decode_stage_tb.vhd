@@ -46,7 +46,7 @@ END COMPONENT;
 	SIGNAL reg_value2		: std_logic_vector(31 downto 0):=x"00000000"; --MuxB
 	SIGNAL reg_dest_addr	: std_logic_vector(4 downto 0):= (others => '0');	--$rd (r-type) or $rt (i-type)
 	SIGNAL shamt			: std_logic_vector(4 downto 0):= (others => '0');	--shift amount
-	SIGNAL j_address		: integer:=0;	--to_integer(unsign(std_logic_vector(25 downto 0)))
+	SIGNAL j_address		: std_logic_vector(25 downto 0):= (others => '0');
 
 	SIGNAL alu_op_code		: std_logic_vector(5 downto 0):= (others => '0');
 

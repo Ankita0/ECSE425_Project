@@ -85,7 +85,7 @@ end Component;
 
 begin
 
-	decoder: decoder
+	decoder1: decoder
 	PORT MAP(	instruction,
 				clock,
 				alu_op_code_s,
@@ -98,7 +98,7 @@ begin
 				branch_s
 			);
 
-	register_file: register_file
+	register_file1: register_file
 	PORT MAP(	clock,
 				instruction(25 downto 21),
 				instruction(20 downto 16),
@@ -109,7 +109,7 @@ begin
 				reg_value2_s
 			);
 
-	signextension: signextension
+	signextension1: signextension
 	PORT MAP(	instruction(15 downto 0),
 				sign_extended_imm
 			);
