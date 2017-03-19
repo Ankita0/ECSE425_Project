@@ -138,8 +138,8 @@ END COMPONENT;
 	
 	--IF stage mapping
 	--map init directly--PC_counter_init: STD_LOGIC;
-	SIGNAL IF_mux_control		: STD_LOGIC;
-	SIGNAL IF_PC_instr_from_EX	: INTEGER;
+	--SIGNAL IF_mux_control		: STD_LOGIC;
+	--SIGNAL IF_PC_instr_from_EX	: INTEGER;
 	SIGNAL IF_control_vector	: STD_LOGIC_VECTOR(1 downto 0); --stalling signal
 	SIGNAL IF_PC_count_out		: INTEGER;
 	SIGNAL IF_Instruction_out	: STD_LOGIC_VECTOR(31 downto 0);
@@ -235,8 +235,8 @@ BEGIN
 DUT_IF_stage: 
 IF_stage PORT MAP(
 	PP_Init,
-	IF_mux_control,
-	IF_PC_instr_from_EX,
+	EX_IF_MUX_CTRL,
+	EX_PC_OUT,
 	PP_CLK,
 	IF_control_vector, --stalling signal
 	IF_PC_count_out,
