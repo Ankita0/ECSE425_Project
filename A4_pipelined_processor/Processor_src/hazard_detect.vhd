@@ -34,11 +34,11 @@ begin
 		--check for both ra and rb
 		if (op_code="000000") then
 
-			if (((ra != "00000") AND 
+			if (((not(ra = "00000")) AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
 			 	(ra = WB_reg_dest_addr))) OR 
-			 	((rb != "00000") AND 
+			 	((not(rb = "00000")) AND 
 			 	((rb = EX_reg_dest_addr) OR
 			 	(rb = MEM_reg_dest_addr) OR 
 			 	(rb = WB_reg_dest_addr)))) then 
@@ -52,7 +52,7 @@ begin
 
 		--only check for ra
 		else
-			if ((ra != "00000") AND 
+			if ((not(ra = "00000")) AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
 			 	(ra = WB_reg_dest_addr))) then 
