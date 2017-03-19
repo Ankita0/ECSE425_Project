@@ -14,12 +14,12 @@ PORT(
       --control signals
   		  do_memread: IN STD_LOGIC;
   		  do_memwrite: IN STD_LOGIC;
+		  reg_write: IN STD_LOGIC;
       
       --coming from EX stage
 		  alu_result: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
 		  writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
 		  reg_dst: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
-		  reg_write: IN STD_LOGIC;
 
       --going to WB stage
   		  alu_result_out: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -70,7 +70,7 @@ BEGIN
 
   mm_address <= to_integer(unsigned(alu_result));
   
-  MEM_PROCESS : PROCESS  (clock, do_memread, do_memwrite)
+  MEM_PROCESS : PROCESS  (clock, do_memread, do_memwrite, reg_dst, alu_result)
   BEGIN
     
 	 if rising_edge(clock) then
@@ -78,12 +78,15 @@ BEGIN
 			mm_read <= '1';
 		elsif do_memwrite = '1' then
 			mm_write <= '1';
+		elsif reg_write = '1' then
+			reg_write_out<='1';
+			reg_dst_out<= reg_dst;
 		end if;
 
 	 end if; 
   end process;
 	
-  MEMSTAGE_PROCESS : PROCESS (clock, reset, reg_dst, data_memread, alu_result, reg_write)	
+  MEMSTAGE_PROCESS : PROCESS (clock, reset, reg_dst, data_memread, alu_result, reg_write, writedata)	
 	 BEGIN
 	  
 	  if reset = '1' then
@@ -97,7 +100,7 @@ BEGIN
 	    data_to_WB <= data_memread;
 	    reg_dst_out <= reg_dst;
 	    reg_write_out <= reg_write;
-
+	    data_memwrite<=writedata;
 	  end if;
 	
   END PROCESS;	
