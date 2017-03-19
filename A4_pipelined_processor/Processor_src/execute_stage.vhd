@@ -81,13 +81,13 @@ Component alu is
 
 
 	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
-	signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
-	signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
+	--signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
+	--signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
 
 	--signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
 	signal branch_taken:std_logic := '0';
 	signal jal : std_logic := '0';
-	signal rslt_set : std_logic :='0';
+	--signal rslt_set : std_logic :='0';
 
 	begin
 
@@ -106,15 +106,18 @@ Component alu is
 
 		Variable alu_opcode : std_logic_vector(5 downto 0);
 		Variable inter_rslt : std_logic_vector(31 downto 0);
+		Variable rslt_set : std_logic;
+		
 
 		begin
     
 			alu_opcode:= alu_op_code;
-			rslt_set<='0';
+			rslt_set:='0';
 
     if(rising_edge(clock)) then
      
-    
+      	   Mux_A<= Input_A;
+					Mux_B<=Input_B;
     
 			case alu_opcode is
 				------------------------------------------------
@@ -123,21 +126,19 @@ Component alu is
 
 				--MFHI needs rd as dst
 				when "010000" =>
-					Hi_Reg<=Hi;
-					inter_rslt:=Hi_Reg;
-          rslt_set<='1';
+					inter_rslt:=Hi;
+          rslt_set:='1';
 
 				--MFLO needs rd as dst
 				when "010010"=>
-					Lo_Reg<=Lo;
-					inter_rslt:=Lo_Reg;
-					rslt_set<='1';
+					inter_rslt:=Lo;
+					rslt_set:='1';
 
 				--LUI NEEDS rt
 				when "001111" =>
 					--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
-					inter_rslt:=std_logic_vector(unsigned(Mux_A)sll 16) ;
-					rslt_set<='1';
+					inter_rslt:=std_logic_vector(unsigned(Input_B)sll 16) ;
+					rslt_set:='1';
 				when "111110" =>
 				  jal<='1';
 				
@@ -172,8 +173,7 @@ Component alu is
 			--EXECUTE
 			------------------------------------------------
 		  if(rslt_set ='0') then
-					Mux_A<= Input_A;
-					Mux_B<=Input_B;
+				
 					Alu_Ctrl<=alu_op_code;
 					inter_rslt:=Alu_Rslt;
 					if (branch = '1') then
