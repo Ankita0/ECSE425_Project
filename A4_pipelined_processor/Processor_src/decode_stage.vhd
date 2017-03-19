@@ -34,7 +34,6 @@ end decode_stage;
 architecture arch of decode_stage is
 
 Component decoder is
-
 	port(	instruction	: in std_logic_vector(31 downto 0);
 			clock		: in std_logic;
 			alu_op_code	: out std_logic_vector(5 downto 0);
@@ -44,32 +43,32 @@ Component decoder is
 			mem_write	: out std_logic;
 			mem_read	: out std_logic;
 			jump		: out std_logic;
-			branch		: out std_logic);
-	end Component;
+			branch		: out std_logic
+		);
+end Component;
 
-	Component register_file is
-	Generic(W : natural := 32);
-	port(
-	clock: in std_logic;
-	rs: in std_logic_vector(4 downto 0);
-	rt: in std_logic_vector(4 downto 0);
-	rd: in std_logic_vector(4 downto 0);
-	reg_write: in std_logic;
-	result: in std_logic_vector(W-1 downto 0);
-	reg_value1: out std_logic_vector(W-1 downto 0);
-	reg_value2: out std_logic_vector(W-1 downto 0)
-	);
-	end Component;
+Component register_file is
+	Generic(W 			: natural := 32);
+	port(	clock		: in std_logic;
+			rs 			: in std_logic_vector(4 downto 0);
+			rt 			: in std_logic_vector(4 downto 0);
+			rd 			: in std_logic_vector(4 downto 0);
+			reg_write	: in std_logic;
+			result 		: in std_logic_vector(W-1 downto 0);
+			reg_value1	: out std_logic_vector(W-1 downto 0);
+			reg_value2	: out std_logic_vector(W-1 downto 0)
+		);
+end Component;
 
-	Component signextension is
-	port(	bit16 : in std_logic_vector(15 downto 0);
-			bit32 : out std_logic_vector(31 downto 0)
-	);
-	end Component;
+Component signextension is
+	port(	bit16 		: in std_logic_vector(15 downto 0);
+			bit32		: out std_logic_vector(31 downto 0)
+		);
+end Component;
 
 	--SIGNALS FOR DECODER
 	signal instruction_s: std_logic_vector(31 downto 0);
---	signal clock: std_logic;
+
 	signal alu_op_code : std_logic_vector(5 downto 0);
     signal reg_dst : std_logic;
     signal reg_write : std_logic;
@@ -90,30 +89,33 @@ Component decoder is
 begin
 
 	decoder: decoder
-	PORT MAP(instruction_s,
-			clock,
-			alu_op_code,
-			reg_dst,
-			reg_write,
-			alu_src,
-			mem_write,
-			mem_read,
-			jump,
-			branch);
+	PORT MAP(	instruction_s,
+				clock,
+				alu_op_code,
+				reg_dst,
+				reg_write,
+				alu_src,
+				mem_write,
+				mem_read,
+				jump,
+				branch
+			);
 
 	register_file: register_file
-	PORT MAP(clock,
-		instruction_s(25 downto 21),
-		instruction_s(20 downto 16),
-		WB_data_addr,
-		WB_data_write,
-		WB_data,
-		reg_value1,
-		reg_value2);
+	PORT MAP(	clock,
+				instruction_s(25 downto 21),
+				instruction_s(20 downto 16),
+				WB_data_addr,
+				WB_data_write,
+				WB_data,
+				reg_value1,
+				reg_value2
+			);
 
 	signextension: signextension
-	PORT MAP(instruction_s(15 downto 0),
-			signextended);
+	PORT MAP(	instruction_s(15 downto 0),
+				signextended
+			);
 
 
 	--instruction_s<=result;	
