@@ -80,7 +80,7 @@ BEGIN
 
     test_process : process
     BEGIN
-
+	 wait for 0.5*clk_period;
         --TEST WRITE
         alu_result <= x"00000001"; --addr in mem
         writedata <= x"00000002"; --value inside rt
@@ -110,7 +110,7 @@ BEGIN
         memwrite <= '1';
         wait for clk_period;
         
-        assert data_t_WB = x"00000004" report "unsuccessful write" severity error;
+        assert data_to_WB = x"00000004" report "unsuccessful write" severity error;
         wait for clk_period;
         
         memread <= '0';

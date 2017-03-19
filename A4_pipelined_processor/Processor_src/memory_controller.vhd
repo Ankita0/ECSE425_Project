@@ -50,8 +50,8 @@ END COMPONENT;
 
  	SIGNAL data_memwrite: STD_LOGIC_VECTOR (31 DOWNTO 0);
  	SIGNAL mm_address: INTEGER RANGE 0 to ram_size-1;
- 	SIGNAL mm_write: STD_LOGIC;
- 	SIGNAL mm_read: STD_LOGIC;
+ 	SIGNAL mm_write: STD_LOGIC:='0';
+ 	SIGNAL mm_read: STD_LOGIC:='0';
  	SIGNAL data_memread: STD_LOGIC_VECTOR (31 DOWNTO 0);
 	SIGNAL waitrequest: STD_LOGIC; 
   
@@ -59,18 +59,18 @@ BEGIN
   
   DUT: data_memory
       port map(
-	     clock,
+	clock,
       	data_memwrite,
       	mm_address,
       	mm_write,
       	mm_read,
-       data_memread,
+	data_memread,
       	waitrequest
       );
 
   mm_address <= to_integer(unsigned(alu_result));
   
-  MEM_PROCESS : PROCESS  (clock)
+  MEM_PROCESS : PROCESS  (clock, do_memread, do_memwrite)
   BEGIN
     
 	 if rising_edge(clock) then
@@ -83,11 +83,10 @@ BEGIN
 	 end if; 
   end process;
 	
-  MEMSTAGE_PROCESS : PROCESS (clock, reset)	
+  MEMSTAGE_PROCESS : PROCESS (clock, reset, reg_dst, data_memread, alu_result, reg_write)	
 	 BEGIN
 	  
 	  if reset = '1' then
-	    
 	    alu_result_out <= (others => '0');
 	    data_to_WB <= (others => '0');
 	    reg_dst_out <= (others => '0');
