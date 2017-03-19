@@ -142,7 +142,7 @@ COMPONENT hazard_detect is
 );
 end COMPONENT;
 
-	SIGNAL CLK		:std_logic;
+	--SIGNAL CLK		:std_logic;
 	
 	--IF stage mapping
 	--map init directly--PC_counter_init: STD_LOGIC;
@@ -241,7 +241,7 @@ IF_stage PORT MAP(
 	PP_Init,
 	IF_mux_control,
 	IF_PC_instr_from_EX,
-	CLK,
+	PP_CLK,
 	IF_control_vector, --stalling signal
 	IF_PC_count_out,
 	IF_Instruction_out
@@ -249,7 +249,7 @@ IF_stage PORT MAP(
 
 DUT_DE_stage:
 decode_stage PORT MAP(	
-	CLK,	
+	PP_CLK,	
 	DE_instruction,		--instruction from IF stage
 	DE_PC_counter_in, 	--to propagate to EX stage
 	DE_WB_data,		--signals propagated from WB
@@ -275,7 +275,7 @@ decode_stage PORT MAP(
 
 DUT_EX_stage: 
 execute_stage PORT MAP(	
-	CLK,
+	PP_CLK,
 	EX_PC_IN,-- PC from IF and Decode
 
 	--Passing through IN
@@ -309,7 +309,7 @@ execute_stage PORT MAP(
 
 DUT_MEM_stage:
 memory_controller PORT MAP(
-	CLK,
+	PP_CLK,
 	PP_Init,
       
       --control signals
@@ -332,7 +332,7 @@ memory_controller PORT MAP(
 
 DUT_WB_stage:
 WB_STAGE PORT MAP(
-      CLK,
+      PP_CLK,
       WB_reg_write,
       WB_alu_data,
       WB_mem_data,
@@ -342,9 +342,22 @@ WB_STAGE PORT MAP(
       WB_writedata 
 );
 
-PP_process: PROCESS (CLK)
+PP_process: PROCESS (PP_CLK)
 
 BEGIN
+--PP_Init: IN STD_LOGIC;
+	--PP_CLK: IN STD_LOGIC;
+--	POOP: IN STD_LOGIC;
+--	PP_reg_data: OUT STD_LOGIC_VECTOR(31 downto 0);
+--	PP_mm_data: OUT STD_LOGIC_VECTOR(31 downto 0)
+IF ((PP_CLK'event and PP_CLK='1') and (PP_Init = '0')) THEN
+	if POOP= '0' then
+	
+	elsif(POOP'event and POOP='1') then
+		PP_mm_data<=MEM_Data_to_WB;
+		PP_reg_data<= DE_reg_value1;
+	end if;
+END IF;
 
 END PROCESS;
 
