@@ -32,7 +32,7 @@ END COMPONENT;
     SIGNAL memwrite: STD_LOGIC := '0';
     SIGNAL memread: STD_LOGIC := '0';
     SIGNAL readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
-    SIGNAL writedata: STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL writedata: STD_LOGIC_VECTOR (31 DOWNTO 0):= x"00000000";
     signal waitrequest: STD_LOGIC;
 
 BEGIN
@@ -56,26 +56,7 @@ test_process : process
         VARIABLE line_num:      line;
 	VARIABLE char_vector_to_store: std_logic_vector(31 downto 0);
 BEGIN
-	--open file: path specified in the second argument
-	file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
-	--Read through 1024 lines of text file and save to memory	
-	For i in 0 to ram_size-1 LOOP
-		address<=i;
-		readline (file_name, line_num); 
-		read (line_num, char_vector_to_store);
-		writedata <= char_vector_to_store;
-		memwrite<='1';
-		WAIT FOR 0.25 ns;	
-		memwrite<='0';
-		-- check if written in previous cycle
-		if (i>1) then
-			address<=(i-1);
-		end if;
-		memread<='1';
-		WAIT FOR 0.25 ns;	
-		memread<='0';
-	END LOOP;
-	
+	address<= 13;
 	memread <= '1';
 	WAIT FOR 0.25 ns;	
 	memread <= '0';

@@ -2,6 +2,8 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
+USE ieee.std_logic_textio.all;
+USE STD.textio.all;
 
 ENTITY instruction_memory IS
 	GENERIC(
@@ -29,15 +31,24 @@ ARCHITECTURE rtl OF instruction_memory IS
 BEGIN
 	--This is the main section of the SRAM model
 	mem_process: PROCESS (clock, memwrite)
+	FILE file_name:         	text;
+        VARIABLE line_num:      	line;
+	VARIABLE char_vector_to_store: 	std_logic_vector(31 downto 0);
 	BEGIN
 		--This is a cheap trick to initialize the SRAM in simulation
 		--Left in just in case. All 0s should correspond to zero instruction????
+		file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
 		IF(now < 1 ps)THEN
+		if (not (endfile(file_name))) then
 			For i in 0 to ram_size-1 LOOP
-				ram_block(i) <= std_logic_vector(to_unsigned(0,32));
+				readline (file_name, line_num); 
+				read (line_num, char_vector_to_store);
+				ram_block(i)<=char_vector_to_store;
 			END LOOP;
 		end if;
-
+		file_close(file_name);
+		end if;
+		
 		--This is the actual synthesizable SRAM block
 		IF (memwrite = '1') THEN
 			ram_block(address) <= writedata;
