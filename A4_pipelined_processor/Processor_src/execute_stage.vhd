@@ -32,6 +32,7 @@ entity execute_stage is
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jump_addr: in std_logic_vector(25 downto 0);
+			branch_offset: in integer;
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -113,12 +114,15 @@ Component alu is
     
 			alu_opcode:= alu_op_code;
 			rslt_set:='0';
+			IF_MUX_CTRL<='0';
+			inter_rslt:="00000000000000000000000000000000";
+
 
     if(rising_edge(clock)) then
      
-      	   Mux_A<= Input_A;
-					Mux_B<=Input_B;
-    
+     	  Mux_A<= Input_A;
+				Mux_B<=Input_B;
+        
 			case alu_opcode is
 				------------------------------------------------
 				--Move Values & Load
@@ -178,11 +182,11 @@ Component alu is
 					inter_rslt:=Alu_Rslt;
 					if (branch = '1') then
 					   IF(Input_A /= Input_B) then
-					       PC_OUT<=to_integer(unsigned(inter_rslt));
+					       PC_OUT<=(branch_offset*4);
 						    IF_MUX_CTRL<='1';
 					   elsif (Input_A = Input_B) then
 						--SET MUX AND NEW PC VALUE
-						    PC_OUT<=to_integer(unsigned(inter_rslt));
+						    PC_OUT<=(branch_offset*4);
 						    IF_MUX_CTRL<='1';
 						    end if;
 					end if;

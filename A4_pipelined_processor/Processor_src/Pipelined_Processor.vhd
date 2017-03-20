@@ -11,7 +11,9 @@ PORT(
 	PP_CLK: IN STD_LOGIC;
 	POOP: IN STD_LOGIC;
 	PP_reg_data: OUT STD_LOGIC_VECTOR(31 downto 0);
-	PP_mm_data: OUT STD_LOGIC_VECTOR(31 downto 0)
+	PP_reg_number: std_logic_vector(4 downto 0);-- data type can be changed
+	PP_mm_data: OUT STD_LOGIC_VECTOR(31 downto 0);
+	PP_mm_addr: OUT INTEGER;-- data type can be changed
 );
 end Pipelined_Processor;
 
@@ -80,6 +82,7 @@ PORT(
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jump_addr: in std_logic_vector(25 downto 0);
+			branch_offset: in integer;
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -318,6 +321,7 @@ execute_stage PORT MAP(
 	DE_jump,
 	DE_branch,
 	DE_j_address,
+	DE_branch_offset,
 			
 	--ALU OUT
 	EX_result,
