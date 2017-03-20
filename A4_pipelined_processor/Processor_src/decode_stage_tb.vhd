@@ -26,6 +26,7 @@ COMPONENT decode_stage is
 			shamt			: out std_logic_vector(4 downto 0);	--shift amount
 			j_address		: out std_logic_vector(25 downto 0);
 			alu_op_code		: out std_logic_vector(5 downto 0);
+			branch_offset	: out integer;
 
 			--control signals
 			reg_write		: out std_logic;	--to be propagated to WB and back to DE
@@ -57,7 +58,7 @@ END COMPONENT;
 	SIGNAL reg_dest_addr	: std_logic_vector(4 downto 0):= (others => '0');	--$rd (r-type) or $rt (i-type)
 	SIGNAL shamt			: std_logic_vector(4 downto 0):= (others => '0');	--shift amount
 	SIGNAL j_address		: std_logic_vector(25 downto 0):= (others => '0');
-
+	SIGNAL branch_offset	: integer:= 0;
 	SIGNAL alu_op_code		: std_logic_vector(5 downto 0):= (others => '0');
 
 	--control signals
@@ -67,6 +68,7 @@ END COMPONENT;
 	SIGNAL branch			: std_logic:= '0';
 	SIGNAL jump				: std_logic:= '0';
 	SIGNAL IF_stall			: std_logic:= '0';
+
 
 
 BEGIN
@@ -87,6 +89,7 @@ DUT: decode_stage
 				shamt,
 				j_address,
 				alu_op_code,
+				branch_offset,
 				reg_write,
 				mem_read,
 				mem_write,

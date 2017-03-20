@@ -24,6 +24,7 @@ entity decode_stage is
 			shamt			: out std_logic_vector(4 downto 0);	--shift amount
 			j_address		: out std_logic_vector(25 downto 0);
 			alu_op_code		: out std_logic_vector(5 downto 0);
+			branch_offset	: out integer;
 
 			--control signals
 			reg_write		: out std_logic;	--to be propagated to WB and back to DE
@@ -154,6 +155,7 @@ begin
 			reg_value1 <= reg_value1_s; 
 			shamt <= instruction_s(4 downto 0);	--shift amount
 			j_address <= instruction_s(25 downto 0);
+			branch_offset <= (to_integer(unsigned(instruction_s(16 downto 0))));
 			alu_op_code <= alu_op_code_s;
 			reg_write <= reg_write_s;
 			mem_read <= mem_read_s;
@@ -162,9 +164,12 @@ begin
 			jump <= jump_s;
 			IF_stall <= stall_s;
 
-			if(alu_src_s = '1') then 
+			if((alu_src_s = '1') AND (mem_write_s='1')) then 	--sw
 			-- use sign extended value
-				reg_value2 <= sign_extended_imm; 
+				reg_value2 <= reg_value2_s; 
+			elsif (alu_src_s = '1') then 
+			-- use sign extended value
+				reg_value2 <= sign_extended_imm; 				
 			else --alu_src_s='1' 
 			--use reg_value2_s from register file
 				reg_value2 <= reg_value2_s; 

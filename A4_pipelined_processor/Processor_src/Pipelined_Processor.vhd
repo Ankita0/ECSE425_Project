@@ -48,6 +48,7 @@ Port(
 			shamt			: out std_logic_vector(4 downto 0);	--shift amount
 			j_address		: out std_logic_vector(25 downto 0);
 			alu_op_code		: out std_logic_vector(5 downto 0);
+			branch_offset	: out integer;
 
 			--control signals
 			reg_write		: out std_logic;	--to be propagated to WB and back to DE
@@ -170,6 +171,7 @@ END COMPONENT;
 	SIGNAL DE_branch		: std_logic;
 	SIGNAL DE_jump			: std_logic;
 	SIGNAL DE_IF_stall		: std_logic:='0';
+	SIGNAL DE_branch_offset	: integer;
 
 	--EX stage mapping
 	--SIGNAL EX_PC_IN		: integer; -- PC from IF and Decode
@@ -262,6 +264,7 @@ decode_stage PORT MAP(
 	DE_shamt,		--shift amount	
 	DE_j_address,
 	DE_alu_op_code,
+	DE_branch_offset,
 
 			--control signals
 	DE_reg_write,		--to be propagated to WB and back to DE
