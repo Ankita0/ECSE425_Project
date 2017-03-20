@@ -79,6 +79,7 @@ PORT(
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jump_addr: in std_logic_vector(25 downto 0);
+			branch_offset: in integer;
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -294,6 +295,7 @@ execute_stage PORT MAP(
 	DE_jump,
 	DE_branch,
 	DE_j_address,
+	DE_branch_offset,
 			
 	--ALU OUT
 	EX_result,
