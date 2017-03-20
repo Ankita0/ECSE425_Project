@@ -24,13 +24,14 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
 
     --all the input signals with initial values
         signal clock: STD_LOGIC := '0';
+        constant clk_period: time := 1 ns;
         signal reg_write: STD_LOGIC := '0';
-        signal alu_data: STD_LOGIC_VECTOR := (others => '0');
-        signal mem_data: STD_LOGIC_VECTOR := (others => '0');
-        signal reg_dst: STD_LOGIC_VECTOR := (others => '0');
+        signal alu_data: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
+        signal mem_data: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
+        signal reg_dst: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
         signal reg_write_out: STD_LOGIC := '0';
-        signal reg_dst_out: STD_LOGIC_VECTOR := (others => '0');
-        signal writedata: STD_LOGIC_VECTOR := (others => '0');
+        signal reg_dst_out: STD_LOGIC_VECTOR (4 DOWNTO 0) := (others => '0');
+        signal writedata: STD_LOGIC_VECTOR (31 DOWNTO 0) := (others => '0');
         
 BEGIN
 
@@ -71,7 +72,7 @@ BEGIN
         wait for clk_period;
         
         reg_write <= '1';
-        reg_dst <= "00002";
+        reg_dst <= "00010";
         mem_data <= x"00000004";
         alu_data <= x"00000005";
         wait for clk_period;  
