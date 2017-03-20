@@ -37,7 +37,7 @@ BEGIN
 	BEGIN
 		--This is a cheap trick to initialize the SRAM in simulation
 		--Left in just in case. All 0s should correspond to zero instruction????
-		file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
+		file_open (file_name, "P:\mipspipeline\read.txt", READ_MODE);
 		IF(now < 1 ps)THEN
 		if (not (endfile(file_name))) then
 			For i in 0 to ram_size-1 LOOP
@@ -45,7 +45,7 @@ BEGIN
 				read (line_num, char_vector_to_store);
 				ram_block(i)<=char_vector_to_store;
 			END LOOP;
-		end if;
+	   end if;
 		file_close(file_name);
 		end if;
 		
