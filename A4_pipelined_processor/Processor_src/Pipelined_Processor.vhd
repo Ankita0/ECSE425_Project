@@ -11,7 +11,9 @@ PORT(
 	PP_CLK: IN STD_LOGIC;
 	POOP: IN STD_LOGIC;
 	PP_reg_data: OUT STD_LOGIC_VECTOR(31 downto 0);
-	PP_mm_data: OUT STD_LOGIC_VECTOR(31 downto 0)
+	PP_reg_number: std_logic_vector(4 downto 0);-- data type can be changed
+	PP_mm_data: OUT STD_LOGIC_VECTOR(31 downto 0);
+	PP_mm_addr: OUT INTEGER;-- data type can be changed
 );
 end Pipelined_Processor;
 
