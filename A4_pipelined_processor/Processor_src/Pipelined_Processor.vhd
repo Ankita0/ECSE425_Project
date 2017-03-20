@@ -358,7 +358,7 @@ IF ((PP_CLK'event and PP_CLK='1') and (PP_Init = '0')) THEN
 	
 	elsif(POOP'event and POOP='1') then
 		PP_mm_data<=MEM_Data_to_WB;
-		PP_reg_data<= DE_reg_value1;
+		PP_reg_data<= WB_writedata;
 	end if;
 END IF;
 
