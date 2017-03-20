@@ -30,6 +30,7 @@ Component execute_stage is
 			Jump: in std_logic;
 			Branch: in std_logic;
 			jump_addr: in std_logic_vector(25 downto 0);
+			branch_offset: in integer;
 			
 			--ALU OUT
 			result: out std_logic_vector(31 downto 0);
@@ -59,6 +60,7 @@ Component execute_stage is
 	signal	Jump: std_logic :='0';
 	signal	Branch: std_logic :='0';
 	signal  jump_addr: std_logic_vector(25 downto 0) := (others =>'0');
+	signal branch_offset:integer := 0;
 	signal	result: std_logic_vector(31 downto 0):= (others => '0');
 	signal	PC_OUT: integer := 0;
 	signal	IF_MUX_CTRL: std_logic :='0';
@@ -84,6 +86,7 @@ Component execute_stage is
 				Jump,
 				Branch,
 				jump_addr,
+				branch_offset,
 				result,
 				PC_OUT,
 				IF_MUX_CTRL,
@@ -108,7 +111,7 @@ Component execute_stage is
 	    	var_result:= (others=>'0');
 	    	pc_int := 0;
 	    	
-	     IF_MUX_CTRL<= '0';
+	     --IF_MUX_CTRL<= '0';
 	    	
 	    	
 	    	--wait for clk_period;
@@ -134,7 +137,7 @@ Component execute_stage is
 			IN_mem_read<='0';
 			IN_wb_write<='1';
 			IN_wb_addr<="00010";
-			wait for clk_period;
+			wait for clk_period/2;
 			ASSERT 	(OUT_mem_write = '1') REPORT "MEM_WRITE PASS NOT WORKING" SEVERITY ERROR;
 			ASSERT	(OUT_mem_read ='0') REPORT "MEM READ PASS OPERATIONS NOT WORKING" SEVERITY ERROR;
 			ASSERT	(OUT_wb_write='1') REPORT "REG WRITE PASS NOT WORKING" SEVERITY ERROR;
@@ -164,11 +167,12 @@ Component execute_stage is
 	    	Input_A<=x"00001000";
 	    	Input_B<=x"01000000";
 	    	Branch<='1';
+	    	branch_offset<=2;
 	    	alu_op_code<="100000";
 	    	wait for clk_period;
-	    	var_result:=result;
-	    	pc_int= to_integer(unsigned(var_result));
-	    	ASSERT(PC_OUT=pc_int) REPORT "BNE-INCORRECT PC VALUE" SEVERITY ERROR;
+	    	--var_result:=result;
+--	     pc_int:= to_integer(unsigned(var_result));
+	    	ASSERT(PC_OUT=(branch_offset*4)) REPORT "BNE-INCORRECT PC VALUE" SEVERITY ERROR;
 	    	
 
 	    	--TEST BEQ
@@ -176,9 +180,11 @@ Component execute_stage is
 	    	Input_B<=x"00001000";
 	    	Branch<='1';
 	    	alu_op_code<="100000";
+	    	branch_offset<=2;
 	    	wait for clk_period;
-	    	var_result:=result;
-	    	ASSERT(PC_OUT=to_integer(unsigned(var_result))) REPORT "BEQ-INCORRECT PC VALUE" SEVERITY ERROR;
+	    	--var_result:=result;
+--	    	pc_int:= to_integer(unsigned(var_result));
+	    	ASSERT(PC_OUT=(branch_offset*4)) REPORT "BEQ-INCORRECT PC VALUE" SEVERITY ERROR;
 	    
 
 	    	--TEST JR
@@ -201,13 +207,12 @@ Component execute_stage is
 	    	jump_addr<="00000000000000000000011111"; 
 	    	Input_A<=std_logic_vector(to_unsigned(5,32)); --PC COUNT
 	    	Input_B<=std_logic_vector(to_unsigned(2,32)); --PC + 8
-	    	wait for clk_period;
 	    
 	    	
 	    	wait for clk_period;
 	    	ASSERT(result=x"00000007") REPORT "JAL- ADDI DID NOT CALC THE CORRECT PC ADDRESS" SEVERITY ERROR;
 	    	ASSERT(PC_OUT=31) REPORT "JAL- DID NOT GET THE CORRECT JUMP ADDRESS" SEVERITY ERROR;
-
+        Jump<='0';
 
 	    end process;
 
