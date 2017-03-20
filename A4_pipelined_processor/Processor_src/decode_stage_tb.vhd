@@ -34,7 +34,8 @@ COMPONENT decode_stage is
 			mem_write		: out std_logic;	--for MEM stage
 			branch			: out std_logic;
 			jump			: out std_logic;
-			IF_stall		: out std_logic
+			IF_stall		: out std_logic;
+			mem_data_sw		: out std_logic_vector(31 downto 0)
 			);
 END COMPONENT;
 
@@ -68,7 +69,7 @@ END COMPONENT;
 	SIGNAL branch			: std_logic:= '0';
 	SIGNAL jump				: std_logic:= '0';
 	SIGNAL IF_stall			: std_logic:= '0';
-
+	SIGNAL mem_data_sw		: std_logic_vector(31 downto 0):= (others => '0');
 
 
 BEGIN
@@ -95,7 +96,8 @@ DUT: decode_stage
 				mem_write,
 				branch,
 				jump,
-				IF_stall
+				IF_stall,
+				mem_data_sw
 			);
 
 

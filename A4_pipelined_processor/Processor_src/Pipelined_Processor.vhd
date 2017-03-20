@@ -58,7 +58,8 @@ Port(
 			mem_write		: out std_logic;	--for MEM stage
 			branch			: out std_logic;
 			jump			: out std_logic;
-			IF_stall		: out std_logic
+			IF_stall		: out std_logic;
+			mem_data_sw		: out std_logic_vector(31 downto 0)
 			);
 END COMPONENT;
 
@@ -138,6 +139,19 @@ COMPONENT WB_STAGE is
       );
 END COMPONENT;
 
+
+Component register_file is
+	Generic(W 			: natural := 32);
+	port(	clock		: in std_logic;
+			rs 			: in std_logic_vector(4 downto 0);
+			rt 			: in std_logic_vector(4 downto 0);
+			rd 			: in std_logic_vector(4 downto 0);
+			reg_write	: in std_logic;
+			result 		: in std_logic_vector(W-1 downto 0);
+			reg_value1	: out std_logic_vector(W-1 downto 0);
+			reg_value2	: out std_logic_vector(W-1 downto 0)
+		);
+end Component;
 	--SIGNAL CLK		:std_logic;
 	
 	--IF stage mapping
@@ -175,7 +189,7 @@ END COMPONENT;
 	SIGNAL DE_jump			: std_logic;
 	SIGNAL DE_IF_stall		: std_logic:='0';
 	SIGNAL DE_branch_offset	: integer;
-
+	SIGNAL DE_mem_data		: std_logic_vector(31 downto 0);
 	--EX stage mapping
 	--SIGNAL EX_PC_IN		: integer; -- PC from IF and Decode
 
@@ -235,6 +249,15 @@ END COMPONENT;
 	SIGNAL WB_reg_dst_out		: STD_LOGIC_VECTOR (4 DOWNTO 0);
 	SIGNAL WB_writedata		: STD_LOGIC_VECTOR (31 DOWNTO 0);
 
+	SIGNAL rf_clock		: std_logic;
+	SIGNAL rf_rs 		: std_logic_vector(4 downto 0);
+	SIGNAL rf_rt 		: std_logic_vector(4 downto 0);
+	SIGNAL rf_rd 		: std_logic_vector(4 downto 0);
+	SIGNAL rf_reg_write	: std_logic;
+	SIGNAL rf_result 	: std_logic_vector(31 downto 0);
+	SIGNAL rf_reg_value1: std_logic_vector(31 downto 0);
+	SIGNAL rf_reg_value2: std_logic_vector(31 downto 0);
+
 BEGIN
 
 DUT_IF_stage: 
@@ -275,7 +298,8 @@ decode_stage PORT MAP(
 	DE_mem_write,		--for MEM stage
 	DE_branch,
 	DE_jump,
-	DE_IF_stall
+	DE_IF_stall,
+	DE_mem_data
 );
 
 DUT_EX_stage: 
@@ -286,7 +310,7 @@ execute_stage PORT MAP(
 	--Passing through IN
 	DE_mem_write, --MEM write
 	DE_mem_read,  --- MEM READ
-	DE_reg_value2, --WRITE DATA TO MEM, value of rt from i-type instruction
+	DE_mem_data, --WRITE DATA TO MEM, value of rt from i-type instruction
 	DE_mem_write, -- WB WRITE
 	DE_reg_dest_addr, --to propagate to WB and back to DE
 
@@ -362,7 +386,7 @@ IF ((PP_CLK'event and PP_CLK='1') and (PP_Init = '0')) THEN
 	
 	elsif(POOP'event and POOP='1') then
 		PP_mm_data<=MEM_Data_to_WB;
-		PP_reg_data<= DE_reg_value1;
+		PP_reg_data<= WB_writedata;
 	end if;
 END IF;
 
