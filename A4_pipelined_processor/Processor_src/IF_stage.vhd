@@ -66,21 +66,22 @@ END COMPONENT;
 
 	--PC_counter
 	SIGNAL PC_IN :  INTEGER:=0;
-	SIGNAL PC_counter_init_s: STD_LOGIC := '0';
+	--SIGNAL PC_counter_init_s: STD_LOGIC := '0';
+	SIGNAL PC_OUT_2 :  INTEGER:=0;
 	SIGNAL PC_OUT :  INTEGER:=0;
 	-- mux
-	SIGNAL PC_instr_plus4: INTEGER:=0;
+	--SIGNAL PC_instr_plus4: INTEGER:=0;
 	SIGNAL PC_instr_to_fetch: INTEGER:=0;
 	--instruction mem
 	SIGNAL writedata:  STD_LOGIC_VECTOR (31 DOWNTO 0);
-	SIGNAL address: INTEGER RANGE 0 TO instr_mem_ram_size-1 :=0;
+	SIGNAL address: INTEGER :=0;
 	SIGNAL memwrite: STD_LOGIC:= '0';
 	SIGNAL memread: STD_LOGIC:= '0';
-	SIGNAL readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
+	SIGNAL readdata: STD_LOGIC_VECTOR (31 DOWNTO 0):= x"00000000";
 	SIGNAL waitrequest: STD_LOGIC;
 	-- adder
-	SIGNAL PC_instr_in: INTEGER:= 0;
-	SIGNAL PC_inst_plus4_out: INTEGER:=0;
+	--SIGNAL PC_instr_in: INTEGER:= 0;
+	SIGNAL PC_inst_plus4: INTEGER:=0;
 	
 	--mapping signals
 	SIGNAL counter_out: INTEGER:=0;
@@ -92,20 +93,21 @@ BEGIN
 COUNTER:
 PC_instruction_counter PORT MAP(
 	PC_IN,
-	PC_counter_init_s,
-	PC_OUT
+	PC_counter_init,
+	PC_OUT_2
 );
+
 ADDER:
 IF_adder PORT MAP(
-	PC_instr_in,
+	PC_OUT,
 	stall,
-	PC_inst_plus4_out
+	PC_inst_plus4
 );
 
 MUX:
 IF_mux PORT MAP(
 	PC_instr_from_EX,
-	PC_instr_plus4,
+	PC_inst_plus4,
 	mux_control,
 	PC_instr_to_fetch
 );
@@ -117,37 +119,28 @@ instruction_memory GENERIC MAP(
 	PORT MAP(
 	CLK,
 	writedata,
-	address,
+	PC_OUT,
 	memwrite,
 	memread,
 	readdata,
 	waitrequest
 );
 
-PC_count_out<=PC_instr_to_fetch;
-Instruction_out<=readdata;
+
 
 init_process: PROCESS (CLK, PC_counter_init, mux_control,PC_instr_from_EX, control_DE)
 BEGIN
-
 if (rising_edge(CLK)) then
-	PC_counter_init_s<= PC_counter_init;
-	PC_instr_in<=counter_out;
-	address<=counter_out;
-	PC_instr_plus4<= PC_inst_plus4_out;
+	PC_OUT<=PC_OUT_2;
+	PC_count_out<=PC_instr_to_fetch;
+  Instruction_out<=readdata;
 	IF (PC_counter_init = '0')THEN
 			--with stalls
 			IF (control_DE= '0') THEN
-				memread<='0';
-				Instruction_out<=readdata;
-				final_count<= PC_instr_to_fetch;
-				memread<='0';
-				counter_out<=PC_OUT;
-					
+				memread<='1';
+				PC_IN<=PC_instr_to_fetch;
 
-			ELSIF (control_DE= '0') THEN
-					--counter_out<=PC_OUT;
-					--address<=counter_out;
+			ELSIF (control_DE= '1') THEN
 					memread<='0';
 					memwrite<='0';
 					Instruction_out<=x"00000020";
