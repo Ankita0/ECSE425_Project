@@ -61,11 +61,11 @@ Component alu is
 	
 	port( 		Mux_A		: in  std_logic_vector(W-1 downto 0); --RS
 			   	Mux_B		: in  std_logic_vector(W-1 downto 0); --RT
-          Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
+          		Alu_Ctrl	: in  std_logic_vector(F-1 downto 0);
 			   	clock 		: in std_logic;
 			   	shamt		: in std_logic_vector (F-2 downto 0);
 			   	Hi 			: out std_logic_vector(W-1 downto 0);
-	       	Lo 			: out std_logic_vector(W-1 downto 0);
+	       		Lo 			: out std_logic_vector(W-1 downto 0);
 			   	Alu_Rslt	: out std_logic_vector(W-1 downto 0));
 	end Component;
 
@@ -190,7 +190,7 @@ Component alu is
 						    IF_MUX_CTRL<='1';
 						    end if;
 					end if;
-          if(jump='1') then
+         			if(jump='1') then
 					   if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
 						    --SET MUX AND NEW PC VALUE
 						     PC_OUT<=to_integer(unsigned(jump_addr));
@@ -199,7 +199,7 @@ Component alu is
 						    PC_OUT<=to_integer(unsigned(Input_A));
 						    IF_MUX_CTRL<='1';
 					   end if;
-			     end if;
+			     	end if;
 			   end if;
 			     --RESULT OUT
 			     result<=inter_rslt;
