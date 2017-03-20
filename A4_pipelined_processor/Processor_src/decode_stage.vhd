@@ -32,7 +32,8 @@ entity decode_stage is
 			mem_write		: out std_logic;	--for MEM stage
 			branch			: out std_logic;
 			jump			: out std_logic;
-			IF_stall		: out std_logic
+			IF_stall		: out std_logic;
+			mem_data_sw		: out std_logic_vector(31 downto 0)
 			);
 end decode_stage;
 
@@ -166,13 +167,16 @@ begin
 
 			if((alu_src_s = '1') AND (mem_write_s='1')) then 	--sw
 			-- use sign extended value
-				reg_value2 <= reg_value2_s; 
+				reg_value2 <= sign_extended_imm; 
+				mem_data_sw <= reg_value2_s;
 			elsif (alu_src_s = '1') then 
 			-- use sign extended value
-				reg_value2 <= sign_extended_imm; 				
+				reg_value2 <= sign_extended_imm;
+				mem_data_sw <= x"00000000"; 				
 			else --alu_src_s='1' 
 			--use reg_value2_s from register file
 				reg_value2 <= reg_value2_s; 
+				mem_data_sw <= x"00000000"; 
 			end if;
 
 			--if reg_dst_s='1' (r-type), '0' (i-type)
