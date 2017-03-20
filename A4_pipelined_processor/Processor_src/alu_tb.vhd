@@ -23,10 +23,7 @@ architecture arch of alu_testbed is
 			   	shamt	: in std_logic_vector (F-2 downto 0);
 			   	Hi 		: out std_logic_vector(W-1 downto 0);
 	       		Lo 		: out std_logic_vector(W-1 downto 0);
-			   	Alu_Rslt: out std_logic_vector(W-1 downto 0);
-			   	Zero 	: out std_logic;
-			   	Overflow: out std_logic;
-			   	Carryout: out std_logic);
+			   	Alu_Rslt: out std_logic_vector(W-1 downto 0));
 	end Component;
 
 	constant clk_period : time := 1 ns;
@@ -37,9 +34,6 @@ architecture arch of alu_testbed is
 	signal Hi 			: std_logic_vector(31 downto 0):=(others=>'0');
 	signal Lo 			: std_logic_vector(31 downto 0):=(others=>'0');
 	signal Alu_Rslt 	: std_logic_vector(31 downto 0):=(others=>'0');
-	signal Zero 		: std_logic := '0';
-	signal Overflow		: std_logic := '0';
-	signal Carryout 	: std_logic := '0';
 
 	BEGIN
 
@@ -52,10 +46,7 @@ architecture arch of alu_testbed is
 				shamt,
 				Hi,
 				Lo,
-				Alu_Rslt,
-				Zero,	
-				Overflow,
-				Carryout);
+				Alu_Rslt);
 				
 		clk_process: process
 		  begin

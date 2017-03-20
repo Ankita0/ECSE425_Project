@@ -33,20 +33,21 @@ BEGIN
 	mem_process: PROCESS (clock, memwrite)
 	FILE file_name:         	text;
         VARIABLE line_num:      	line;
-        VARIABLE i:      	integer:= 0;
+        VARIABLE i:      	integer:=0;
 	VARIABLE char_vector_to_store: 	std_logic_vector(31 downto 0);
-	
 	BEGIN
 		--This is a cheap trick to initialize the SRAM in simulation
 		--Left in just in case. All 0s should correspond to zero instruction????
+		--file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
+	
 		IF(now < 1 ps)THEN
-		file_open (file_name, "P:\mipspipeline\read.txt", READ_MODE);
-		while (not (endfile(file_name))) LOOP
-				readline (file_name, line_num); 
+		file_open(file_name, "P:\ECSE_425\processor_test\Mips_test1.txt",READ_MODE);
+		while (not (endfile(file_name))) loop
+					readline (file_name, line_num); 
 				read (line_num, char_vector_to_store);
 				ram_block(i)<=char_vector_to_store;
-				 i:= i+1;
-			END LOOP;
+				  i:=i+1;
+		END LOOP;
 		file_close(file_name);
 		end if;
 		

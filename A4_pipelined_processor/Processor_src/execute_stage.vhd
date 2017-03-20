@@ -115,7 +115,7 @@ Component alu is
 			alu_opcode:= alu_op_code;
 			rslt_set:='0';
 			IF_MUX_CTRL<='0';
-			inter_rslt:="00000000000000000000000000000000";
+			--inter_rslt:="00000000000000000000000000000000";
 
 
     if(rising_edge(clock)) then
@@ -146,7 +146,7 @@ Component alu is
 				when "111110" =>
 				  jal<='1';
 				
-				when others => inter_rslt := (others => '0');
+				when others => inter_rslt := (others => 'X');
 
 			end case;
 		
@@ -190,7 +190,7 @@ Component alu is
 						    IF_MUX_CTRL<='1';
 						    end if;
 					end if;
-         			if(jump='1') then
+          if(jump='1') then
 					   if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
 						    --SET MUX AND NEW PC VALUE
 						     PC_OUT<=to_integer(unsigned(jump_addr));
@@ -199,7 +199,7 @@ Component alu is
 						    PC_OUT<=to_integer(unsigned(Input_A));
 						    IF_MUX_CTRL<='1';
 					   end if;
-			     	end if;
+			     end if;
 			   end if;
 			     --RESULT OUT
 			     result<=inter_rslt;
