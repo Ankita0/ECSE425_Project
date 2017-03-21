@@ -116,7 +116,7 @@ Component alu is
 			rslt_set:='0';
 			IF_MUX_CTRL<='0';
 			--inter_rslt:="00000000000000000000000000000000";
-
+			clk<=clock;
 
     if(rising_edge(clock)) then
      
