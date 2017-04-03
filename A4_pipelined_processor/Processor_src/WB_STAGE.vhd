@@ -31,17 +31,27 @@ ARCHITECTURE behaviour of WB_STAGE is
     
   BEGIN
     MUX: EX_MUX PORT MAP(alu_data_s, readdata, reg_write, clock, mux_data);
-      
     write_back : process(clock)
     BEGIN
-      if rising_edge(clock) then
-        readdata <= mem_data;
+	--clock: IN STD_LOGIC;
+   --   reg_write: IN STD_LOGIC;
+  --    alu_data: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+ --     mem_data: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+--      reg_dst: IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+      
+ --     reg_write_out: OUT STD_LOGIC;
+ --     reg_dst_out: OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
+   --   writedata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)  
+
+	readdata <= mem_data;
         alu_data_s <= alu_data;
         reg_write_s <= reg_write;
-        writedata <= mux_data;
-        reg_dst_out <= reg_dst;
-        reg_write_out <= reg_write;
-    end if;
+
+	if rising_edge(clock) then
+		reg_write_out <= reg_write;
+        	reg_dst_out <= reg_dst;
+		writedata <= mux_data;
+	end if;
   end process;
 end behaviour;
         

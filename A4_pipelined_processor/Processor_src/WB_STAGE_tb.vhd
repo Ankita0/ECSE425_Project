@@ -5,7 +5,7 @@ USE ieee.numeric_std.all;
 ENTITY WB_STAGE_tb IS
 END WB_STAGE_tb;
 
-ARCHITECTURE behaviour OF memory_controller_tb IS
+ARCHITECTURE behaviour OF WB_STAGE_tb IS
 
 --Declare the component that you are testing:
     COMPONENT WB_STAGE IS
@@ -23,7 +23,7 @@ ARCHITECTURE behaviour OF memory_controller_tb IS
     END COMPONENT;
 
     --all the input signals with initial values
-        signal clock: STD_LOGIC := '0';
+        signal clock: STD_LOGIC;-- := '0';
         signal reg_write: STD_LOGIC := '0';
         signal alu_data: STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
         signal mem_data: STD_LOGIC_VECTOR (31 downto 0):= (others => '0');
@@ -49,37 +49,33 @@ BEGIN
 
     test_process : process
     BEGIN
-	       wait for 0.5*clk_period;
+	       --wait for 0.5*clk_period;
         
         --TEST FROM MEMORY
         reg_write <= '1';
         reg_dst <= "00001";
         mem_data <= x"00000002";
         alu_data <= x"00000003";
-        wait for clk_period;  
 
+        wait for 0.5*clk_period;
         ASSERT writedata = x"00000002" REPORT "unsuccessful write" SEVERITY ERROR;
+        wait for 0.5*clk_period;
         
-        wait for clk_period;
-        
-        reg_write <= '0';
-        
-        wait for clk_period;        
+        reg_write <= '0';      
     
-        --TEST READ     
+        --TEST READ 
+	wait for 0.5*clk_period;    
         assert writedata = x"00000003" report "unsuccessful pass" severity error;
-
-        wait for clk_period;
+	wait for 0.5*clk_period;
         
         reg_write <= '1';
         reg_dst <= "00010";
         mem_data <= x"00000004";
         alu_data <= x"00000005";
-        wait for clk_period;  
 
-        ASSERT writedata = x"00000004" REPORT "unsuccessful write" SEVERITY ERROR;
-        
-        wait for clk_period;
+	wait for 0.5*clk_period;
+	ASSERT writedata = x"00000004" REPORT "unsuccessful write" SEVERITY ERROR;
+	wait for 0.5*clk_period;
 
         reg_write <= '0';
         wait;

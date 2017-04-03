@@ -18,13 +18,12 @@ Architecture arch of Ex_mux is
 
 BEGIN
 
-	process(CLK,mux_control,ID_instr_1,ID_instr_2)
+	process(mux_control,ID_instr_1,ID_instr_2)
 
 	BEGIN
-
-		if(rising_edge(clk) AND mux_control='1') then
+		if(mux_control='1') then
 			instr_to_Ex<=ID_instr_2;
-		elsif (rising_edge(clk) AND mux_control='0') then
+		elsif ( mux_control='0') then
 			instr_to_Ex<=ID_instr_1;
 		end if;			
 
