@@ -23,7 +23,7 @@ ARCHITECTURE behaviour OF WB_STAGE_tb IS
     END COMPONENT;
 
     --all the input signals with initial values
-        signal clock: STD_LOGIC;-- := '0';
+        signal clock: STD_LOGIC;
         signal reg_write: STD_LOGIC := '0';
         signal alu_data: STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
         signal mem_data: STD_LOGIC_VECTOR (31 downto 0):= (others => '0');
@@ -67,6 +67,7 @@ BEGIN
 	wait for 0.5*clk_period;    
         assert writedata = x"00000003" report "unsuccessful pass" severity error;
 	wait for 0.5*clk_period;
+	wait for 0.5*clk_period;
         
         reg_write <= '1';
         reg_dst <= "00010";
@@ -76,7 +77,8 @@ BEGIN
 	wait for 0.5*clk_period;
 	ASSERT writedata = x"00000004" REPORT "unsuccessful write" SEVERITY ERROR;
 	wait for 0.5*clk_period;
-
+	wait for 0.5*clk_period;
+         
         reg_write <= '0';
         wait;
 

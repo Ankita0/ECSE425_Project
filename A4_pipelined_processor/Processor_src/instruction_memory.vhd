@@ -41,7 +41,7 @@ BEGIN
 		--file_open (file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\read.txt", READ_MODE);
 	
 		IF(now < 1 ps)THEN
-		file_open(file_name, "P:\ECSE_425\processor_test\Mips_test1.txt",READ_MODE);
+		file_open(file_name, "C:\Users\Ankita\Documents\McGill\Winter2017\ECSE425_Project\A4_pipelined_processor\Assembler\program.txt",READ_MODE);
 		while (not (endfile(file_name))) loop
 					readline (file_name, line_num); 
 				read (line_num, char_vector_to_store);
