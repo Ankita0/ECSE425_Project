@@ -23,6 +23,12 @@ begin
 	process(clock,rs,rt,rd)
 	begin
 		-- if there is a change in rs
+		IF(now < 1 ps)THEN
+		For i in 0 to 31 LOOP
+				register_file_array(i) <= std_logic_vector(to_unsigned(0,32));
+			END LOOP;
+		end if;
+		
 			if (unsigned(rs))="00000" then	--register $0 is wired to 0x0000
 				reg_value1<=x"00000000";
 			else
