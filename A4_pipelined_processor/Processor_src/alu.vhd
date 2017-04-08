@@ -32,7 +32,7 @@ architecture arch of alu is
   
 	begin
 
-		process(Alu_Ctrl)
+		process(Alu_Ctrl,Mux_A,Mux_B)
 
 		Variable Y : std_logic_vector(W-1 downto 0);
 		Variable sign_A,sign_B : signed(W-1 downto 0);
