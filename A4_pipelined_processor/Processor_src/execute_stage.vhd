@@ -96,22 +96,21 @@ Component alu is
 	begin
 		IF_MUX_CTRL<='0';
      	 
-    if(rising_edge(clock)) then     
-	case alu_op_code is
+    --if(rising_edge(clock)) then     
 		------------------------------------------------
 		--Move Values & Load
 		------------------------------------------------
 			--MFHI needs rd as dst
-		when "010000" =>
+		if(alu_op_code= "010000") then
 			result<=Hi;				--MFLO needs rd as dst
-		when "010010"=>
+		elsif(alu_op_code=  "010010") then
 			result<=Lo;				--LUI NEEDS rt
-		when "001111" =>
+		elsif(alu_op_code= "001111") then
 			--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
 			result<=std_logic_vector(unsigned(Input_B)sll 16) ;
-		when "111110" =>
+		elsif(alu_op_code= "111110") then
 		  	jal<='1';
-		when others => 		
+		else	
 			result<=Alu_Rslt;
 			if (branch = '1') then
 				IF(Input_A /= Input_B) then
@@ -134,8 +133,8 @@ Component alu is
 				end if;
 			end if;
 	
-	end case;
-    end if;
+		end if;
+  --  end if;
 			
 end process;
 
