@@ -72,8 +72,14 @@ BEGIN
   
   MEM_PROCESS : PROCESS  (clock, do_memread, do_memwrite, reg_dst, alu_result)
   BEGIN
-    
-	 if rising_edge(clock) then
+	--reset /initialize
+    	 if reset = '1' then
+	    alu_result_out <= (others => '0');
+	    data_to_WB <= (others => '0');
+	    reg_dst_out <= (others => '0');
+	end if;
+		--when running
+	 if rising_edge(clock) and reset = '0' then
 		if do_memread = '1' then
 			mm_read <= '1';
 		elsif do_memwrite = '1' then
@@ -82,28 +88,13 @@ BEGIN
 			reg_write_out<='1';
 			reg_dst_out<= reg_dst;
 		end if;
-
-	 end if; 
-  end process;
-	
-  MEMSTAGE_PROCESS : PROCESS (clock, reset, reg_dst, data_memread, alu_result, reg_write, writedata)	
-	 BEGIN
-	  
-	  if reset = '1' then
-	    alu_result_out <= (others => '0');
-	    data_to_WB <= (others => '0');
-	    reg_dst_out <= (others => '0');
-	    
-	  elsif rising_edge(clock) then
-	    
 	    alu_result_out <= alu_result;
 	    data_to_WB <= data_memread;
 	    reg_dst_out <= reg_dst;
 	    reg_write_out <= reg_write;
 	    data_memwrite<=writedata;
-	  end if;
-	
-  END PROCESS;	
+	end if; 
+  end process;
 
 END behaviour;
       
