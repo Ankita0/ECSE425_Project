@@ -82,94 +82,62 @@ Component alu is
 	signal jal : std_logic := '0';
 
 	begin
-
 		alu_1: alu
-		PORT MAP(
-					Input_A,
-					Input_B,
-					alu_op_code,
-					clock,
-					shamt,
-					Hi,
-					Lo,
-					Alu_Rslt);
+		PORT MAP(Input_A,
+			Input_B,
+			alu_op_code,
+			clock,
+			shamt,
+			Hi,
+			Lo,
+			Alu_Rslt);
 
-	pipeline : process (alu_op_code,clock,branch,jump)
-
-		Variable alu_opcode : std_logic_vector(5 downto 0);
-		Variable inter_rslt : std_logic_vector(31 downto 0);
-		Variable rslt_set : std_logic;
-		
-
-		begin
-    
-			alu_opcode:= alu_op_code;
-			rslt_set:='0';
-			IF_MUX_CTRL<='0';
-			inter_rslt:="00000000000000000000000000000000";
+	pipeline : process (Input_A,Input_B,Alu_Rslt,alu_op_code,clock,branch,jump)
+	begin
+		IF_MUX_CTRL<='0';
      	 
-    if(rising_edge(clock)) then
-     
-			case alu_opcode is
-				------------------------------------------------
-				--Move Values & Load
-				------------------------------------------------
-
-				--MFHI needs rd as dst
-				when "010000" =>
-					inter_rslt:=Hi;
-          rslt_set:='1';
-
-				--MFLO needs rd as dst
-				when "010010"=>
-					inter_rslt:=Lo;
-					rslt_set:='1';
-
-				--LUI NEEDS rt
-				when "001111" =>
-					--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
-					inter_rslt:=std_logic_vector(unsigned(Input_B)sll 16) ;
-					rslt_set:='1';
-				when "111110" =>
-				  jal<='1';
-				
-				when others => inter_rslt := (others => 'X');
-
-			end case;
-		
-			------------------------------------------------
-			--EXECUTE
-			------------------------------------------------
-		  if(rslt_set ='0') then
-				
-					
-					inter_rslt:=Alu_Rslt;
-					if (branch = '1') then
-					   IF(Input_A /= Input_B) then
-					       PC_OUT<=(branch_offset*4);
-						    IF_MUX_CTRL<='1';
-					   elsif (Input_A = Input_B) then
-						--SET MUX AND NEW PC VALUE
-						    PC_OUT<=(branch_offset*4);
-						    IF_MUX_CTRL<='1';
-						    end if;
-					end if;
-          if(jump='1') then
-					   if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
-						    --SET MUX AND NEW PC VALUE
-						     PC_OUT<=to_integer(unsigned(jump_addr));
-						    IF_MUX_CTRL<='1';
-						  else
-						    PC_OUT<=to_integer(unsigned(Input_A));
-						    IF_MUX_CTRL<='1';
-					   end if;
-			     end if;
-			   end if;
-			     --RESULT OUT
-			     result<=inter_rslt;
+    if(rising_edge(clock)) then     
+	case alu_op_code is
+		------------------------------------------------
+		--Move Values & Load
+		------------------------------------------------
+			--MFHI needs rd as dst
+		when "010000" =>
+			result<=Hi;				--MFLO needs rd as dst
+		when "010010"=>
+			result<=Lo;				--LUI NEEDS rt
+		when "001111" =>
+			--lui_shift:= std_logic_vector(unsigned(Mux_A)sll 16) ;
+			result<=std_logic_vector(unsigned(Input_B)sll 16) ;
+		when "111110" =>
+		  	jal<='1';
+		when others => 		
+			result<=Alu_Rslt;
+			if (branch = '1') then
+				IF(Input_A /= Input_B) then
+					PC_OUT<=(branch_offset*4);
+					IF_MUX_CTRL<='1';
+				elsif (Input_A = Input_B) then
+					--SET MUX AND NEW PC VALUE
+					PC_OUT<=(branch_offset*4);
+					IF_MUX_CTRL<='1';
+				end if;
+			end if;
+	          	if(jump='1') then
+				if(jal='1') then -- change to if 100000 if the jal op_code is changed to addi
+					 --SET MUX AND NEW PC VALUE
+					PC_OUT<=to_integer(unsigned(jump_addr));
+					IF_MUX_CTRL<='1';
+				else
+					PC_OUT<=to_integer(unsigned(Input_A));
+					IF_MUX_CTRL<='1';
+				end if;
+			end if;
+	
+	end case;
     end if;
 			
-		end process;
+end process;
 
 	--PASS VALUES TO NEXT STAGE
 		OUT_mem_write <=IN_mem_write;
