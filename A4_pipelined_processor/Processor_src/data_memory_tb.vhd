@@ -77,7 +77,7 @@ BEGIN
         address <= 12;
 	memread <= '1';
 	WAIT FOR 0.25 ns;	
-        assert readdata = x"0000000c" report "write unsuccessful" severity error;
+        assert readdata = x"00000000" report "write unsuccessful" severity error;
         memread <= '0';
 	wait for clk_period;
         address <= 14;
