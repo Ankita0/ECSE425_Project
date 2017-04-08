@@ -78,26 +78,17 @@ Component alu is
 	signal Hi 				: std_logic_vector(31 downto 0):=(others=>'0'); --done
 	signal Lo 				: std_logic_vector(31 downto 0):=(others=>'0'); -- done
 	signal Alu_Rslt 		: std_logic_vector(31 downto 0):=(others=>'0');
-
-
-
-	--SIGNALS FOR HI-LO REGISTERS NEED TO DO MFHI OR MFLO IN THE STAGE
-	--signal Hi_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
-	--signal Lo_Reg: std_logic_vector (31 downto 0) :=(others=>'0');
-
-	--signal inter_rslt: std_logic_vector(31 downto 0):=(others=>'0'); --might need to change it for a variable
 	signal branch_taken:std_logic := '0';
 	signal jal : std_logic := '0';
-	--signal rslt_set : std_logic :='0';
 
 	begin
 
 		alu_1: alu
 		PORT MAP(
-					Mux_A,
-					Mux_B,
-					Alu_Ctrl,
-					clk,
+					Input_A,
+					Input_B,
+					alu_op_code,
+					clock,
 					shamt,
 					Hi,
 					Lo,
@@ -115,14 +106,10 @@ Component alu is
 			alu_opcode:= alu_op_code;
 			rslt_set:='0';
 			IF_MUX_CTRL<='0';
-			--inter_rslt:="00000000000000000000000000000000";
-			clk<=clock;
-
+			inter_rslt:="00000000000000000000000000000000";
+     	 
     if(rising_edge(clock)) then
      
-     	  Mux_A<= Input_A;
-				Mux_B<=Input_B;
-        
 			case alu_opcode is
 				------------------------------------------------
 				--Move Values & Load
@@ -150,35 +137,12 @@ Component alu is
 
 			end case;
 		
-			
-			--if(jump='1') then
-				--PC_OUT<=to_integer(unsigned(Input_A)); --TARGET AND rS come from INPUT A
-				
-			--if(alu_op_code="111110") then --- set jal high so we can get the addr fro alu
---				jal<='1';
---			end if;
-
-			--if(branch ='1') then
---					--bne
---					IF(Input_A /= Input_B) then
---					--YES BRANCH TAKEN
---						branch_taken <='1';					
---					end if;
---
---					--beq
---					IF(Input_A = Input_B) then
---
---						--YES BRANCH TAKEN
---						branch_taken <='1';					
---					end if;			
---			end if;
-
 			------------------------------------------------
 			--EXECUTE
 			------------------------------------------------
 		  if(rslt_set ='0') then
 				
-					Alu_Ctrl<=alu_op_code;
+					
 					inter_rslt:=Alu_Rslt;
 					if (branch = '1') then
 					   IF(Input_A /= Input_B) then
