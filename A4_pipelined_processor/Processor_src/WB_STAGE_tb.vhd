@@ -57,29 +57,29 @@ BEGIN
         mem_data <= x"00000002";
         alu_data <= x"00000003";
 
-        wait for 0.5*clk_period;
-        ASSERT writedata = x"00000002" REPORT "unsuccessful write" SEVERITY ERROR;
-        wait for 0.5*clk_period;
+        wait for clk_period;
+        ASSERT writedata = x"00000003" REPORT "unsuccessful write" SEVERITY ERROR;
+        wait for 1*clk_period;
         
         reg_write <= '0';      
     
         --TEST READ 
-	wait for 0.5*clk_period;    
-        assert writedata = x"00000003" report "unsuccessful pass" severity error;
-	wait for 0.5*clk_period;
-	wait for 0.5*clk_period;
+	wait for 1*clk_period;    
+        assert writedata = x"00000002" report "unsuccessful pass" severity error;
+	wait for 1* clk_period;
         
         reg_write <= '1';
         reg_dst <= "00010";
         mem_data <= x"00000004";
         alu_data <= x"00000005";
 
-	wait for 0.5*clk_period;
-	ASSERT writedata = x"00000004" REPORT "unsuccessful write" SEVERITY ERROR;
-	wait for 0.5*clk_period;
-	wait for 0.5*clk_period;
+	wait for 1*clk_period;
+	ASSERT writedata = x"00000005" REPORT "unsuccessful write" SEVERITY ERROR;
+	wait for 1* clk_period;
          
         reg_write <= '0';
+	wait for 1*clk_period;
+	ASSERT writedata = x"00000004" REPORT "unsuccessful write" SEVERITY ERROR;
         wait;
 
     END PROCESS;
