@@ -312,7 +312,7 @@ execute_stage PORT MAP(
 	DE_mem_write, --MEM write
 	DE_mem_read,  --- MEM READ
 	DE_mem_data, --WRITE DATA TO MEM, value of rt from i-type instruction
-	DE_mem_write, -- WB WRITE
+	DE_reg_write, -- WB WRITE
 	DE_reg_dest_addr, --to propagate to WB and back to DE
 
 	-- ALU INPUT
