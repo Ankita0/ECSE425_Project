@@ -158,7 +158,7 @@ end Component;
 	--map init directly--PC_counter_init: STD_LOGIC;
 	--SIGNAL IF_mux_control		: STD_LOGIC;
 	--SIGNAL IF_PC_instr_from_EX	: INTEGER;
-	SIGNAL IF_control_vector	: STD_LOGIC_VECTOR(1 downto 0); --stalling signal
+	--SIGNAL IF_control_vector	: STD_LOGIC_VECTOR(1 downto 0); --stalling signal
 	SIGNAL IF_PC_count_out		: INTEGER;
 	SIGNAL IF_Instruction_out	: STD_LOGIC_VECTOR(31 downto 0);
 	SIGNAL control_DE: STD_LOGIC:='0';
@@ -250,15 +250,6 @@ end Component;
 	SIGNAL WB_reg_dst_out		: STD_LOGIC_VECTOR (4 DOWNTO 0);
 	SIGNAL WB_writedata		: STD_LOGIC_VECTOR (31 DOWNTO 0);
 
-	SIGNAL rf_clock		: std_logic;
-	SIGNAL rf_rs 		: std_logic_vector(4 downto 0);
-	SIGNAL rf_rt 		: std_logic_vector(4 downto 0);
-	SIGNAL rf_rd 		: std_logic_vector(4 downto 0);
-	SIGNAL rf_reg_write	: std_logic;
-	SIGNAL rf_result 	: std_logic_vector(31 downto 0);
-	SIGNAL rf_reg_value1: std_logic_vector(31 downto 0);
-	SIGNAL rf_reg_value2: std_logic_vector(31 downto 0);
-
 BEGIN
 
 DUT_IF_stage: 
@@ -267,7 +258,7 @@ IF_stage PORT MAP(
 	EX_IF_MUX_CTRL,
 	EX_PC_OUT,
 	PP_CLK,	
-	control_DE,
+	DE_IF_stall,
 	IF_PC_count_out,
 	IF_Instruction_out
 );
@@ -312,7 +303,7 @@ execute_stage PORT MAP(
 	DE_mem_write, --MEM write
 	DE_mem_read,  --- MEM READ
 	DE_mem_data, --WRITE DATA TO MEM, value of rt from i-type instruction
-	DE_mem_write, -- WB WRITE
+	DE_reg_write, -- WB WRITE
 	DE_reg_dest_addr, --to propagate to WB and back to DE
 
 	-- ALU INPUT

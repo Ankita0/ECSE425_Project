@@ -80,40 +80,56 @@ BEGIN
 
     test_process : process
     BEGIN
-	 wait for 0.5*clk_period;
+	reset<='1';
+	wait for 0.5*clk_period;
+	memread <='0';
+	memwrite <='0';
+	reg_write <='0';
+	reset<='0';
+	wait for 0.5*clk_period;
         --TEST WRITE
         alu_result <= x"00000001"; --addr in mem
         writedata <= x"00000002"; --value inside rt
         memwrite <= '1';
         wait for clk_period;  
-
         memwrite <= '0';
         memread <= '1';
         wait for clk_period;
-        
+
         ASSERT data_to_WB = x"00000002" REPORT "unsuccessful write" SEVERITY ERROR;
-        
-        wait for clk_period;
-        
+
         alu_result <= x"00000003";
         memread <= '0';
-        
         wait for clk_period;        
-   
         --TEST READ     
         memread <= '1';
+	wait for clk_period;  
         assert data_to_WB = x"00000000" report "unsuccessful read" severity error;
 
-        wait for clk_period;
         writedata <= x"00000004";
         memread <= '0';
         memwrite <= '1';
         wait for clk_period;
         
-        assert data_to_WB = x"00000004" report "unsuccessful write" severity error;
+        assert data_to_WB = x"00000000" report "unsuccessful write" severity error;
         wait for clk_period;
         
+	-- Register write back
         memread <= '0';
+	memwrite <= '0';
+	reg_dst <= "00010";
+	reg_write <='1';
+	wait for clk_period;
+	assert reg_write_out = '1' report "reg_write does not propogate" severity error;
+	assert data_to_WB =  x"00000004" report "reg write data does not propogate" severity error;
+	reg_write <='0';
+	wait for clk_period;
+	reg_write <='1';
+	reset<='1';
+	wait for clk_period;
+	assert reg_write_out = '1' report "reg_write does not change at reset" severity error;
+	assert data_to_WB =  x"00000000" report "reg write data does not change at reset" severity error;
+	assert reg_dst_out = "00000" report "reg dest does not change at reset" severity error;
         wait;
 
     END PROCESS;

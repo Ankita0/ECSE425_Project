@@ -18,8 +18,6 @@ END WB_STAGE;
 
 ARCHITECTURE behaviour of WB_STAGE is
 
-  SIGNAL readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
-  SIGNAL alu_data_s: STD_LOGIC_VECTOR (31 DOWNTO 0);
   SIGNAL reg_write_s: STD_LOGIC;
   SIGNAL mux_data: STD_LOGIC_VECTOR (31 DOWNTO 0);
   
@@ -30,12 +28,9 @@ ARCHITECTURE behaviour of WB_STAGE is
     end component;
     
   BEGIN
-    MUX: EX_MUX PORT MAP(alu_data_s, readdata, reg_write, clock, mux_data);
-    write_back : process(clock)
+    MUX: EX_MUX PORT MAP(mem_data, alu_data, reg_write, clock, mux_data);
+    write_back : process(clock, reg_write, reg_dst)
     BEGIN
-	readdata <= mem_data;
-        alu_data_s <= alu_data;
-        reg_write_s <= reg_write;
 
 	if rising_edge(clock) then
 		reg_write_out <= reg_write;

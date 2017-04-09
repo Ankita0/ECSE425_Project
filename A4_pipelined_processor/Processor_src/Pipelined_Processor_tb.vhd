@@ -21,7 +21,7 @@ PORT(
 );
 END COMPONENT;
     
-  constant clk_period: time := 1 ns;  
+  	constant clk_period: time := 1 ns;  
 	SIGNAL PP_Init: STD_LOGIC:='0';
 	SIGNAL PP_CLK: STD_LOGIC:='0';
 	SIGNAL POOP: STD_LOGIC:='0';
