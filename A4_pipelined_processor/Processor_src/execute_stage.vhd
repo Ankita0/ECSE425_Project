@@ -96,7 +96,7 @@ Component alu is
 	begin
 		IF_MUX_CTRL<='0';
      	 
-    --if(rising_edge(clock)) then     
+    if(rising_edge(clock)) then     
 		------------------------------------------------
 		--Move Values & Load
 		------------------------------------------------
@@ -134,7 +134,7 @@ Component alu is
 			end if;
 	
 		end if;
-  --  end if;
+    end if;
 			
 end process;
 
