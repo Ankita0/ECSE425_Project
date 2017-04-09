@@ -68,8 +68,11 @@ BEGIN
       	waitrequest
       );
 
-  mm_address <= to_integer(unsigned(alu_result));
-  
+
+mm_address <= to_integer(unsigned(alu_result));
+mm_write <= do_memwrite;
+mm_read <= do_memread;
+data_memwrite<=writedata;
   MEM_PROCESS : PROCESS  (clock, do_memread, do_memwrite, reg_dst, alu_result)
   BEGIN
 	--reset /initialize
@@ -77,23 +80,23 @@ BEGIN
 	    alu_result_out <= (others => '0');
 	    data_to_WB <= (others => '0');
 	    reg_dst_out <= (others => '0');
-	end if;
+	
 		--when running
-	 if rising_edge(clock) and reset = '0' then
+	elsif rising_edge(clock) and reset= '0' then
 		if do_memread = '1' then
-			mm_read <= '1';
+			data_to_WB <= data_memread;
+
 		elsif do_memwrite = '1' then
-			mm_write <= '1';
+			data_to_WB <= (others => '0');
+		--register data appears on writedata line, to be propogated 
+		-- else result to be written to register should be on alu result line
 		elsif reg_write = '1' then
-			reg_write_out<='1';
-			reg_dst_out<= reg_dst;
+			data_to_WB<= writedata;
 		end if;
-	    alu_result_out <= alu_result;
-	    data_to_WB <= data_memread;
-	    reg_dst_out <= reg_dst;
-	    reg_write_out <= reg_write;
-	    data_memwrite<=writedata;
-	end if; 
+			reg_write_out<=reg_write;
+			reg_dst_out<= reg_dst;
+			alu_result_out <= alu_result; 
+	end if;
   end process;
 
 END behaviour;
