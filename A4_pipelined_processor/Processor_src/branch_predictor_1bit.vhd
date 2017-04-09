@@ -1,4 +1,5 @@
 --1bit branch predictor
+--Group 8
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -10,6 +11,7 @@ entity branch_predictor_1bit is
 	port (clk : in std_logic;
 			  init : in std_logic;
    		   branch_taken : in std_logic; --INPUT from IF stage
+   		   PC : in integer;
       		b_predict : out std_logic
   );
 end branch_predictor_1bit;
@@ -17,7 +19,14 @@ end branch_predictor_1bit;
 architecture behaviour of branch_predictor_1bit is
 
 	  Type state_type is (T, NT); --taken or not taken
-	  Type branch_history_table is array (31 downto 0) of std_logic;
+	  Type branch_history_row is 
+	     record 
+	       bhr: std_logic;
+	       NT: std_logic;
+	       T: std_logic;
+	     end record;
+	  
+	  Type branch_history_table is array (1023 downto 0) of branch_history_row;
 	  signal next_state : state_type;
 	  signal bht: branch_history_table;
 	  
@@ -54,29 +63,32 @@ architecture behaviour of branch_predictor_1bit is
 		end if;
 	end process;
 
-	Update_BHT : process (next_state, branch_taken)
+	Update_BHT : process (clk, PC, next_state, branch_taken)
 		begin
 
-			case next_state is
-
-        --not sure if this is right
-				When T=>
-					if(branch_taken='1') then
-            bht <= '1';
-          elsif(branch_taken='0') then
-            bht <= '0';
-          end if;  
+      if(init = '1') then
+        bht.bhr <= '1';
+      else 
+					if(next_state = NT) then
+            bht(PC).NT <= '1';
+          else
+            bht(PC).T <= '1';
+          end if;
+      end if;
 				
-				When NT=>
-				  if(branch_taken='1') then
-				    bht <= '1';
-				  elsif(branch_taken='0') then
-				    bht <= '0';
-			    end if;
-
-			end case;
-
 	end process;
 
+  Predict : process (clk, next_state)
+    
+    begin
+    
+      if(bht.bhr = '0') then
+        b_predict <= branch_history_table.NT;
+      elsif(bht.bhr = '1') then
+        b_predict <= branch_history_table.T;
+      end if;
+    
+    end process;
 
 end arch;
+
