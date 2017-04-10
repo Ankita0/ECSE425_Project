@@ -55,7 +55,7 @@ END COMPONENT;
 COMPONENT IF_adder IS
 PORT(
 	PC_instr_in: IN INTEGER;
-	stall: in std_logic;
+	control_DE: in std_logic;
 	PC_instr_plus4_out: OUT INTEGER
 );
 END COMPONENT;
