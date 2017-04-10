@@ -17,7 +17,7 @@ ARCHITECTURE arch OF IF_adder IS
 BEGIN
 
 --Add 1 to program instruction count
-PC_count_up: PROCESS(PC_instr_in)
+PC_count_up: PROCESS(PC_instr_in,stall)
 BEGIN
 	if stall='0' then
 		PC_instr_plus4_out <= PC_instr_in+ 1;
