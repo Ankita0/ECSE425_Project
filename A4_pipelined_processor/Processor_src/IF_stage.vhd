@@ -100,7 +100,7 @@ PC_instruction_counter PORT MAP(
 ADDER:
 IF_adder PORT MAP(
 	PC_OUT,
-	stall,
+	control_DE,
 	PC_inst_plus4
 );
 

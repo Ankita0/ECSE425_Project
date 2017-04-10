@@ -52,7 +52,7 @@ begin
 		--only check for ra
 		else
 
-			if (NOT(ra = "00000") AND 
+			if (NOT(ra = "00000" OR ra = "UUUUU" OR ra="XXXXX") AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
 			 	(ra = WB_reg_dest_addr))) then 
