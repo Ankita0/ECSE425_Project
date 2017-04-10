@@ -374,6 +374,13 @@ WB_STAGE PORT MAP(
       WB_writedata 
 );
 
+--counter: PROCESS
+--if now > 10000 ns then
+--	PP_mm_data<=MEM_Data_to_WB;
+--	PP_reg_data<= data;
+--end if;
+--end process;
+
 PP_process: PROCESS (PP_CLK)
 
 BEGIN
