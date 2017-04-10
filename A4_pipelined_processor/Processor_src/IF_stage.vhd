@@ -130,16 +130,18 @@ instruction_memory GENERIC MAP(
 
 init_process: PROCESS (CLK, PC_counter_init, mux_control,PC_instr_from_EX, control_DE)
 BEGIN
+
 if (rising_edge(CLK)) then
-	PC_OUT<=PC_OUT_2;
+	
 	PC_count_out<=PC_instr_to_fetch;
-  Instruction_out<=readdata;
+  	Instruction_out<=readdata;
+	PC_IN<=PC_instr_to_fetch;
+	PC_OUT<=PC_OUT_2;
 	IF (PC_counter_init = '0')THEN
 			--with stalls
 			IF (control_DE= '0') THEN
 				memread<='1';
-				PC_IN<=PC_instr_to_fetch;
-
+				
 			ELSIF (control_DE= '1') THEN
 					memread<='0';
 					memwrite<='0';
