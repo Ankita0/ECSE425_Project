@@ -55,7 +55,7 @@ END COMPONENT;
 COMPONENT IF_adder IS
 PORT(
 	PC_instr_in: IN INTEGER;
-	control_DE: in std_logic;
+	stall: in std_logic;
 	PC_instr_plus4_out: OUT INTEGER
 );
 END COMPONENT;
@@ -100,7 +100,7 @@ PC_instruction_counter PORT MAP(
 ADDER:
 IF_adder PORT MAP(
 	PC_OUT,
-	stall,
+	control_DE,
 	PC_inst_plus4
 );
 
