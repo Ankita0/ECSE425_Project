@@ -87,16 +87,16 @@ architecture arch of Branch_Predictor_2Bit is
 		begin
 				---Init to all true
 				if(init ='1') then
-					bht.bhr<="11";
+					bht(PC).bhr<="11";
 				else
-					std_logic_vector(unsigned(bht.bhr) srl 1);
-					bht(PC).bhr(1 downto 1)<=branch_taken;
+					bht(PC).bhr<= std_logic_vector(unsigned(bht(PC).bhr) srl 1);
+					bht(PC).bhr(1)<=branch_taken;
 					if(next_state = NT) then
 						bht(PC).NT<='1';
 					elsif(next_state = WNT) then
 						bht(PC).WNT<='1';
 					elsif(next_state=WT) then
-						bht(PC).WT<='1'
+						bht(PC).WT<='1';
 					else
 						bht(PC).T<='1';
 					end if;
@@ -106,14 +106,14 @@ architecture arch of Branch_Predictor_2Bit is
 
 	Predict: process (clk,next_state)
 		begin
-			if(bht.bhr="00") then
-				b_predict<= branch_history_table.NT;
-			elsif (bhtbhr="01") then
-				b_predict<=branch_history_table.WNT;
-			elsif(bht.bhr="10") then
-				b_predict<=branch_history_table.WT;
-			elsif (bht.bhr="11") then
-				b_predict<=branch_history_table.T;
+			if(bht(PC).bhr="00") then
+				b_predict<= bht(PC).NT;
+			elsif (bht(PC).bhr="01") then
+				b_predict<=bht(PC).WNT;
+			elsif(bht(PC).bhr="10") then
+				b_predict<=bht(PC).WT;
+			elsif (bht(PC).bhr="11") then
+				b_predict<=bht(PC).T;
 			end if;
 	end process;
 

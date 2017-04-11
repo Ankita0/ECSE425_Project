@@ -67,7 +67,7 @@ architecture behaviour of branch_predictor_1bit is
 		begin
 
       if(init = '1') then
-        bht.bhr <= '1';
+        bht(PC).bhr <= '1';
       else 
 					if(next_state = NT) then
             bht(PC).NT <= '1';
@@ -82,13 +82,13 @@ architecture behaviour of branch_predictor_1bit is
     
     begin
     
-      if(bht.bhr = '0') then
-        b_predict <= branch_history_table.NT;
-      elsif(bht.bhr = '1') then
-        b_predict <= branch_history_table.T;
+      if(bht(PC).bhr = '0') then
+        b_predict <= bht(PC).NT;
+      elsif(bht(PC).bhr = '1') then
+        b_predict <= bht(PC).T;
       end if;
     
     end process;
 
-end arch;
+end behaviour;
 
