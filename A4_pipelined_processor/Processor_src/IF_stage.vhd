@@ -86,7 +86,7 @@ END COMPONENT;
 	--mapping signals
 	SIGNAL counter_out: INTEGER:=0;
 	SIGNAL final_count: INTEGER :=0;
-	SIGNAL stall: std_logic:='0';
+	--SIGNAL stall: std_logic:='0';
 	
 BEGIN
 
