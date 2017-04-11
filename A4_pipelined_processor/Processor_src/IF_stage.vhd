@@ -86,7 +86,7 @@ END COMPONENT;
 	--mapping signals
 	SIGNAL counter_out: INTEGER:=0;
 	SIGNAL final_count: INTEGER :=0;
-	--SIGNAL stall: std_logic:='0';
+	SIGNAL stall: std_logic:='0';
 	
 BEGIN
 
@@ -140,7 +140,7 @@ IF (PC_counter_init = '0')THEN
 			memwrite<='0';
 			PC_count_out<=PC_instr_to_fetch;
   			Instruction_out<=readdata;
-			PC_IN<=PC_instr_to_fetch-1;
+			PC_IN<=PC_instr_to_fetch;
 		end if;	
 	ELSIF (control_DE = '0') THEN
 		if (CLK='1') then		

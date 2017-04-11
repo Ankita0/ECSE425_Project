@@ -149,12 +149,13 @@ begin
 
 
 	pipeline: process (clock)
-
+			
 		begin
 		--all outputs should be clock synchronized 
+		IF_stall <= stall_s;
 
 		if (rising_edge(clock)) then
-			IF_stall <= stall_s;
+
 			PC_counter_out <= PC_counter_in;
 			reg_value1 <= reg_value1_s; 
 			shamt <= instruction_s(4 downto 0);	--shift amount
@@ -167,7 +168,6 @@ begin
 			branch <= branch_s;
 			jump <= jump_s;
 			
-
 			if((alu_src_s = '1') AND (mem_write_s='1')) then 	--sw
 			-- use sign extended value
 				reg_value2 <= sign_extended_imm; 
