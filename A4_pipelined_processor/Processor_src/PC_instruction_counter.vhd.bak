@@ -22,7 +22,7 @@ BEGIN
 	IF (INIT 'event AND INIT='1') THEN
 		PC_OUT<= 0;
 	ELSIF (INIT ='0') THEN 
-		if(PC_IN=0 OR PC_IN=-2147483648) then
+		if(PC_IN='0' OR PC_IN=-2147483648) then
 		PC_OUT<= 0;
 		else
 		PC_OUT<= PC_IN;

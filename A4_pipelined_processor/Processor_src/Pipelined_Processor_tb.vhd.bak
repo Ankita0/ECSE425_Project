@@ -56,10 +56,12 @@ test_process: PROCESS
 
 BEGIN
   
-  PP_INIT<='0';
+  PP_INIT<='1';
   
   wait for clk_period;
-
+  
+ PP_INIT<='0';
+wait;
 END PROCESS;
 
 END ARCHITECTURE;
