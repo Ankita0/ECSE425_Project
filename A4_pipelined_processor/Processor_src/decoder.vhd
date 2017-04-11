@@ -299,7 +299,7 @@ begin
 
 			--Control-flow
 			when "000100" =>		--beq
-				alu_op_code<="100000";					
+				alu_op_code<="100001";					
 				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='0';
@@ -309,7 +309,7 @@ begin
 				branch<='1';
 
 			when "000101" =>		--bne
-				alu_op_code<="100000";
+				alu_op_code<="100011";
 				reg_dst<='0';
 				reg_write<='0';
 				alu_src<='0';
