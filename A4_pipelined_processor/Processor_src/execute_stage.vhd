@@ -114,11 +114,11 @@ Component alu is
 			result<=Alu_Rslt;
 			if (branch = '1') then
 				IF(Input_A /= Input_B) then
-					PC_OUT<=(branch_offset*4);
+					PC_OUT<=PC_IN+branch_offset;
 					IF_MUX_CTRL<='1';
 				elsif (Input_A = Input_B) then
 					--SET MUX AND NEW PC VALUE
-					PC_OUT<=(branch_offset*4);
+					PC_OUT<=PC_IN+branch_offset;
 					IF_MUX_CTRL<='1';
 				end if;
 			end if;
