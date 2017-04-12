@@ -1,3 +1,6 @@
+# Coded by: Rafed Muhammad Yasir
+# From github.com/rafed123
+
 # Multiplying matrices
 	xor $t1, $t1, $t1				# loop 1 var
 L1:	
