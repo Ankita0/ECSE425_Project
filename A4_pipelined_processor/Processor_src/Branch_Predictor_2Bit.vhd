@@ -44,7 +44,7 @@ architecture arch of Branch_Predictor_2Bit is
 		begin
 
 		if (init = '1') then
-			next_state<=WT;
+			next_state<=WT; --Init to a weak state to minimize CC penalty for a mispredict
 
 		elsif(rising_edge(clk) and init ='0') then
 			Case next_state is
@@ -83,41 +83,41 @@ architecture arch of Branch_Predictor_2Bit is
 	end process;
 
 	Update_BHT : process (clk,PC,init,next_state,branch_taken)
-		begin
-				---Init to all true
-				if(init ='1') then
-				  for i in 0 to 1023 loop
-  					 bht(i).bhr<="11";
-  					 bht(i).NT<='1';
-  					 bht(i).WNT<='1';
- 					 bht(i).WT<='1';
-					 bht(i).T<='1';
-				  end loop;
-				elsif(init='0') then
-          bht(PC).bhr<= std_logic_vector(unsigned(bht(PC).bhr) srl 1);
-          bht(PC).bhr(1)<=branch_taken;
-            if (branch_taken= '1') then
-                if(next_state = NT) then
-                  bht(PC).NT<='1';
-                elsif(next_state = WNT) then
-                  bht(PC).WNT<='1';
-                elsif(next_state=WT) then
-                  bht(PC).WT<='1';
-              else
-  						      bht(PC).T<='1';
-  						end if;
-					  elsif(branch_taken = '0')then
-    						    if(next_state = NT) then
-    						      bht(PC).NT<='0';
-					      elsif(next_state = WNT) then
-    						      bht(PC).WNT<='0';
-    					     elsif(next_state=WT) then
-    						      bht(PC).WT<='0';
-    					     else
-    						      bht(PC).T<='0';
-    					     end if;
-					 end if;
-				end if;
+	begin
+	---Init to all true
+	if(init ='1') then
+	  for i in 0 to 1023 loop
+		 bht(i).bhr<="11";
+		 bht(i).NT<='1';
+		 bht(i).WNT<='1';
+		 bht(i).WT<='1';
+		 bht(i).T<='1';
+	  end loop;
+	elsif(init='0') then
+          bht(PC).bhr<= std_logic_vector(unsigned(bht(PC).bhr) srl 1); --shift the 2 previous Branch outcomes, shifting out the old outcome
+          bht(PC).bhr(1)<=branch_taken; --update with new outcome
+		    if (branch_taken= '1') then
+			if(next_state = NT) then
+			  bht(PC).NT<='1';
+			elsif(next_state = WNT) then
+			  bht(PC).WNT<='1';
+			elsif(next_state=WT) then
+			  bht(PC).WT<='1';
+			else
+			  bht(PC).T<='1';
+			end if;
+		  elsif(branch_taken = '0')then
+			 if(next_state = NT) then
+			    bht(PC).NT<='0';
+			elsif(next_state = WNT) then
+			      bht(PC).WNT<='0';
+			elsif(next_state=WT) then
+			      bht(PC).WT<='0';
+			else
+			      bht(PC).T<='0';
+			end if;
+		 end if;
+	end if;
 	end process;
 	
 	Predict: process (clk,next_state)
