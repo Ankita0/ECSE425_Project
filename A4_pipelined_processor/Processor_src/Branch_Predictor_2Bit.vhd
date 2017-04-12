@@ -47,7 +47,6 @@ architecture arch of Branch_Predictor_2Bit is
 			next_state<=WT;
 
 		elsif(rising_edge(clk) and init ='0') then
-
 			Case next_state is
 
 				When T =>
