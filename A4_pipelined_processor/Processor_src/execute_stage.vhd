@@ -117,7 +117,7 @@ Component alu is
 					if (Input_A = Input_B) then
 						--SET MUX AND NEW PC VALUE
 						if (branch_offset = 65535)then
-							PC_OUT<=PC_IN+branch_offset;
+							PC_OUT<=PC_IN+branch_offset+1;
 						else 
 							PC_OUT<=PC_IN;
 						end if;
@@ -126,7 +126,7 @@ Component alu is
 				elsif (alu_op_code="100011") then --bne
 					IF(Input_A /= Input_B) then
 						if (branch_offset = 65535)then
-							PC_OUT<=PC_IN+branch_offset;
+							PC_OUT<=PC_IN+branch_offset+1;
 						else 
 							PC_OUT<=PC_IN;
 						end if;

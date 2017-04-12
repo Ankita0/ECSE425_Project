@@ -16,12 +16,25 @@ entity hazard_detect is
 end hazard_detect;
 
 architecture arch of hazard_detect is
+  signal previous_instruction: std_logic_vector(31 downto 0);
+  signal previous_stall: std_logic;
+  signal stall_s: std_logic;
 begin
-	process(instruction_in)
+  --process to store the previous instruction
+  process(clock)
+    begin
+    if(rising_edge(clock))then
+    		previous_instruction<=instruction_in;
+    		previous_stall<=stall_s;
+  		end if;
+	end process;
+  
+	process(instruction_in,previous_instruction,previous_stall)
 		Variable op_code: std_logic_vector(5 downto 0);
 		Variable ra: std_logic_vector(4 downto 0);
 		Variable rb: std_logic_vector(4 downto 0);
 	begin
+
 		-- if stall
 		-- stall = (IF/ID.rA != 0 && 
 		-- (IF/ID.rA == ID/EX.reg_dest_addr 
@@ -43,27 +56,39 @@ begin
 			 	(rb = WB_reg_dest_addr)))) then 
 			--insert an add $r0, $r0, $r0
 			instruction_out<=x"00000020";
+			stall_s<='1';
 			stall<='1';
+			elsif(previous_stall='1') then
+			instruction_out<=previous_instruction;
+			stall_s<='0';
+			stall<='0';			
 			else
 			instruction_out<=instruction_in;
+			stall_s<='0';
 			stall<='0';
 			end if;
 
 		--only check for ra
 		else
-
 			if (NOT(ra = "00000" OR ra = "UUUUU" OR ra="XXXXX") AND 
 				((ra = EX_reg_dest_addr) OR
 			 	(ra = MEM_reg_dest_addr) OR 
 			 	(ra = WB_reg_dest_addr))) then 
 			--insert an add $r0, $r0, $r0
 			instruction_out<=x"00000020";
+			stall_s<='1';
 			stall<='1';
+			elsif(previous_stall='1') then
+			instruction_out<=previous_instruction;
+			stall_s<='0';
+			stall<='0';			
 			else
 			instruction_out<=instruction_in;
+			stall_s<='0';
 			stall<='0';
 			end if;
 
 		end if;
+		
 	end process;
 end arch; 
