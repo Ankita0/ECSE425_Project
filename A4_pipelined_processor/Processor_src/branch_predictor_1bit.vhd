@@ -26,7 +26,7 @@ architecture behaviour of branch_predictor_1bit is
 	       T: std_logic;
 	     end record;
 	  
-	  Type branch_history_table is array (1023 downto 0) of branch_history_row;
+	  Type branch_history_table is array (integer range 0 to 1023) of branch_history_row;
 	  signal next_state : state_type;
 	  signal bht: branch_history_table;
 	  
@@ -67,7 +67,11 @@ architecture behaviour of branch_predictor_1bit is
 		begin
 
       if(init = '1') then
-        bht(PC).bhr <= '1';
+         for i in 0 to 1023 loop
+  					 bht(i).bhr<='1';
+  					 bht(i).NT<='1';
+					 bht(i).T<='1';
+				  end loop;
       else 
 					if(next_state = NT) then
             bht(PC).NT <= '1';

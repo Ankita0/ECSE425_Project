@@ -13,7 +13,7 @@ use ieee.numeric_std.all;
 entity Branch_Predictor_2Bit is
 
 	port (	clk : in std_logic;
-			init : in std_logic;
+			   init : in std_logic;
       		branch_taken : in std_logic; --INPUT from Execute
       		PC : in integer;
       		b_predict : out std_logic
@@ -32,14 +32,14 @@ architecture arch of Branch_Predictor_2Bit is
 	  		T:std_logic;
 	  	end record;
 
-	  Type branch_history_table is array (1023 downto 0) of branch_history_row;
+	  Type branch_history_table is array (integer range 0 to 1023) of branch_history_row;
 	  signal next_state : State_type;
 	  signal bht: branch_history_table;
 	  
 
 	begin
 
-	FSM:process(clk,init,next_state,branch_taken)
+	FSM:process(clk,init,next_state,branch_taken,PC)
 
 		begin
 
@@ -87,23 +87,40 @@ architecture arch of Branch_Predictor_2Bit is
 		begin
 				---Init to all true
 				if(init ='1') then
-					bht(PC).bhr<="11";
-				else
-					bht(PC).bhr<= std_logic_vector(unsigned(bht(PC).bhr) srl 1);
-					bht(PC).bhr(1)<=branch_taken;
-					if(next_state = NT) then
-						bht(PC).NT<='1';
-					elsif(next_state = WNT) then
-						bht(PC).WNT<='1';
-					elsif(next_state=WT) then
-						bht(PC).WT<='1';
-					else
-						bht(PC).T<='1';
-					end if;
+				  for i in 0 to 1023 loop
+  					 bht(i).bhr<="11";
+  					 bht(i).NT<='1';
+  					 bht(i).WNT<='1';
+ 					 bht(i).WT<='1';
+					 bht(i).T<='1';
+				  end loop;
+				elsif(init='0') then
+          bht(PC).bhr<= std_logic_vector(unsigned(bht(PC).bhr) srl 1);
+          bht(PC).bhr(1)<=branch_taken;
+            if (branch_taken= '1') then
+                if(next_state = NT) then
+                  bht(PC).NT<='1';
+                elsif(next_state = WNT) then
+                  bht(PC).WNT<='1';
+                elsif(next_state=WT) then
+                  bht(PC).WT<='1';
+              else
+  						      bht(PC).T<='1';
+  						end if;
+					  elsif(branch_taken = '0')then
+    						    if(next_state = NT) then
+    						      bht(PC).NT<='0';
+					      elsif(next_state = WNT) then
+    						      bht(PC).WNT<='0';
+    					     elsif(next_state=WT) then
+    						      bht(PC).WT<='0';
+    					     else
+    						      bht(PC).T<='0';
+    					     end if;
+					 end if;
 				end if;
-
 	end process;
-
+	
 	Predict: process (clk,next_state)
 		begin
 			if(bht(PC).bhr="00") then
